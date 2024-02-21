@@ -11,26 +11,44 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 ### Required Queries:
 #### 1. Count of orders grouped by week
 - description placeholder 
+
 #### 2. Count of orders and their total in an hour
-- description placeholder 
+- orders_and_their_total_in_an_hour.sql
+- Retrieves the total number of orders and the total cost associated with said order plced during the 5th hour of service.
+
 #### 3. Top 10 sums of order total grouped by day in descending order by order total
-- description placeholder 
+- top_ten_sums_of_day_descending_by_order_total.sql
+- Retrieves the top 10 most profitable days (in terms of customer orders) and sorts the results in descending order.
+
 #### 4. Inventory items for 20 items
-- description placeholder 
+- inventory_items_for_20_items.sql
+- Retrieves the top 20 menu items with the highest number of ingredients from the menu.
 
 ### Extra Queries:
-#### 5. List of ingredients in the burger (may be the same as #4)
-- description placeholder 
-#### 6. Last time we ordered lettuce
-- description placeholder 
-#### 7. Title Placeholder
-- description placeholder 
-#### 8. Title Placeholder
-- description placeholder 
-#### 9. Title Placeholder
-- description placeholder 
-#### 10. Title Placeholder
-- description placeholder 
+#### 5. List of ingredients in the burger
+- ingredients_in_cheeseburger.sql
+- Retrieves the names of all ingredients found in the item "Cheeseburger."
+
+#### 6. Menu items with patties
+- orders_with_patties.sql
+- Retrieves all the deatils of menu items that contain the ingredient "Burger Patty."
+
+#### 7. All menu items less than 5 dollars
+- menu_items_less_than_five.sql
+- Retrieves all the menu items that are priced less than $5 USD.
+
+#### 8. All ingredients with less than 25 in stock ascending
+- ingredients_with_less_than_25.sql
+- Retrieves all the ingredients that are low (less than 25 units of said ingredient) in stock.
+
+#### 9. Ingredients with most stock in descending order
+- ingredients_with_most_stock.sq
+- Retrieves all ingredients and sorts the results based on the current stock within inventory into descending order.
+
+#### 10. Total count of ingredients already ordered by managers
+- ingredients_ordered_by_manager.sql
+- Retrieves the total quantity of ingredients ordered by the manager and sorts the results in descending order.
+
 #### 11. Title Placeholder
 - description placeholder 
 #### 13. Title Placeholder
