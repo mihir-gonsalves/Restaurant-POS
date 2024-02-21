@@ -25,6 +25,18 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 - Retrieves the top 20 menu items with the highest number of ingredients from the menu.
 
 ### Extra Queries:
+#### 5. List of ingredients in cheeseburger (may be the same as #4)
+- description placeholder 
+#### 6. Orders with patties
+- description placeholder 
+#### 7. All menu items less than 5 dollars
+- description placeholder 
+#### 8. Title Placeholder
+- description placeholder 
+#### 9. Title Placeholder
+- description placeholder 
+#### 10. Title Placeholder
+- description placeholder 
 #### 5. List of ingredients in the burger
 - ingredients_in_cheeseburger.sql
 - Retrieves the names of all ingredients found in the item "Cheeseburger."

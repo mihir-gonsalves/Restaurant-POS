@@ -154,7 +154,7 @@ try:
                       ingredient_quantity INT,
                       PRIMARY KEY (item_id, ingredient_id))
      '''
-     cur.execute(my_script)
+    cur.execute(my_script)
     
     insert_script = 'INSERT INTO item_to_ingredient_list (item_id, ingredient_id, ingredient_quantity) VALUES (%s, %s, %s)'
 
