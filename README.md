@@ -10,11 +10,12 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 
 ### Required Queries:
 #### 1. Count of orders grouped by week
-- description placeholder 
+- orders_grouped_by_week.sql
+- Groups orders by week and year and displays the total orders in these time periods
 
 #### 2. Count of orders and their total in an hour
 - orders_and_their_total_in_an_hour.sql
-- Retrieves the total number of orders and the total cost associated with said order plced during the 5th hour of service.
+- Retrieves the total number of orders and the total cost associated with said order plced during the 13th hour of service.
 
 #### 3. Top 10 sums of order total grouped by day in descending order by order total
 - top_ten_sums_of_day_descending_by_order_total.sql
@@ -49,14 +50,25 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 - ingredients_ordered_by_manager.sql
 - Retrieves the total quantity of ingredients ordered by the manager and sorts the results in descending order.
 
-#### 11. Title Placeholder
+#### 11. Most ordered items in past month by descending order (not tested)
+- most_ordered_items_past_month.sql
+- Retrieves most ordered items in the past month
+
+#### 12. Most ordered ingredients by manager
+- managers_most_ordered_ingredients.sql
+- Retrieves total ingredient quantities by manager
+
+#### 13. Names of all items ordered more than 10 times on (not tested)
+- items_ordered_more_than_10x.sql
+- Retrieves names of all items 
+
+#### 14. Title Placeholder (not tested)
+- description placeholder
+-  
+
+#### 15. Title Placeholder (not tested)
 - description placeholder 
-#### 13. Title Placeholder
-- description placeholder 
-#### 14. Title Placeholder
-- description placeholder 
-#### 15. Title Placeholder
-- description placeholder 
+- 
 
 
 ## ER Diagram:
