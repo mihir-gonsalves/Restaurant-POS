@@ -50,7 +50,7 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 - ingredients_ordered_by_manager.sql
 - Retrieves the total quantity of ingredients ordered by the manager and sorts the results in descending order.
 
-#### 11. Most ordered items in past month by descending order (not tested)
+#### 11. Most ordered items in past month by descending order
 - most_ordered_items_past_month.sql
 - Retrieves most ordered items in the past month
 
@@ -58,17 +58,17 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 - managers_most_ordered_ingredients.sql
 - Retrieves total ingredient quantities by manager
 
-#### 13. Names of all items ordered more than 10 times on (not tested)
+#### 13. Names of all items ordered more than 10 times
 - items_ordered_more_than_10x.sql
 - Retrieves names of all items 
 
-#### 14. Title Placeholder (not tested)
-- description placeholder
--  
+#### 14. Number of items an ingredient is used in
+- items_per_ingredient.sql
+- Retrieves most used ingredients across all items and returns them in descending order.
 
-#### 15. Title Placeholder (not tested)
-- description placeholder 
-- 
+#### 15. Months with lowest revenue.
+- lowest_sales_month.sql
+- Retrieves the sum of order value by month and returns in ascending order, grouped further by year.
 
 
 ## ER Diagram:
