@@ -19,11 +19,11 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 - description placeholder 
 
 ### Extra Queries:
-#### 5. List of ingredients in the burger (may be the same as #4)
+#### 5. List of ingredients in cheeseburger (may be the same as #4)
 - description placeholder 
-#### 6. Last time we ordered lettuce
+#### 6. Orders with patties
 - description placeholder 
-#### 7. Title Placeholder
+#### 7. All menu items less than 5 dollars
 - description placeholder 
 #### 8. Title Placeholder
 - description placeholder 
