@@ -148,13 +148,14 @@ try:
     )
     cur = conn.cursor()
 
-    # my_script = '''CREATE TABLE item_to_ingredient_list(
-    #                  item_id    INT,
-    #                  ingredient_id  INT,
-    #                  ingredient_quantity INT,
-    #                  PRIMARY KEY (item_id, ingredient_id))
-    # '''
-    # cur.execute(my_script)
+    my_script = '''CREATE TABLE item_to_ingredient_list(
+                      item_id    INT,
+                      ingredient_id  INT,
+                      ingredient_quantity INT,
+                      PRIMARY KEY (item_id, ingredient_id))
+     '''
+     cur.execute(my_script)
+    
     insert_script = 'INSERT INTO item_to_ingredient_list (item_id, ingredient_id, ingredient_quantity) VALUES (%s, %s, %s)'
 
     for item_id, ingredients in id_items_ingredients.items():
