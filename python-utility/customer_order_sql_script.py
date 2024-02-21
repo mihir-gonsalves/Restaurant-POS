@@ -41,11 +41,11 @@ def printout():
         for day in range(1,days+1):
             day_sale = 0
             if month == 8 and day == 23:
-                day_limit = 8000
+                day_limit = 9000
             elif month == 1 and day == 17:
-                day_limit = 8000
+                day_limit = 9000
             else:
-                day_limit = 2750
+                day_limit = random.randrange(2000,4500)
             while day_sale < day_limit:
                 f.write("INSERT INTO Customer_order (c_order_id, c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES (")
                 f.write(str(i)+", '"+ year+ str(month)+ "-" + str(day)+ "', '")
@@ -65,36 +65,9 @@ def printout():
                 payments = ["cash", "credit", "debit"]
                 f.write("'"+ payments[random.randrange(0,3)]+ "');\n")
                 i += 1
+            print(day_sale)
     print(total_sales)
-"""
-    for day in range(1,32):
-        day_sale = 0
-        if day == 17:
-            day_limit = 8000
-        else:
-            day_limit = 2750
-        while day_sale < day_limit:
-            f.write("INSERT INTO Customer_order (c_order_id, c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES (")
-            f.write(str(i)+", '2024-"+ str(1)+ "-" + str(day)+ "', '")
-            f.write(str(random.randrange(11,23))+ ":" + str(random.randrange(0,60))+ ":" + str(random.randrange(0,60))+ "', ") # 11am to pm
-            subtotal = Decimal(random.randrange(5,30))
-            tax = subtotal * Decimal('0.0825')
 
-            total = subtotal + tax
-            total_sales += subtotal
-            day_sale += subtotal
-            subtotal = subtotal.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-            tax = tax.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-            total = total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-            f.write(str(subtotal)+ ", ") # subtotal
-            f.write(str(tax)+ ", ")# tax
-            f.write(str(total)+ ", ")   # total
-            payments = ["cash", "credit", "debit"]
-            f.write("'"+ payments[random.randrange(0,3)]+ "');\n")
-            i += 1
-    print(total_sales)
     f.close()
-"""
-
 if __name__ == "__main__":
     printout()
