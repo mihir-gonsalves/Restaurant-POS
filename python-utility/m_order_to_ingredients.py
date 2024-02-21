@@ -86,7 +86,8 @@ try:
                         m_order_id    INT PRIMARY KEY,
                         m_order_date DATE,
                         m_order_time TIME,
-                        m_order_total DECIMAL(10,2))
+                        m_order_total DECIMAL(10,2),
+                        manager_name VARCHAR(20))
     '''
     cur.execute(my_script)
     
