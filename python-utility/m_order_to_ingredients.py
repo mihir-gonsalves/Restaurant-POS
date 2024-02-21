@@ -91,16 +91,27 @@ try:
     cur.execute(my_script)
     
     insert_script = 'INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (%s, %s, %s)'
-    insert_script2 = 'INSERT INTO manager_order(m_order_id, m_order_date, m_order_time, m_order_total) VALUES (%s, %s, %s, %s)'
+    insert_script2 = 'INSERT INTO manager_order(m_order_id, m_order_date, m_order_time, m_order_total, manager_name) VALUES (%s, %s, %s, %s, %s)'
     for i in range(1, 70):
         m_order_id = random.randrange(1, 6)
+        if (m_order_id == 1):
+            manager_name = "John"
+        elif (m_order_id == 2):
+            manager_name = "Jane"
+        elif (m_order_id == 3):
+            manager_name = "Joe"
+        elif (m_order_id == 4):
+            manager_name = "Jack"
+        elif (m_order_id == 5):
+            manager_name = "Jill"
+        
         ingredient_quantity = random.randrange(1, 40)
         ingredient_id = random.randrange(1, 49)
         m_order_date = f'%s-%s-%s' % (random.randrange(2022, 2024), random.randrange(1, 13), random.randrange(1, 29))
         m_order_time = f'%s:%s:%s' % (random.randrange(0, 24), random.randrange(0, 60), random.randrange(0, 60))
         m_order_total = random.randrange(100, 1000)
         insert_value = (m_order_id, ingredient_id, ingredient_quantity)
-        insert_value2 = (m_order_id, m_order_date, m_order_time, m_order_total)
+        insert_value2 = (m_order_id, m_order_date, m_order_time, m_order_total, manager_name)
         cur.execute(insert_script, insert_value)
         cur.execute(insert_script2, insert_value2)
         # print("\n")
