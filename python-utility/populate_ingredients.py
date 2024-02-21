@@ -74,11 +74,11 @@ try:
     )
     cur = conn.cursor()
 
-    my_script = '''CREATE TABLE item_to_ingredient_list(
-                     item_id    INT,
-                     ingredient_id  INT,
-                     ingredient_quantity INT,
-                     PRIMARY KEY (item_id, ingredient_id))
+    my_script = '''CREATE TABLE ingredients(
+                     ingredient_id    INT,
+                     ingredient_name  VARCHAR(50),
+                     ingredient_current_stock INT,
+                     ingredient_unit_price DECIMAL(15,2))
     '''
     cur.execute(my_script)
 
