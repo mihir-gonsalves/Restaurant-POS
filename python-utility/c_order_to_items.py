@@ -57,7 +57,7 @@ try:
     )
     cur = conn.cursor()
 
-    my_script = '''CREATE TABLE c_order_to_ingredient_list(
+    my_script = '''CREATE TABLE c_order_to_item_list(
                       c_order_id    INT,
                       item_id  INT,
                       item_quantity INT,
@@ -65,7 +65,7 @@ try:
      '''
     cur.execute(my_script)
     
-    insert_script = 'INSERT INTO c_order_to_ingredient_list (c_order_id, item_id, item_quantity) VALUES (%s, %s, %s)'
+    insert_script = 'INSERT INTO c_order_to_item_list (c_order_id, item_id, item_quantity) VALUES (%s, %s, %s)'
 
     c_order_id = 1
     for c_order_id in range(1, MAX_CUSTOMER_ID + 1):
