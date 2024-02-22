@@ -15,7 +15,7 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 
 #### 2. Count of orders and their total in an hour
 - orders_and_their_total_in_an_hour.sql
-- Retrieves the total number of orders and the total cost associated with said order plced during the 13th hour of service.
+- Retrieves the total number of orders and the total cost associated with said order placed during the 13th hour of service.
 
 #### 3. Top 10 sums of order total grouped by day in descending order by order total
 - top_ten_sums_of_day_descending_by_order_total.sql
@@ -60,7 +60,7 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 
 #### 13. Names of all items ordered more than 10 times
 - items_ordered_more_than_10x.sql
-- Retrieves names of all items 
+- Retrieves names of all items ordered more than 10 times
 
 #### 14. Number of items an ingredient is used in
 - items_per_ingredient.sql
