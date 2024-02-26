@@ -10,11 +10,12 @@ public class App {
     private static JFrame currentScreen;
 
     public static void main(String[] args) {
+        DatabaseManager.initialize();
         switchToLoginScreen();
     }
 
     public static void switchToLoginScreen() {
-        currentScreen = new LoginScreen(App::switchToMainScreen);
+        currentScreen = new LoginScreen(App::switchToTestScreen);
         currentScreen.setVisible(true);
     }
 
