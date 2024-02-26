@@ -9,7 +9,7 @@ Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsa
 As to not expose our database password, you should create a copy of the config.properties file and then fill in the fields with the proper database information.
 
 ## Building and Running:
-This project uses [Maven] (https://maven.apache.org/download.cgi) for dependency management and building. To build the project, navigate to the project directory in your terminal and run the following command:
+This project uses [Maven](https://maven.apache.org/download.cgi) for dependency management and building. To build the project, navigate to the project directory in your terminal and run the following command:
 
 ```bash
 mvn clean package
