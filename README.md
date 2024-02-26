@@ -5,6 +5,21 @@
 ## Team Members:
 Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsalves
 
+## Config:
+As to not expose our database password, you should create a copy of the config.properties file and then fill in the fields with the proper database information.
+
+## Building and Running:
+This project uses [Maven] (https://maven.apache.org/download.cgi) for dependency management and building. To build the project, navigate to the project directory in your terminal and run the following command:
+
+```bash
+mvn clean package
+```
+Then, in the same directory, run the application with the following command:
+```bash
+java -jar target/RevsGUI-0.0.1-jar-with-dependencies.jar
+```
+
+
 
 ## Query Behaviors:
 
