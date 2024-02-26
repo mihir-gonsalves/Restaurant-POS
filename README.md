@@ -18,7 +18,10 @@ Then, in the same directory, run the application with the following command:
 ```bash
 java -jar target/RevsGUI-0.0.1-jar-with-dependencies.jar
 ```
-
+To recompile the project run the following command:
+```bash
+mvn package
+```
 
 
 ## Query Behaviors:

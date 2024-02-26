@@ -23,7 +23,8 @@ import java.io.IOException;
 
 public class LoginScreen extends JFrame implements ActionListener {
     static JTextField phoneNumberField;
-    static JFrame f;
+    static JFrame frame;
+    static JPanel panel;
     private Runnable switchToMainScreenCallback;
 
 
@@ -32,12 +33,12 @@ public class LoginScreen extends JFrame implements ActionListener {
         this.switchToMainScreenCallback = switchToMainScreenCallback;
         
         // create a new frame
-        f = new JFrame("Login Screen");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Rev's GUI: Login Screen");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // create a panel
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         // add actionlistener to button
         phoneNumberField = new JTextField(20);
@@ -48,26 +49,27 @@ public class LoginScreen extends JFrame implements ActionListener {
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add components to panel
-        p.add(Box.createVerticalGlue());  // Add vertical glue before the components
-        p.add(new JLabel("Phone Number:"));
-        p.add(phoneNumberField);
-        p.add(Box.createRigidArea(new Dimension(0, 10)));  // Add some space between the components
-        p.add(btnLogin);
-        p.add(Box.createVerticalGlue());  // Add vertical glue after the components
+        panel.add(Box.createVerticalGlue());  // Add vertical glue before the components
+        panel.add(new JLabel("Phone Number:"));
+        panel.add(phoneNumberField);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));  // Add some space between the components
+        panel.add(btnLogin);
+        panel.add(Box.createVerticalGlue());  // Add vertical glue after the components
 
         // add panel to frame
-        f.add(p);
+        frame.add(panel);
 
         // set the size of frame
-        f.setSize(400, 400);
+        frame.setSize(400, 400);
 
-        f.setVisible(true);
+        frame.setVisible(true);
 
         //closing the connection
         btnLogin.addActionListener(e -> {
             // check login credentials here
             // if login is successful, call the callback
             switchToMainScreenCallback.run();
+            frame.setVisible(false);
         });
     }
 
@@ -76,7 +78,7 @@ public class LoginScreen extends JFrame implements ActionListener {
     {
         String s = e.getActionCommand();
         if (s.equals("Close")) {
-            f.dispose();
+            frame.dispose();
         }
     }
 }
