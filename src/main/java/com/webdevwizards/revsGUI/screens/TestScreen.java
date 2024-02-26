@@ -35,7 +35,7 @@ public class TestScreen extends JFrame {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
         
         // Test Button
-        JButton testButton = new JButton("Test1");
+        JButton testButton = new JButton("Ingredients in cheeseburger");
         testButton.addActionListener(e -> TableQuery("SELECT ingredients.ingredient_name\r\n" + //
         "\r\n" + //
         "FROM menu_items\r\n" + //
@@ -46,14 +46,14 @@ public class TestScreen extends JFrame {
         "\r\n" + //
         "WHERE menu_items.item_name = 'Cheeseburger';"));
         buttonsPanel.add(testButton);
-        testButton = new JButton("Test2");
+        testButton = new JButton("Ingredients by manager");
         testButton.addActionListener(e -> TableQuery("SELECT ingredient_id, SUM(ingredient_quantity) AS total_quantity_ordered\r\n" + //
                         "FROM M_order_to_ingredient_list\r\n" + //
                         "GROUP BY ingredient_id\r\n" + //
                         "ORDER BY total_quantity_ordered DESC;\r\n" + //
                         ""));
         buttonsPanel.add(testButton);
-        testButton = new JButton("Test3");
+        testButton = new JButton("Ingredients less than 25");
         testButton.addActionListener(e -> TableQuery("SELECT *\r\n" + //
                         "\r\n" + //
                         "FROM ingredients\r\n" + //
@@ -62,7 +62,7 @@ public class TestScreen extends JFrame {
                         "\r\n" + //
                         "ORDER BY ingredient_current_stock ASC;"));
         buttonsPanel.add(testButton);
-        testButton = new JButton("Test4");
+        testButton = new JButton("Ingredients most stock");
         testButton.addActionListener(e -> TableQuery("SELECT *\r\n" + //
                         "\r\n" + //
                         "FROM ingredients\r\n" + //
