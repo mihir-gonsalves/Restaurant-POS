@@ -1,5 +1,6 @@
 package com.webdevwizards.revsGUI.screens;
 import com.webdevwizards.revsGUI.DatabaseManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,8 +10,8 @@ public class testGUI extends JFrame implements ActionListener{
     JFrame frame;
     Popup po;
     PopupFactory pf;
-    private static final String INSERT_ORDER_QUERY = "INSERT INTO customer_order (c_order_id, c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
+    private static final String INSERT_ORDER_QUERY = "INSERT INTO c_orders (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_ORDER_ITEM_QUERY = "INSERT INTO c_oti (c_order_id, item_id, item_quantity) VALUES (?, ?, ?)";
     
     public testGUI() {
         SwingUtilities.invokeLater(() -> {
@@ -170,31 +171,49 @@ public class testGUI extends JFrame implements ActionListener{
             }
         
             try (Connection connection = DatabaseManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ORDER_QUERY)) {
+                 PreparedStatement preparedStatementInsert = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
                 
                 // Get cashier name and order subtotal from GUI components
                 String cashierName = "Ritchey"; // Assuming static cashier name for now
                 String subtotal = "0.00"; // Assuming initial subtotal for now
 
                 // Set parameters for the prepared statement
-                preparedStatement.setInt(1, 1000000); // Replace "Item Name" with actual item name
+                //preparedStatement.setInt(1, 1000000); // Replace "Item Name" with actual item name
                 java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-                preparedStatement.setDate(2, currentDate);
+                preparedStatementInsert.setDate(1, currentDate);
 
                 // Set current time
                 java.sql.Time currentTime = new java.sql.Time(System.currentTimeMillis());
-                preparedStatement.setTime(3, currentTime);
+                preparedStatementInsert.setTime(2, currentTime);
                 
                 // Set subtotal
-                preparedStatement.setDouble(4, Double.parseDouble(subtotal));
+                preparedStatementInsert.setDouble(3, Double.parseDouble(subtotal));
                 // Set tax
-                preparedStatement.setDouble(5, 0.0825 * Double.parseDouble(subtotal));
+                preparedStatementInsert.setDouble(4, 0.0825 * Double.parseDouble(subtotal));
                 // Set total
-                preparedStatement.setDouble(6, 1.0825 * Double.parseDouble(subtotal));
+                preparedStatementInsert.setDouble(5, 1.0825 * Double.parseDouble(subtotal));
                 // Set payment type
-                preparedStatement.setString(7, "Credit");
+                preparedStatementInsert.setString(6, "Credit");
                 // Execute the query
-                preparedStatement.executeUpdate();
+                
+                
+                preparedStatementInsert.executeUpdate();
+
+                ResultSet rs = preparedStatementInsert.getGeneratedKeys();
+                if (rs.next()) {
+                    // Retrieve the auto-generated c_order_id
+                    int c_order_id = rs.getInt("c_order_id");
+                    System.out.println("Generated c_order_id: " + c_order_id);
+                    PreparedStatement preparedStatementInsertOrderItem = connection.prepareStatement(INSERT_ORDER_ITEM_QUERY);
+                    // Add order items to the database
+                    preparedStatementInsertOrderItem.setInt(1, c_order_id);
+                    // Replace "Item Name" with actual item name
+                    preparedStatementInsertOrderItem.setInt(2, 10);
+                    // Replace "Item Quantity" with actual item quantity
+                    preparedStatementInsertOrderItem.setInt(3, 1);
+                    preparedStatementInsertOrderItem.executeUpdate();
+
+                }
 
                 // Display success message
                 JOptionPane.showMessageDialog(frame, "Order placed successfully!");
