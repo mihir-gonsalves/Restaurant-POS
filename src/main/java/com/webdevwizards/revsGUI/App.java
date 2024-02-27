@@ -15,7 +15,7 @@ public class App {
     }
 
     public static void switchToLoginScreen() {
-        currentScreen = new LoginScreen(App::switchToTestScreen);
+        currentScreen = new LoginScreen(App::switchToTestScreen); // change this line to whichever screen you want to switch to after the login screen 
         currentScreen.setVisible(true);
     }
 

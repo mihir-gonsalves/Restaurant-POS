@@ -31,7 +31,7 @@ public class MainScreen extends JFrame implements ActionListener{
         panel.setBackground(Color.gray);
 
         gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(2, 3, 10, 10));
+        gridPanel.setLayout(new GridLayout(3, 3, 10, 10));
         gridPanel.setBackground(Color.green);
 
         String query = "SELECT * FROM menu_items;";
