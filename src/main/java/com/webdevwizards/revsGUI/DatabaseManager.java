@@ -55,6 +55,10 @@ public class DatabaseManager {
         }
     }
 
+    public static Connection getConnection() {
+        return conn;
+    }
+
     // Execute and return query results
     public static ResultSet executeQuery(String sql) {
         try {

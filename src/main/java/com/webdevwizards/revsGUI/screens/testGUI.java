@@ -1,14 +1,16 @@
 package com.webdevwizards.revsGUI.screens;
-
+import com.webdevwizards.revsGUI.DatabaseManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
 public class testGUI extends JFrame implements ActionListener{
     JFrame frame;
     Popup po;
     PopupFactory pf;
-    
+    private static final String INSERT_ORDER_QUERY = "INSERT INTO customer_order (c_order_id, c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
     
     public testGUI() {
         SwingUtilities.invokeLater(() -> {
@@ -138,7 +140,10 @@ public class testGUI extends JFrame implements ActionListener{
             
             bottomPanel.add(new JLabel("Cashier Name: Ritchey"));
             bottomPanel.add(new JLabel(" Order Subtotal: $0.00"));
-            bottomPanel.add(new JButton(" Order Complete"));
+
+            JButton orderCompleteButton = new JButton("Order Complete");
+            orderCompleteButton.addActionListener(this);
+            bottomPanel.add(orderCompleteButton);
 
             frame.add(leftPanel, BorderLayout.WEST);
             frame.add(middlePanel, BorderLayout.CENTER);
@@ -149,14 +154,58 @@ public class testGUI extends JFrame implements ActionListener{
             frame.setVisible(true);
         });
     }
-
+    @Override
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
-        if (s.equals("Order Complete")) {
-            // Create a new popup
-            pf = new PopupFactory();
-            po = pf.getPopup(frame, new JLabel("Order Complete"), 50, 50);
-            po.show();
+        System.out.println("Button clicked: ");
+        if (e.getActionCommand().equals("Order Complete")) {
+            
+            System.out.println("Order Complete button clicked");
+            // Connect to the database and insert order details
+            try {
+                DatabaseManager.initialize();
+                // Add your additional functionality here
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        
+            try (Connection connection = DatabaseManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ORDER_QUERY)) {
+                
+                // Get cashier name and order subtotal from GUI components
+                String cashierName = "Ritchey"; // Assuming static cashier name for now
+                String subtotal = "0.00"; // Assuming initial subtotal for now
+
+                // Set parameters for the prepared statement
+                preparedStatement.setInt(1, 1000000); // Replace "Item Name" with actual item name
+                java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+                preparedStatement.setDate(2, currentDate);
+
+                // Set current time
+                java.sql.Time currentTime = new java.sql.Time(System.currentTimeMillis());
+                preparedStatement.setTime(3, currentTime);
+                
+                // Set subtotal
+                preparedStatement.setDouble(4, Double.parseDouble(subtotal));
+                // Set tax
+                preparedStatement.setDouble(5, 0.0825 * Double.parseDouble(subtotal));
+                // Set total
+                preparedStatement.setDouble(6, 1.0825 * Double.parseDouble(subtotal));
+                // Set payment type
+                preparedStatement.setString(7, "Credit");
+                // Execute the query
+                preparedStatement.executeUpdate();
+
+                // Display success message
+                JOptionPane.showMessageDialog(frame, "Order placed successfully!");
+                pf = new PopupFactory();
+                po = pf.getPopup(frame, new JLabel("Order Complete"), 50, 50);
+                po.show();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                // Display error message
+                JOptionPane.showMessageDialog(frame, "Error placing order: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
