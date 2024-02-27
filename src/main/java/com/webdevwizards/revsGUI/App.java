@@ -15,13 +15,19 @@ public class App {
     }
 
     public static void switchToLoginScreen() {
-        currentScreen = new LoginScreen(App::switchToTestGUIScreen);
+        currentScreen = new LoginScreen(App::switchToMainScreen, App::switchToManagerScreen);
         currentScreen.setVisible(true);
     }
 
-    public static void switchToMainScreen() {
+    public static void switchToCashierScreen() {
         currentScreen.dispose();
-        currentScreen = new MainScreen();
+        currentScreen = new CashierScreen();
+        currentScreen.setVisible(true);
+    }
+
+    public static void switchToManagerScreen() {
+        currentScreen.dispose();
+        currentScreen = new ManagerScreen();
         currentScreen.setVisible(true);
     }
 
@@ -30,11 +36,4 @@ public class App {
         currentScreen = new TestScreen();
         currentScreen.setVisible(true);
     }
-
-    public static void switchToTestGUIScreen() {
-        currentScreen.dispose();
-        currentScreen = new testGUI();
-        currentScreen.setVisible(true);
-    }
-
 }

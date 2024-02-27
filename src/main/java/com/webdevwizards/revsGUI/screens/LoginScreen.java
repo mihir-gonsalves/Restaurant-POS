@@ -26,11 +26,13 @@ public class LoginScreen extends JFrame implements ActionListener {
     static JFrame frame;
     static JPanel panel;
     private Runnable switchToMainScreenCallback;
+    private Runnable switchToManagerScreenCallback;
 
 
-    public LoginScreen(Runnable switchToMainScreenCallback)
+    public LoginScreen(Runnable switchToMainScreenCallback, Runnable switchToManagerScreenCallback)
     {
         this.switchToMainScreenCallback = switchToMainScreenCallback;
+        this.switchToManagerScreenCallback = switchToManagerScreenCallback;
         
         // create a new frame
         frame = new JFrame("Rev's GUI: Login Screen");
@@ -68,8 +70,14 @@ public class LoginScreen extends JFrame implements ActionListener {
         btnLogin.addActionListener(e -> {
             // check login credentials here
             // if login is successful, call the callback
-            switchToMainScreenCallback.run();
-            frame.setVisible(false);
+            if (true) { // change this to a real login check
+                switchToMainScreenCallback.run();
+                frame.setVisible(false);
+            }
+            else {
+                switchToManagerScreenCallback.run();
+                frame.setVisible(false);
+            }
         });
     }
 
