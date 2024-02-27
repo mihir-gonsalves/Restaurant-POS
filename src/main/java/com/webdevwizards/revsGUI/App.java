@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import com.webdevwizards.revsGUI.screens.LoginScreen;
 import com.webdevwizards.revsGUI.screens.MainScreen;
 import com.webdevwizards.revsGUI.screens.TestScreen;
+import com.webdevwizards.revsGUI.screens.testGUI;
 
 public class App {
     
@@ -15,7 +16,7 @@ public class App {
     }
 
     public static void switchToLoginScreen() {
-        currentScreen = new LoginScreen(App::switchToTestScreen);
+        currentScreen = new LoginScreen(App::switchToTestGUIScreen);
         currentScreen.setVisible(true);
     }
 
@@ -28,6 +29,12 @@ public class App {
     public static void switchToTestScreen() {
         currentScreen.dispose();
         currentScreen = new TestScreen();
+        currentScreen.setVisible(true);
+    }
+
+    public static void switchToTestGUIScreen() {
+        currentScreen.dispose();
+        currentScreen = new testGUI();
         currentScreen.setVisible(true);
     }
 
