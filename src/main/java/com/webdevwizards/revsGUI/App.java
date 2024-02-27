@@ -1,17 +1,13 @@
 package com.webdevwizards.revsGUI;
 
 import javax.swing.JFrame;
-import com.webdevwizards.revsGUI.screens.LoginScreen;
-import com.webdevwizards.revsGUI.screens.MainScreen;
-import com.webdevwizards.revsGUI.screens.TestScreen;
-import com.webdevwizards.revsGUI.screens.testGUI;
+import com.webdevwizards.revsGUI.screens.*;
 
 public class App {
     
     private static JFrame currentScreen;
 
     public static void main(String[] args) {
-        DatabaseManager.initialize();
         switchToLoginScreen();
     }
 

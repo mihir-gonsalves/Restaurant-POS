@@ -1,4 +1,4 @@
-package com.webdevwizards.revsGUI;
+package com.webdevwizards.revsGUI.database;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +17,11 @@ public class DatabaseManager {
     private static Connection conn = null;
     private static boolean initialized = false;
 
-    public static void initialize() {
+    public DatabaseManager() {
+        this.initialize();
+    }
+
+    public void initialize() {
 
         if (initialized) return; // Prevent re-initialization
 
@@ -25,7 +29,7 @@ public class DatabaseManager {
 
         Properties prop = new Properties();
         String rootPath = System.getProperty("user.dir");
-        try (InputStream input = new FileInputStream(rootPath + "/config.properties")) {
+        try (InputStream input = new FileInputStream("./config.properties")) {
             prop.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -33,7 +37,7 @@ public class DatabaseManager {
             return;
         }
 
-        try (InputStream localInput = new FileInputStream(rootPath + "/config-local.properties")) {
+        try (InputStream localInput = new FileInputStream("./config-local.properties")) {
             prop.load(localInput);
         } catch (IOException ex) {
             // Local config not found, using default values
@@ -64,6 +68,15 @@ public class DatabaseManager {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
             return null;
+        }
+    }
+
+    public static void close() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to close database connection.");
         }
     }
 
