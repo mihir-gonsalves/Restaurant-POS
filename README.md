@@ -23,6 +23,15 @@ To recompile the project run the following command:
 mvn package
 ```
 
+## Icons Used:
+- [Appetizers](https://www.flaticon.com/free-icons/appetizer) created by Iconiic
+- [Beverages](https://www.flaticon.com/free-icons/beverage) created by ultimatearm
+- [Burgers](https://www.flaticon.com/free-icons/burger) created by Freepik
+- [Limited Time Offers](https://www.flaticon.com/free-icons/offer) created by Freepik
+- [Salads](https://www.flaticon.com/free-icons/salad) created by Freepik
+- [Sandwiches](https://www.flaticon.com/free-icons/sandwich) created by Freepik
+- [Shakes and More](https://www.flaticon.com/free-icons/milk-shake) created by Freepik
+- [Value Meals](https://www.flaticon.com/free-icons/value) created by srip
 
 ## Query Behaviors:
 

@@ -1,6 +1,8 @@
 package com.webdevwizards.revsGUI;
 
 import javax.swing.JFrame;
+
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.webdevwizards.revsGUI.screens.*;
 
 public class App {
@@ -8,6 +10,7 @@ public class App {
     private static JFrame currentScreen;
 
     public static void main(String[] args) {
+        FlatDarkLaf.setup();
         switchToLoginScreen();
     }
 

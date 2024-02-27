@@ -12,6 +12,7 @@ public class testGUI extends JFrame implements ActionListener{
     Popup po;
     PopupFactory pf;
     JPanel itemsPanel;
+    JPanel navPanel;
     
     
     public testGUI() {
@@ -20,14 +21,16 @@ public class testGUI extends JFrame implements ActionListener{
         frame.setLayout(new BorderLayout());
 
         // Left panel for categories
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(7, 1)); // Changed to GridLayout for icons
+        navPanel = new JPanel();
+        navPanel.setLayout(new GridLayout(8, 1)); // Changed to GridLayout for icons
         // Add icons for each category
-        leftPanel.setPreferredSize(new Dimension(100, 600));
-        for (int i = 0; i <= 6; i++) {
-            // leftPanel.add(new JButton(new ImageIcon("icon_" + i + ".png")));
-            leftPanel.add(new JButton(resizeIcon("./images/icon_" + i + ".png", 70, 70)));
-        }
+        navPanel.setPreferredSize(new Dimension(100, 600));
+        // for (int i = 0; i <= 6; i++) {
+        //     // leftPanel.add(new JButton(new ImageIcon("icon_" + i + ".png")));
+        //     navPanel.add(new JButton(resizeIcon("./images/icon_" + i + ".png", 70, 70)));
+        // }
+
+        populateNavBar();
 
         // Middle panel for items
         JPanel middlePanel = new JPanel(new BorderLayout()); // Changed to BorderLayout
@@ -38,7 +41,7 @@ public class testGUI extends JFrame implements ActionListener{
         middlePanel.add(searchBar, BorderLayout.NORTH);
         
         // Changed layout to GridLayout for items 
-        itemsPanel = new JPanel(new GridLayout(3, 3)); // Increase grid size as needed
+        itemsPanel = new JPanel(new GridLayout(3, 2)); // Increase grid size as needed
 
         // Wrap itemsPanel in a JScrollPane
         JScrollPane itemsScrollPane = new JScrollPane(itemsPanel);
@@ -87,7 +90,7 @@ public class testGUI extends JFrame implements ActionListener{
         bottomPanel.add(new JLabel(" Order Subtotal: $0.00"));
         bottomPanel.add(new JButton(" Order Complete"));
 
-        frame.add(leftPanel, BorderLayout.WEST);
+        frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
         frame.add(rightPanel, BorderLayout.EAST);
         frame.add(bottomPanel, BorderLayout.SOUTH);
@@ -113,17 +116,60 @@ public class testGUI extends JFrame implements ActionListener{
         return new ImageIcon(resizedImage);
     }
 
+    public void populateNavBar() {
+        DatabaseManager db = new DatabaseManager();
+        ResultSet rs = db.executeQuery("SELECT * FROM menu_items ORDER BY category;");
+        String current_category = "";
+        try {
+            while (rs.next()) {
+                String db_category = rs.getString("category");
+                // System.out.println("Category: " + db_category);
+                if (!db_category.equals(current_category)) {
+                    // System.out.println("|" + db_category + "|" + " is not equal to " + "|" + current_category + "|");
+                    current_category = db_category;
+                    
+                    // Get category icon image
+                    StringBuilder category_file_name = new StringBuilder();
+                    for (int i = 0; i < current_category.length(); i++) {
+                        char c = current_category.charAt(i);
+                        if (Character.isLetter(c)) {
+                            category_file_name.append(Character.toLowerCase(c));
+                        }
+                        else if (c == ' ') {
+                            category_file_name.append('_');
+                        }
+                        else if (c == '&') {
+                            category_file_name.append("and");
+                        }
+                    }
+                    String category_image_path = "./images/" + category_file_name + ".png";
+                    JButton categoryButton = new JButton(resizeIcon(category_image_path, 60, 60));
+                    // System.out.println("Category image: " + category_image_path);
+                    final String current_category_final = current_category;
+                    categoryButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            populateItemPanel(current_category_final);
+                        }
+                    });
+                    navPanel.add(categoryButton);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void populateItemPanel(String category) {
         // Get items and sort by category
         DatabaseManager db = new DatabaseManager();
         ResultSet rs = db.executeQuery("SELECT * FROM menu_items ORDER BY category;");
         itemsPanel.removeAll();
-
-
+        
         try {
             while (rs.next()) {
-                String category_from_db = rs.getString("category");
-                if (category_from_db.equals(category)) {
+                String db_category = rs.getString("category");
+                if (db_category.equals(category)) {
                     String item_name = rs.getString("item_name");
                     StringBuilder item_image = new StringBuilder();
                     for (int i = 0; i < item_name.length(); i++) {
@@ -137,11 +183,11 @@ public class testGUI extends JFrame implements ActionListener{
                     }
                     
                     String item_image_path = "./images/" + item_image + ".png";
-                    System.out.println("Item image: " + item_image_path);
+                    // System.out.println("Item image: " + item_image_path);
                     JPanel itemPanel = new JPanel(new BorderLayout());
 
                     // Create a new button with an image
-                    System.out.println("Adding item: " + item_name);
+                    // System.out.println("Adding item: " + item_name);
                     JButton itemButton = new JButton(new ImageIcon(item_image_path));
                     itemPanel.add(itemButton, BorderLayout.CENTER);
     
@@ -164,7 +210,7 @@ public class testGUI extends JFrame implements ActionListener{
                             popUpButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                    System.out.println("Item added to order: " + item_name);
+                                    // System.out.println("Item added to order: " + item_name);
                                     po.hide();
                                 }
                             });
@@ -195,5 +241,7 @@ public class testGUI extends JFrame implements ActionListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        itemsPanel.revalidate();
+        itemsPanel.repaint();
     }
 }
