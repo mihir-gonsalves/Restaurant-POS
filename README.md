@@ -1,29 +1,70 @@
-# Project 2 Rev's GUI
+# Project 2: Restaurant Database and GUI
 -----
 
+## Surface Overview
+A Point-of-Sale system and inventory solution for Texas A&M University's very own Rev's American Grill restaurant!
 
-## Team Members:
+
+### Group Members:
 Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsalves
 
-## Config:
-As to not expose our database password, you should create a copy of the config.properties file and then fill in the fields with the proper database information.
+#### Additional Group Details:
+Class Section: 905
+Team Number: 01
 
-## Building and Running:
-This project uses [Maven](https://maven.apache.org/download.cgi) for dependency management and building. To build the project, navigate to the project directory in your terminal and run the following command:
+### Configuration:
+As to not expose our own database password, you should create a copy of the config.properties file and then fill in the
+fields with the proper database information. 
 
+#### config.properties example:
+db.name=<database name> 
+db.user=<database user>  
+db.password=<database password>
+
+### Building and Running:
+This project uses [Maven](https://maven.apache.org/download.cgi) for dependency management and building. To build the 
+project, navigate to the project directory in your terminal (bash) and run the following commands:
+
+#### Commands
 ```bash
 mvn clean package
 ```
+
 Then, in the same directory, run the application with the following command:
+
 ```bash
 java -jar target/RevsGUI-0.0.1-jar-with-dependencies.jar
 ```
+
 To recompile the project run the following command:
+
 ```bash
 mvn package
 ```
 
-## Icons Used:
+## Underlying Details
+Extra details about how the project's GUI and Database were created.
+
+
+### Tech Used:
+Java (JDBC and Java Swing), PostgreSQL, Maven, Python, AWS, Git/Github
+
+Java: the primary programming language used for development.
+Java Database Connectivity: used for db conectivity to PostgreSQL.
+Java Swing: employed for GUI development.
+PostgreSQL: the chosen relational db management system.
+Maven: used for project and dependency management during build process.
+Python: used to script SQL instructions to populate database.
+AWS: host for database.
+Git/Github: collaborative software tool used to track member development progress.
+
+### ER Diagram:
+![ER Diagram](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/ERD.png?raw=true)
+
+### Database Schema:
+![Database Schema](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/schema.png?raw=true)
+
+### Icons Used for Menu Screen navigation bar:
 - [Appetizers](https://www.flaticon.com/free-icons/appetizer) created by Iconiic
 - [Beverages](https://www.flaticon.com/free-icons/beverage) created by ultimatearm
 - [Burgers](https://www.flaticon.com/free-icons/burger) created by Freepik
@@ -33,7 +74,38 @@ mvn package
 - [Shakes and More](https://www.flaticon.com/free-icons/milk-shake) created by Freepik
 - [Value Meals](https://www.flaticon.com/free-icons/value) created by srip
 
-## Query Behaviors:
+## Individual Folders/File Descriptions
+
+
+### Images:
+This folder holds all images used in the GUI.
+
+### Python-Utility:
+All python files are scripts to create SQL files that will populate the database.
+
+### SQL-Script:
+Files created by python that will actually populate the database.
+
+### Test-Query:
+15 Queries that verify the functionality of the database.
+
+### src/main/java/com/<db password>/revsGUI/
+#### Database
+model.java encapsulates database interaction logic and user authentication functionality for the application.
+
+#### Screens
+Each file represents an individual screen for the GUI that will flow intuitively.
+
+#### Controller.java
+Manages the overall flow and user interactions of the GUI.
+
+### config.properties
+Includes the access details for the database.
+
+### pom.xml 
+Configuration file for maven which builds and manages the Java components of the project.
+
+## Query Testing Behaviours for Demo 1
 
 ### Required Queries:
 #### 1. Count of orders grouped by week
@@ -98,13 +170,6 @@ mvn package
 - Retrieves the sum of order value by month and returns in ascending order, grouped further by year.
 
 
-## ER Diagram:
-![ER Diagram](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/ERD.png?raw=true)
-
-
-## Database Schema:
-![Database Schema](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/schema.png?raw=true)
-
-
+# Ignore Below
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/7JP64vQQ)
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-7f7980b617ed060a017424585567c406b6ee15c891e84e1186181d67ecf80aa0.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=13882821)
