@@ -102,4 +102,5 @@ public class CashierScreen extends JFrame{
     public JButton getOrderCompleteButton() {
         return orderCompleteButton;
     }
+    
 }

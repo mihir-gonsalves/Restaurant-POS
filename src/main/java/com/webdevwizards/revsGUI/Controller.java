@@ -260,9 +260,14 @@ public class Controller implements ActionListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
-                JOptionPane.showMessageDialog(null, "Order complete");
-                cashierScreen.setVisible(false);
-                switchToPaymentScreen();
+                int[][] orderItems = {{10, 1}, {11, 2}, {12, 3}};
+                if(model.insert_order("11",orderItems,"credit") == false){
+                    JOptionPane.showMessageDialog(null, "Order failed");
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Order complete");
+                
+                }
             }
         });
     }
