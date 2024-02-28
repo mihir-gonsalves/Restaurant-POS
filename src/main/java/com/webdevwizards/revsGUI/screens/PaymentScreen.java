@@ -7,5 +7,10 @@ public class PaymentScreen extends JFrame {
 
     public PaymentScreen() {
         System.out.println("PaymentScreen constructor");
+        frame = new JFrame("Rev's GUI: Payment Screen");
+    }
+
+    public JFrame getFrame() {
+        return frame;
     }
 }

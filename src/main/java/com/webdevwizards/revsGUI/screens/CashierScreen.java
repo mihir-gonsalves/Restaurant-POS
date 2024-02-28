@@ -84,7 +84,6 @@ public class CashierScreen extends JFrame{
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.pack();
-        frame.setVisible(true);
     }
 
     public JFrame getFrame() {
@@ -102,4 +101,5 @@ public class CashierScreen extends JFrame{
     public JButton getOrderCompleteButton() {
         return orderCompleteButton;
     }
+    
 }

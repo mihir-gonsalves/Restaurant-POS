@@ -19,4 +19,8 @@ public class ManagerScreen extends JFrame implements ActionListener{
         System.out.println("Action event occurred: " + e.getActionCommand());
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
 }
