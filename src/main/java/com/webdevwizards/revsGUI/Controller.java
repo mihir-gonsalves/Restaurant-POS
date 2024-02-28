@@ -2,6 +2,7 @@ package com.webdevwizards.revsGUI;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -282,14 +283,23 @@ public class Controller implements ActionListener{
 
     public void populateBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
+        if (cashierScreen.getFrame().isAncestorOf(bottomPanel)) {
+            cashierScreen.getFrame().remove(bottomPanel);
+        }
+        if (bottomPanel.getComponentCount() > 0) {
+            bottomPanel.removeAll();
+        }
         bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
+        bottomPanel.add(Box.createHorizontalGlue());
         JLabel totalLabel = new JLabel("Total: " + model.sumItemPrices(orderItems));
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
         bottomPanel.add(totalLabel);
+        bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
         bottomPanel.revalidate();
         bottomPanel.repaint();
+        cashierScreen.getFrame().add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public void completeOrder() {

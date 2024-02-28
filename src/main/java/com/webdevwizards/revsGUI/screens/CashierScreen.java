@@ -64,14 +64,10 @@ public class CashierScreen extends JFrame{
         JPanel orderFieldsPanel = new JPanel();
         orderFieldsPanel.setLayout(new GridLayout(3, 1)); // Use GridLayout to organize text fields
 
-        // Bottom panel for cashier and subtotal
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
-
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
         frame.add(orderPanel, BorderLayout.EAST);
-        frame.add(bottomPanel, BorderLayout.SOUTH);
+        
 
         frame.pack();
     }
