@@ -427,7 +427,22 @@ public class Model {
         }
     }
 
+    public static boolean insertUser(String phonenumber, String name, boolean ismanager){
+        try{
+            PreparedStatement statement = conn.prepareStatement("insert into users (phonenumber, name, ismanager) values (?, ?, ?)");
+            statement.setString(1, phonenumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, ismanager);
+            statement.execute();
+            statement.close();
+            return true;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
 
 }
 
