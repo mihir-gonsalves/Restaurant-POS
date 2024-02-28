@@ -62,14 +62,32 @@ public class Controller implements ActionListener{
     // initializes the model and all screens
     public void initialize() {
         model = new Model();
+
         loginScreen = new LoginScreen();
-        loginScreen.getFrame().setVisible(false);
+        final JFrame loginFrame = loginScreen.getFrame();
+        loginFrame.setVisible(false);
+        updateFontSizes(loginFrame, loginFrame);
+  
         cashierScreen = new CashierScreen();
-        cashierScreen.getFrame().setVisible(false);
+        final JFrame cashierFrame = cashierScreen.getFrame();
+        cashierFrame.setVisible(false);
+
         managerScreen = new ManagerScreen();
-        managerScreen.getFrame().setVisible(false);
+        final JFrame managerFrame = managerScreen.getFrame();
+        managerFrame.setVisible(false);
+
         paymentScreen = new PaymentScreen();
-        paymentScreen.getFrame().setVisible(false);
+        final JFrame paymentFrame = paymentScreen.getFrame();
+        paymentFrame.setVisible(false);
+
+        // auto update fontsizes
+        loginFrame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateFontSizes(loginFrame, loginFrame);
+            }
+        });
+
         isManager = false;
         pf = new PopupFactory();
         orderItems = new int[10][2];
@@ -112,15 +130,9 @@ public class Controller implements ActionListener{
                 managerScreen.getFrame().setSize(preferredWidth, preferredHeight);
                 paymentScreen.getFrame().setSize(preferredWidth, preferredHeight);
 
-                // revalidate and repaint the frames for redraw
+                // revalidate and repaint the frame for redraw
                 loginScreen.getFrame().revalidate();
                 loginScreen.getFrame().repaint();
-                cashierScreen.getFrame().revalidate();
-                cashierScreen.getFrame().repaint();
-                managerScreen.getFrame().revalidate();
-                managerScreen.getFrame().repaint();
-                paymentScreen.getFrame().revalidate();
-                paymentScreen.getFrame().repaint();
             }
         });
     }
@@ -137,15 +149,28 @@ public class Controller implements ActionListener{
                     // if the user is a manager, switch to the manager screen and populate with defaults, get rid of the login screen 
                     if (model.isManager(phoneNumber)) {
                         switchToManagerScreen();
+                        managerScreen.getFrame().setSize(preferredWidth, preferredHeight);
                         loginScreen.getFrame().dispose();
                         populateManagerNavBar();
-                        populateManagerMainPanel("chart");
+                        populateManagerMainPanel("order");
+
+                        // auto update fonts 
+                        for (Component c : managerScreen.getFrame().getComponents()) {
+                            updateFontSizes(c, managerScreen.getFrame());
+                        }
                     } else { // if the user is a cashier, switch to the cashier screen and populate with defaults, get rid of the login screen, and completeOrder 
                         switchToCashierScreen();
+                        cashierScreen.getFrame().setSize(preferredWidth, preferredHeight);
                         loginScreen.getFrame().dispose();
                         populateCashierNavBar();
                         populateCashierItemPanel("Burgers");
-                        completeCashierOrder();
+                        populateCashierBottomPanel();
+                        populateCashierOrderPanel();
+                        // auto update fonts 
+                        for (Component c : cashierScreen.getFrame().getComponents()) {
+                            updateFontSizes(c, cashierScreen.getFrame());
+                        }
+                        switchFromCashierPanel();
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid phone number");
@@ -213,6 +238,7 @@ public class Controller implements ActionListener{
                     itemPanel.add(itemButton, BorderLayout.CENTER);
     
                     // add action listener to the image button to display a popup with the item name and an "Add to Order" button
+                    
                     itemButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -222,7 +248,7 @@ public class Controller implements ActionListener{
                             Dimension frameSize = frame.getSize();
 
                             // sets the size and style of the popup panel
-                            int size = (int) (frameSize.getWidth() - 600 * 1.1f);
+                            int size = (int) (frameSize.getWidth() / 2);
                             popUpPanel.setPreferredSize(new Dimension(size, size));
                             popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
                             popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
@@ -230,11 +256,11 @@ public class Controller implements ActionListener{
                             // create and style the label and button for the popup
                             JLabel popUpLabel = new JLabel("Item: " + item_name);
                             popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                            JButton popUpButton = new JButton("Add to Order");
-                            popUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                            JButton orderButton = new JButton("Add to Order");
+                            orderButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                             // add action listener to the "Add to Order" button to add the item to the order and close the popup
-                            popUpButton.addActionListener(new ActionListener() {
+                            orderButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     // System.out.println("Item added to order: " + item_name);
@@ -255,11 +281,25 @@ public class Controller implements ActionListener{
                                 }
                             });
 
-                            // add the label and button to the popup panel with some vertical spacing
-                            popUpPanel.add(Box.createVerticalStrut(20));
+                            JButton cancelButton = new JButton("Cancel");
+                            cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                            // add action listener to the "Cancel" button to close the popup
+                            cancelButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    po.hide();
+                                }
+                            });
+
+                            // add the label and buttons to the popup panel with some vertical spacing
+                            popUpPanel.add(Box.createVerticalGlue());
                             popUpPanel.add(popUpLabel);
-                            popUpPanel.add(Box.createVerticalStrut(20));
-                            popUpPanel.add(popUpButton);
+                            popUpPanel.add(Box.createVerticalGlue());
+                            popUpPanel.add(orderButton);
+                            popUpPanel.add(Box.createVerticalStrut(30));
+                            popUpPanel.add(cancelButton);
+                            popUpPanel.add(Box.createVerticalGlue());
                     
                             // sets the location of the popup panel (centered on the main frame)
                             Point frameLocation = frame.getLocation();
@@ -286,6 +326,7 @@ public class Controller implements ActionListener{
         }
 
         // revalidate and repaint the itemsPanel for redraw
+        updateFontSizes(itemsPanel, frame); // have to do this because otherwise on category change it reverts to normal size
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
@@ -302,7 +343,6 @@ public class Controller implements ActionListener{
             while (rs.next()) {
                 String db_category = rs.getString("category");
                 if (!db_category.equals(current_category)) {
-                    // System.out.println("|" + db_category + "|" + " DNE " + "|" + current_category + "|"); // testing
                     // set the current category to the new category
                     current_category = db_category;
                     
@@ -352,26 +392,41 @@ public class Controller implements ActionListener{
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
-        if (cashierScreen.getOrderPanel().isAncestorOf(cashierScreen.getOrderFieldsPanel())) {
-            cashierScreen.getOrderFieldsPanel().removeAll();
-            cashierScreen.getOrderPanel().remove(cashierScreen.getOrderFieldsPanel());
+        JPanel orderPanel = cashierScreen.getOrderPanel();
+        JPanel orderFieldsPanel = cashierScreen.getOrderFieldsPanel();
+        if (orderPanel.getComponentCount() > 0) {
+            orderPanel.removeAll();
+            orderFieldsPanel.removeAll();
         }
+
+        JLabel orderItemsLabel = new JLabel("Order Items");
+        orderItemsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
+
+        
 
         // add items (JTextField) to the orderFieldsPanel by looping through the orderItems array
         for (int i = 0; i < orderItems.length; i++) {
             if (orderItems[i][0] != 0) {
-                JTextField orderItemTextField = new JTextField(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
-                orderItemTextField.setEditable(false);
-                orderItemTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-                orderItemTextField.setPreferredSize(new Dimension(200 , 60));
-                cashierScreen.getOrderFieldsPanel().add(orderItemTextField);
+                JTextArea orderItemTextArea = new JTextArea(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
+                orderItemTextArea.setEditable(false);
+                orderItemTextArea.setLineWrap(true);
+                orderItemTextArea.setWrapStyleWord(true);
+                orderItemTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                orderItemTextArea.setPreferredSize(new Dimension(200, 60));
+                orderFieldsPanel.add(orderItemTextArea);
             }
         }
+        // // create scroll pane so that the text fields can be scrolled if there are too many
+        // JScrollPane orderFieldsScrollPane = new JScrollPane(orderFieldsPanel);
+        // orderFieldsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        // orderFieldsScrollPane.setPreferredSize(new Dimension(200, 550));
 
         // add the orderFieldsPanel to the orderPanel and revalidate and repaint the orderPanel for redraw
-        cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
-        cashierScreen.getOrderPanel().revalidate();
-        cashierScreen.getOrderPanel().repaint();
+        orderPanel.add(orderFieldsPanel, BorderLayout.CENTER);
+        updateFontSizes(orderPanel, cashierScreen.getFrame()); // do this because removing all elements
+        orderPanel.revalidate();
+        orderPanel.repaint();
 
         // reinitialize the subtotal label in bottom panel
         populateCashierBottomPanel();
@@ -380,34 +435,31 @@ public class Controller implements ActionListener{
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
 
-        // remove the bottomPanel from the cashierScreen frame if it exists in cashierScreen
-        if (cashierScreen.getFrame().isAncestorOf(bottomPanel)) {
-            cashierScreen.getFrame().remove(bottomPanel);
-        }
-
         // if bottom panel populated with items, remove all items
         if (bottomPanel.getComponentCount() > 0) {
             bottomPanel.removeAll();
         }
 
         // create a new button to complete the order
+        cashierScreen.setOrderCompleteButton(null);
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
 
         // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
         bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(new JLabel("Total: " + model.sumItemPrices(orderItems)));
+        bottomPanel.add(new JLabel("Subtotal: " + model.sumItemPrices(orderItems)));
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
 
         // revalidate and repaint the bottomPanel for redraw and add back to the cashierScreen frame
+        // auto update fonts 
+        updateFontSizes(bottomPanel, cashierScreen.getFrame());
         bottomPanel.revalidate();
         bottomPanel.repaint();
-        cashierScreen.getFrame().add(bottomPanel, BorderLayout.SOUTH);
     }
     // complete the cashier's order via orderComplete button, display subtotal, and switch to payment screen
-    public void completeCashierOrder() {
+    public void switchFromCashierPanel() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
 
         // add action listener to orderComplete button to display subtotal and switch to payment screen when clicked
@@ -688,6 +740,26 @@ public class Controller implements ActionListener{
             table.setModel(tableModel); // Set the updated table model
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    // update font size of all components of a panel recursively
+    private void updateFontSizes(Component c, JFrame f) {
+        if (c instanceof Container) {
+            for (Component child : ((Container) c).getComponents()) {
+                updateFontSizes(child, f);
+            }
+        }
+        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton) {
+            Font sourceFont = c.getFont();
+            float scale = f.getHeight() / 1000.0f;
+            float newSize = sourceFont.getSize() * scale;
+            int minSize = 14;
+            if (newSize < minSize) {
+                newSize = minSize;
+            }
+            c.setFont(sourceFont.deriveFont(newSize));
+            f.revalidate();
+            f.repaint();
         }
     }
 

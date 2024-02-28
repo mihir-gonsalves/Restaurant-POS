@@ -21,13 +21,13 @@ public class CashierScreen extends JFrame{
     public CashierScreen() {
         frame = new JFrame("Rev's GUI: Cashier Screen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
 
         // Left panel for categories
         navPanel = new JPanel();
         navPanel.setLayout(new GridLayout(8, 1)); // Changed to GridLayout for icons
+        navPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         // Add icons for each category
-        navPanel.setPreferredSize(new Dimension(100, 600));
+        // navPanel.setPreferredSize(new Dimension(100, 600));
         // for (int i = 0; i <= 6; i++) {
         //     // leftPanel.add(new JButton(new ImageIcon("icon_" + i + ".png")));
         //     navPanel.add(new JButton(resizeIcon("./images/icon_" + i + ".png", 70, 70)));
@@ -35,7 +35,7 @@ public class CashierScreen extends JFrame{
 
         // Middle panel for items
         JPanel middlePanel = new JPanel(new BorderLayout()); // Changed to BorderLayout
-        middlePanel.setPreferredSize(new Dimension(600, 600));
+        // middlePanel.setPreferredSize(new Dimension(600, 600));
         
         // Added search bar at the top
         JTextField searchBar = new JTextField("Enter an item name to search");
@@ -57,18 +57,20 @@ public class CashierScreen extends JFrame{
         orderPanel.setLayout(new BorderLayout()); // Changed to BorderLayout for better organization
         orderPanel.setPreferredSize(new Dimension(200, 600));
 
-        JLabel orderItemsLabel = new JLabel("Order Items");
-        orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
-
         // Panel for adding text fields
         orderFieldsPanel = new JPanel();
-        orderFieldsPanel.setLayout(new GridLayout(3, 1)); // Use GridLayout to organize text fields
+        orderFieldsPanel.setLayout(new BoxLayout(orderFieldsPanel, BoxLayout.Y_AXIS));
+
+        //create bottom panel
+        bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        bottomPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
         frame.add(orderPanel, BorderLayout.EAST);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
         
-
         frame.pack();
     }
 
@@ -92,6 +94,7 @@ public class CashierScreen extends JFrame{
         if (bottomPanel == null) {
             bottomPanel = new JPanel();
             bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+            bottomPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         }
         return bottomPanel;
     }
@@ -99,7 +102,7 @@ public class CashierScreen extends JFrame{
     public JPanel getOrderFieldsPanel() {
         if (orderFieldsPanel == null) {
             orderFieldsPanel = new JPanel();
-            orderFieldsPanel.setLayout(new GridLayout(3, 1));
+            orderFieldsPanel.setLayout(new BoxLayout(orderFieldsPanel, BoxLayout.Y_AXIS));
         }
         return orderFieldsPanel;
     }
@@ -109,6 +112,10 @@ public class CashierScreen extends JFrame{
             orderCompleteButton = new JButton("Order Complete");
         }
         return orderCompleteButton;
+    }
+
+    public void setOrderCompleteButton(JButton orderCompleteButton) {
+        this.orderCompleteButton = orderCompleteButton;
     }
     
 }

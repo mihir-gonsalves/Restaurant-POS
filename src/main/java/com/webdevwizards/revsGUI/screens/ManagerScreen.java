@@ -25,13 +25,15 @@ public class ManagerScreen extends JFrame implements ActionListener{
 
         navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
-        navPanel.setPreferredSize(new Dimension(150, 600));
+        navPanel.setPreferredSize(new Dimension(120, 600));
+        navPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         
 
         southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
         southPanel.setPreferredSize(new Dimension(600, 100));
+        southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         // Add components to the southPanel as per your requirements
         southPanel.add(new JLabel("Cashier Name: Ritchey"));
         southPanel.add(Box.createHorizontalGlue());
