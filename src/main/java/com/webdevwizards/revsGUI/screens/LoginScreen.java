@@ -25,18 +25,15 @@ public class LoginScreen extends JFrame implements ActionListener {
     static JTextField phoneNumberField;
     static JFrame frame;
     static JPanel panel;
-    private Runnable switchToMainScreenCallback;
+    static JButton btnLogin;
+    private Runnable switchToCashierScreenCallback;
     private Runnable switchToManagerScreenCallback;
 
 
-    public LoginScreen(Runnable switchToMainScreenCallback, Runnable switchToManagerScreenCallback)
+    public LoginScreen()
     {
-        this.switchToMainScreenCallback = switchToMainScreenCallback;
-        this.switchToManagerScreenCallback = switchToManagerScreenCallback;
-        
         // create a new frame
-        frame = new JFrame("Rev's GUI: Login Screen");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Login");
 
         // create a panel
         panel = new JPanel();
@@ -47,7 +44,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // create login button
-        JButton btnLogin = new JButton("Login");
+        btnLogin = new JButton("Login");
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add components to panel
@@ -67,18 +64,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         frame.setVisible(true);
 
         //closing the connection
-        btnLogin.addActionListener(e -> {
-            // check login credentials here
-            // if login is successful, call the callback
-            if (true) { // change this to a real login check
-                switchToMainScreenCallback.run();
-                frame.setVisible(false);
-            }
-            else {
-                switchToManagerScreenCallback.run();
-                frame.setVisible(false);
-            }
-        });
+        btnLogin
     }
 
     // if button is pressed
@@ -89,4 +75,17 @@ public class LoginScreen extends JFrame implements ActionListener {
             frame.dispose();
         }
     }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public JButton getLoginButton() {
+        return btnLogin;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumberField.getText();
+    }
+
 }
