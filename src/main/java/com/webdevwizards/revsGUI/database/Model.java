@@ -12,9 +12,8 @@
     import java.util.Map;
     import java.util.Properties;
     import javax.swing.JOptionPane;
-    
-    
-    import javax.swing.JFrame;
+import javax.naming.spi.DirStateFactory.Result;
+import javax.swing.JFrame;
     
     
     
@@ -312,24 +311,41 @@
                 return null;
             }
         }
-        public static boolean addIngredient(String ingredient_id, String ingredient_quantity){
+        public static boolean addIngredient(String ingredient_id, String ingredient_quantity, String phoneNumber){
             try{
-                PreparedStatement statement = conn.prepareStatement("SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?");
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM ingredients WHERE ingredient_id = ?");
+                int ingredient_num = Integer.parseInt(ingredient_quantity);
                 statement.setInt(1, Integer.parseInt(ingredient_id));
                 ResultSet rs = statement.executeQuery();
+                Double ingredientPrice = 0.00;
                 if(rs.next()){
-                    int current_stock = rs.getInt(1);
+                    int current_stock = rs.getInt(3);
+                    ingredientPrice = rs.getDouble(4);
                     int new_stock = current_stock + Integer.parseInt(ingredient_quantity);
                     PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?");
                     statement2.setInt(1, new_stock);
                     statement2.setInt(2, Integer.parseInt(ingredient_id));
                     statement2.execute();
-                    statement2.close();
-                    return true;
+
+                    
+                    Double order_total = ingredient_num * ingredientPrice;
+                    PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    statement3.setDate(1, new Date(System.currentTimeMillis()));
+                    statement3.setTime(2, new Time(System.currentTimeMillis()));
+                    statement3.setDouble(3, order_total);
+                    statement3.setString(4, phoneNumber);
+
+                    statement3.execute();
+                    ResultSet rs3 = statement3.getGeneratedKeys();
+                    if(rs3.next()){
+                        PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
+                        statement4.setInt(1, rs3.getInt(1));
+                        statement4.setInt(2, Integer.parseInt(ingredient_id));
+                        statement4.setInt(3, ingredient_num);
+                        statement4.execute();
+                    }
                 }
-                else{
-                    return false;
-                }
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
