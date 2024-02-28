@@ -399,5 +399,22 @@ public class Model {
         }
     }
 
+    public static boolean delete(String table, int id, int value){
+        try{
+            PreparedStatement statement = conn.prepareStatement("delete from ? where ? = ?");
+            statement.setString(1, table);
+            statement.setInt(2, id);
+            statement.setInt(3, value);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
 
