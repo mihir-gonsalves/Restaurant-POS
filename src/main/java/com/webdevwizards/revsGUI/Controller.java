@@ -134,6 +134,8 @@ public class Controller implements ActionListener{
                 String db_category = rs.getString("category");
                 if (db_category.equals(category)) {
                     String item_name = rs.getString("item_name");
+                    String item_price = rs.getString("item_price");
+                    String jlabel_text =  item_name + "  " +"$"+ item_price;
                     StringBuilder item_image = new StringBuilder();
                     for (int i = 0; i < item_name.length(); i++) {
                         char c = item_name.charAt(i);
@@ -203,7 +205,7 @@ public class Controller implements ActionListener{
                     });
 
                     // Create a new label with the item name
-                    JLabel itemName = new JLabel(item_name, SwingConstants.CENTER);
+                    JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
                     itemPanel.add(itemName, BorderLayout.SOUTH);
 
                     // Add the panel to the itemsPanel
@@ -309,7 +311,14 @@ public class Controller implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
                 String subtotal = String.valueOf(model.sumItemPrices(orderItems));
+                System.out.println(orderItems);
                 JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
+                if(model.insert_order(subtotal, orderItems,"credit") == true){
+                    JOptionPane.showMessageDialog(null, "Order submitted");
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Order not submitted");
+                }
                 switchToPaymentScreen();
                 cashierScreen.getFrame().dispose();
             }

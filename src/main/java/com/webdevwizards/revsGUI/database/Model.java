@@ -142,6 +142,9 @@ public class Model {
 
             // Insert order items
             for (int i = 0; i < orderItems.length; i++) {
+                if (orderItems[i][0] == 0) {
+                    continue;
+                }
                 try (PreparedStatement preparedStatementInsertItem = connection.prepareStatement(INSERT_ORDER_ITEM_QUERY)) {
                     preparedStatementInsertItem.setInt(1, order_id);
                     preparedStatementInsertItem.setInt(2, orderItems[i][0]);
@@ -177,6 +180,9 @@ public class Model {
     private boolean selectIngredient(int[][] orderItems , Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT)) {
             for (int i = 0; i < orderItems.length; i++) {
+                if (orderItems[i][0] == 0) {
+                    continue;
+                }
                 int item_id = orderItems[i][0];
                 int count = orderItems[i][1];
                 preparedStatement.setInt(1, item_id);
