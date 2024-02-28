@@ -168,7 +168,7 @@ Configuration file for maven which builds and manages the Java components of the
 
 #### 12. Most ordered ingredients by manager
 - managers_most_ordered_ingredients.sql
-- Retrieves total ingredient quantities by manager
+- Retrieves total ingredient quantities by managers
 
 #### 13. Names of all items ordered more than 10 times
 - items_ordered_more_than_10x.sql
