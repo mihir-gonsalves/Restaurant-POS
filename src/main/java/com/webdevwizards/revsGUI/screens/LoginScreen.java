@@ -3,6 +3,9 @@ package com.webdevwizards.revsGUI.screens;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 public class LoginScreen extends JFrame implements ActionListener {
     private JLabel lblScreen;
     
@@ -53,6 +56,24 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumber.setMaximumSize(new Dimension(150, 30));
         phoneNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
 
+        // This will format the phone number as the user types it in
+        phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                formatPhoneNumber();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                formatPhoneNumber();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                formatPhoneNumber();
+            }
+        });
+
         btnLogin = new JButton("Login");
         btnLogin.setFont(font2);
         btnLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -95,5 +116,22 @@ public class LoginScreen extends JFrame implements ActionListener {
 
     public String getPhoneNumber() {
         return phoneNumber.getText();
+    }
+
+    // from XXXXXXXXXX to (XXX) XXX-XXXX
+    private void formatPhoneNumber() {
+        String number = phoneNumber.getText().replaceAll("[^\\d]", "");
+        if (number.length() > 0) {
+            StringBuilder formattedNumber = new StringBuilder("(");
+            for (int i = 0; i < Math.min(number.length(), 10); i++) {
+                if (i == 3) {
+                    formattedNumber.append(") ");
+                } else if (i == 6) {
+                    formattedNumber.append("-");
+                }
+                formattedNumber.append(number.charAt(i));
+            }
+            phoneNumber.setText(formattedNumber.toString());
+        }
     }
 }
