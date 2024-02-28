@@ -308,12 +308,60 @@ public class Controller implements ActionListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
-                String subtotal = String.valueOf(model.sumItemPrices(orderItems));
-                JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
+                // String subtotal = String.valueOf(model.sumItemPrices(orderItems));
+                // JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
+
                 switchToPaymentScreen();
                 cashierScreen.getFrame().dispose();
             }
         });
+    }
+
+    public void populateCustomerInfoPanel() {
+        JPanel customerInfoPanel = paymentScreen.getCustomerInfoPanel();
+        
+        customerInfoPanel.add(new JLabel("Customer: " + model.getUserName(phoneNumber) + " - " + phoneNumber));
+    }
+
+    public void populatePaymentOrderPanel() {
+        JPanel paymentOrderPanel = paymentScreen.getPaymentOrderPanel();
+        if (paymentScreen.getPaymentOrderPanel() != null) {
+            paymentScreen.getPaymentOrderPanel().removeAll();
+            paymentScreen.getPaymentPanel().remove(paymentScreen.getPaymentOrderPanel());
+        }
+
+        for (int i = 0; i < orderItems.length; i++) {
+            if (orderItems[i][0] != 0) {
+                JTextArea paymentOrderItemTextArea = new JTextArea(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
+                paymentOrderItemTextArea.setEditable(false);
+                paymentOrderItemTextArea.setPreferredSize(new Dimension(200 , 60));
+                paymentScreen.getPaymentOrderPanel().add(paymentOrderItemTextArea);
+
+                JTextArea paymentOrderItemPriceTextArea = new JTextArea("$" + model.getItemPrice(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
+            }
+        }
+
+        paymentScreen.getPaymentPanel().add(paymentScreen.getPaymentOrderPanel(), BorderLayout.CENTER);
+        paymentScreen.getPaymentPanel().revalidate();
+        paymentScreen.getPaymentPanel().repaint();
+        populatePaymentOrderPanel();
+    }
+
+    public void populatePaymentPanel() {
+        JPanel paymentPanel = paymentScreen.getPaymentPanel();
+        if (paymentScreen.getFrame().isAncestorOf(paymentPanel)) {
+            paymentScreen.getFrame().remove(paymentPanel);
+        }
+        if (paymentPanel.getComponentCount() > 0) {
+            paymentPanel.removeAll();
+        }
+
+        JLabel lblpaymentTotal = new JLabel("Subtotal: " + model.sumItemPrices(orderItems) + (model.sumItemPrices(orderItems) * 0.0825) +  " (tax)     Total: " + (model.sumItemPrices(orderItems) * 1.0825));
+
+        paymentPanel.add(lblpaymentTotal);
+        paymentPanel.revalidate();
+        paymentPanel.repaint();
+        paymentScreen.getFrame().add(paymentPanel, BorderLayout.SOUTH);
     }
 
     @Override

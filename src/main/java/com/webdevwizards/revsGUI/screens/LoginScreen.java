@@ -1,70 +1,79 @@
 package com.webdevwizards.revsGUI.screens;
 
-import java.sql.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-import java.util.Properties;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import javax.swing.border.EmptyBorder;
-
-/*
-  TODO:
-  1) Change credentials for your own team's database
-  2) Change SQL command to a relevant query that retrieves a small amount of data
-  3) Create a JTextArea object using the queried data
-  4) Add the new object to the JPanel p
-*/
-
 public class LoginScreen extends JFrame implements ActionListener {
-    static JTextField phoneNumberField;
-    static JFrame frame;
-    static JPanel panel;
-    static JButton btnLogin;
-    private Runnable switchToCashierScreenCallback;
-    private Runnable switchToManagerScreenCallback;
+    private JLabel lblScreen;
+    
+    private JLabel lblNumber;
+    private JTextField phoneNumber;
+    
+    private JFrame frame;
+    private JPanel mainPanel;
+    private JPanel inputPanel; // panel for lblNumber and phoneNumber textfield
 
+    private JButton btnLogin; 
 
-    public LoginScreen()
-    {
-        // create a new frame
-        frame = new JFrame("Login");
+    public LoginScreen() {
+        frame = new JFrame("Rev's American Grill: Login");
+        
+        // the next line ensures that the X button in the top right will not close the application
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        // removing window decorations (title and buttons)
+        frame.setUndecorated(true);
+        
+        // get the size of the screen so that we can fill it with our window completely
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setSize(screenSize.width, screenSize.height);
 
-        // create a panel
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panel.setBackground(Color.WHITE);
+        Font  font1  = new Font("Arial", Font.BOLD,  24);
+        Font  font2  = new Font("Arial", Font.PLAIN,  16);
 
-        // add actionlistener to button
-        phoneNumberField = new JTextField(20);
-        phoneNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        phoneNumberField.setFont(new Font("Arial", Font.PLAIN, 14));
+        // the panel will lay compenents out from top to bottom
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // create login button
+        // label for screen (replaces title that was removed by setUndecorated)
+        lblScreen = new JLabel("Rev's American Grill: Login Screen");
+        lblScreen.setFont(font1);
+        lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // the panel will lay compenents out from left to right
+        inputPanel = new JPanel();
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
+
+        lblNumber = new JLabel("Phone Number:");
+        lblNumber.setFont(font2);
+        lblNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        phoneNumber = new JTextField(10);
+        phoneNumber.setFont(font2);
+        phoneNumber.setMaximumSize(new Dimension(150, 30));
+        phoneNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
+
         btnLogin = new JButton("Login");
-        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnLogin.setFont(new Font("Arial", Font.BOLD, 14));
+        btnLogin.setFont(font2);
+        btnLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
+        btnLogin.addActionListener(this);
 
-        // add components to panel
-        panel.add(Box.createVerticalGlue());  // Add vertical glue before the components
-        panel.add(new JLabel("Phone Number:"));
-        panel.add(phoneNumberField);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));  // Add some space between the components
-        panel.add(btnLogin);
-        panel.add(Box.createVerticalGlue());  // Add vertical glue after the components
+        // add components to inputPanel
+        inputPanel.add(lblNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        inputPanel.add(phoneNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        inputPanel.add(btnLogin);
+
+        // add components to mainPanel
+        mainPanel.add(lblScreen);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(inputPanel);
 
         // add panel to frame
-        frame.add(panel);
+        frame.add(mainPanel);
 
-        // set the size of frame
-        frame.setSize(450, 450);
+        frame.setVisible(true);
     }
 
     // if button is pressed
@@ -85,7 +94,6 @@ public class LoginScreen extends JFrame implements ActionListener {
     }
 
     public String getPhoneNumber() {
-        return phoneNumberField.getText();
+        return phoneNumber.getText();
     }
-
 }

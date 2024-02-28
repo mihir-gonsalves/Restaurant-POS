@@ -13,13 +13,6 @@ public class PaymentScreen extends JFrame implements ActionListener {
     private JPanel cardPanel;
     private JPanel buttonPanel;
     
-    // customerInfoPanel components - this will be completed within Controller.java
-
-    private JLabel lblCustomer;
-    
-    // private JLabel lblCustomerName;
-    // private JLabel lblCustomerNumber;
-    
     // orderPanel components - this will be completed within Controller.java
     // image, name, quantity, plus minus buttons, remove button, total
 
@@ -62,11 +55,6 @@ public class PaymentScreen extends JFrame implements ActionListener {
         // customerInfoPanel
         customerInfoPanel = new JPanel();
         customerInfoPanel.setLayout(new BoxLayout(customerInfoPanel, BoxLayout.X_AXIS));
-
-        lblCustomer = new JLabel("Customer:");
-        lblCustomer.setFont(font1);
-        lblCustomer.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblCustomer.setAlignmentY(Component.CENTER_ALIGNMENT);
         
         // the customer name and number will be set within controller
 
@@ -91,21 +79,32 @@ public class PaymentScreen extends JFrame implements ActionListener {
 
         btnCancelOrder = new JButton("Cancel Order");
         btnCancelOrder.setFont(font1);
+        btnCancelOrder.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnCancelOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnCancelOrder.addActionListener(this);
+        buttonPanel.add(btnCancelOrder);
 
         btnGoBack = new JButton("Go Back");
         btnGoBack.setFont(font1);
         btnGoBack.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnGoBack.addActionListener(this);
+        buttonPanel.add(btnGoBack);
 
         btnPlaceOrder = new JButton("Place Order");
         btnPlaceOrder.setFont(font1);
         btnPlaceOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnPlaceOrder.addActionListener(this);
+        buttonPanel.add(btnPlaceOrder);
 
         // add panel to frame
+        mainPanel.add(customerInfoPanel);
+        mainPanel.add(orderPanel);
+        mainPanel.add(paymentPanel);
+        mainPanel.add(cardPanel);
+        mainPanel.add(buttonPanel);
+
         frame.add(mainPanel);
+        frame.setVisible(true);
     }
 
     // if button is pressed
@@ -121,6 +120,18 @@ public class PaymentScreen extends JFrame implements ActionListener {
         return frame;
     }
 
+    public JPanel getCustomerInfoPanel() {
+        return customerInfoPanel;
+    }
+
+    public JPanel getPaymentOrderPanel() {
+        return orderPanel;
+    }
+
+    public JPanel getPaymentPanel() {
+        return paymentPanel;
+    }
+
     public JButton getGoBackButton() {
         return btnGoBack;
     }
@@ -133,3 +144,20 @@ public class PaymentScreen extends JFrame implements ActionListener {
         return btnPlaceOrder;
     }
 }
+
+// controller.loginScreen.getLoginButton().addActionListener(new ActionListener() {
+//     @Override
+//     public void actionPerformed(ActionEvent e) {
+//         if (controller.model.login(controller.loginScreen.getPhoneNumber())) {
+//             controller.loginScreen.getFrame().dispose();
+//             controller.phoneNumber = controller.loginScreen.getPhoneNumber();
+//             if (controller.model.isManager(controller.phoneNumber)) {
+//                 controller.switchToManagerScreen();
+//             } else {
+//                 controller.switchToCashierScreen();
+//             }
+//         } else {
+//             JOptionPane.showMessageDialog(null, "Invalid phone number");
+//         }
+//     }
+// });
