@@ -48,35 +48,16 @@ public class Controller implements ActionListener{
         Controller controller = new Controller();
         controller.initialize();
         controller.switchToLoginScreen();
-
-        // switch to appropriate screen based on login's phone number
-        controller.loginScreen.getLoginButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (controller.model.login(controller.loginScreen.getPhoneNumber())) {
-                    controller.loginScreen.getFrame().dispose();
-                    controller.phoneNumber = controller.loginScreen.getPhoneNumber();
-                    if (controller.model.isManager(controller.phoneNumber)) {
-                        controller.switchToManagerScreen();
-                        controller.populateManagerNavBar();
-                        controller.populateManagerMainPanel("chart");
-                    } else {
-                        controller.switchToCashierScreen();
-                        controller.populateCashierNavBar();
-                        controller.populateItemPanel("Burgers");
-                        controller.completeCashierOrder();
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid phone number");
-                }
-            }
-        });
+        controller.switchFromLoginScreen();
+        
     }
 
+    // constructor
     public Controller() {
-        // TODO Auto-generated constructor stub
+        // not necessary
     }
 
+    // initializes the model and all screens
     public void initialize() {
         this.model = new Model();
         this.loginScreen = new LoginScreen();
@@ -92,46 +73,81 @@ public class Controller implements ActionListener{
         this.orderItems = new int[10][2];
     }
 
+
+    /* 
+     * LOGIN SCREEN METHODS
+     */
+    // sets the login screen to visible
     public void switchToLoginScreen() {
         this.loginScreen.getFrame().setVisible(true);
     }
+    // switch to appropriate screen based on login's phone number
+    public void switchFromLoginScreen() {
+        loginScreen.getLoginButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+                // if the phone number is valid, switch to the appropriate screen
+                if (model.login(loginScreen.getPhoneNumber())) {
+
+                    // dispose of the login screen
+                    loginScreen.getFrame().dispose();
+                    phoneNumber = loginScreen.getPhoneNumber();
+
+                    // if the user is a manager, switch to the manager screen and populate with defaults
+                    if (model.isManager(phoneNumber)) {
+                        switchToManagerScreen();
+                        populateManagerNavBar();
+                        populateManagerMainPanel("chart");
+                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults
+                        switchToCashierScreen();
+                        populateCashierNavBar();
+                        populateCashierItemPanel("Burgers");
+                        completeCashierOrder();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid phone number");
+                }
+            }
+        });
+    }
+
+
+    /* 
+     * CASHIER SCREEN METHODS
+     */
+    // sets the cashier screen to visible and sets isManager to false
     public void switchToCashierScreen() {
-        this.isManager = false;
-        this.cashierScreen.getFrame().setVisible(true);
+        isManager = false;
+        cashierScreen.getFrame().setVisible(true);
     }
-
-    public void switchToManagerScreen() {
-        this.isManager = true;
-        this.managerScreen.getFrame().setVisible(true);
-    }
-
-    public void switchToPaymentScreen() {
-        this.paymentScreen.getFrame().setVisible(true);
-    }
-
-    public static ImageIcon resizeIcon(String iconPath, int width, int height) {
-        ImageIcon icon = new ImageIcon(iconPath);
-        Image img = icon.getImage();
-        Image resizedImage = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
-        return new ImageIcon(resizedImage);
-    }
-
-    public void populateItemPanel(String category) {
+    // populates the cashier screen with items based on category
+    public void populateCashierItemPanel(String category) {
         // Get items and sort by category
-        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // EDIT THIS LATER
+        ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
         JPanel itemsPanel = cashierScreen.getItemsPanel();
+
+        // get mainframe from cashier screen
         JFrame frame = cashierScreen.getFrame();
+
+        // remove current items from the panel so they can be replaced
         itemsPanel.removeAll();
         
+        // try loop to get items from the database safely
         try {
+
+            // while there is another row in the result set
             while (rs.next()) {
-                String db_category = rs.getString("category");
+                String db_category = rs.getString("category"); // get the category of the current row
+
+                // if the category of the current row is the same as the category we want to display
                 if (db_category.equals(category)) {
                     String item_name = rs.getString("item_name");
                     String item_price = rs.getString("item_price");
                     String jlabel_text =  item_name + "  " +"$"+ item_price;
                     StringBuilder item_image = new StringBuilder();
+
+                    // formats image as item_name in lowercase and replaces spaces with underscores
                     for (int i = 0; i < item_name.length(); i++) {
                         char c = item_name.charAt(i);
                         if (Character.isLetter(c)) {
@@ -142,16 +158,19 @@ public class Controller implements ActionListener{
                         }
                     }
                     
+                    // append appropriate project root path and file extension
                     String item_image_path = "./images/" + item_image + ".png";
-                    // System.out.println("Item image: " + item_image_path);
-                    JPanel itemPanel = new JPanel(new BorderLayout());
 
-                    // Create a new button with an image
-                    // System.out.println("Adding item: " + item_name);
+                    // create a new panel to hold the item image and name
+                    JPanel itemPanel = new JPanel(new BorderLayout());
+                    // System.out.println("Item image: " + item_image_path); // testing
+                    // System.out.println("Adding item: " + item_name); // testing
+
+                    // create a new button with an image
                     JButton itemButton = new JButton(new ImageIcon(item_image_path));
                     itemPanel.add(itemButton, BorderLayout.CENTER);
     
-                    // Add action listener to the image button
+                    // add action listener to the image button to display a popup with the item name and an "Add to Order" button
                     itemButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -159,14 +178,20 @@ public class Controller implements ActionListener{
 
                             // Get the screen size
                             Dimension frameSize = frame.getSize();
+
+                            // sets the size and style of the popup panel
                             int size = (int) (frameSize.getWidth() - 600 * 1.1f);
                             popUpPanel.setPreferredSize(new Dimension(size, size));
-                            popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10)); // Add a border
+                            popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
                             popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
+                            
+                            // create and style the label and button for the popup
                             JLabel popUpLabel = new JLabel("Item: " + item_name);
                             popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                             JButton popUpButton = new JButton("Add to Order");
                             popUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                            // add action listener to the "Add to Order" button to add the item to the order and close the popup
                             popUpButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
@@ -176,58 +201,73 @@ public class Controller implements ActionListener{
                                         if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
                                             orderItems[i][0] = model.getItemID(item_name);
                                             orderItems[i][1] = orderItems[i][1] + 1;
+
+                                            // reupdates the order panel
                                             populateCashierOrderPanel();
+
+                                            // break because we found the item in the orderItems array
                                             break;
                                         }
                                     }
                                     po.hide();
                                 }
                             });
+
+                            // add the label and button to the popup panel with some vertical spacing
+                            popUpPanel.add(Box.createVerticalStrut(20));
                             popUpPanel.add(popUpLabel);
+                            popUpPanel.add(Box.createVerticalStrut(20));
                             popUpPanel.add(popUpButton);
                     
-                            
+                            // sets the location of the popup panel (centered on the main frame)
                             Point frameLocation = frame.getLocation();
-
-                            // Calculate the center coordinates
                             int x = (int) (frameLocation.getX() + (frameSize.getWidth() - popUpPanel.getPreferredSize().getWidth()) / 2);
                             int y = (int) (frameLocation.getY() + (frameSize.getHeight() - popUpPanel.getPreferredSize().getHeight()) / 2);
                     
-                            // Create and show the popup
+                            // creates and shows the popup
                             po = pf.getPopup(frame, popUpPanel, x, y);
                             po.show();
                         }
                     });
 
-                    // Create a new label with the item name
+                    // create a new label with the item name to go below the center of the image button
                     JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
+                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
                     itemPanel.add(itemName, BorderLayout.SOUTH);
 
-                    // Add the panel to the itemsPanel
+                    // add the panel to the itemsPanel
                     itemsPanel.add(itemPanel);
                 }
             } 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // revalidate and repaint the itemsPanel for redraw
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
-
+    // populates the cashier navbar and sets up action listeners for each category button
     public void populateCashierNavBar() {
-        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // EDIT THIS LATER
+        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
         JPanel navPanel = cashierScreen.getNavPanel();
+
+        // used in the while loop to keep track of the current category
         String current_category = "";
+
+        // try loop to get categories from the database safely
         try {
             while (rs.next()) {
                 String db_category = rs.getString("category");
-                // System.out.println("Category: " + db_category);
                 if (!db_category.equals(current_category)) {
-                    // System.out.println("|" + db_category + "|" + " is not equal to " + "|" + current_category + "|");
+                    // System.out.println("|" + db_category + "|" + " DNE " + "|" + current_category + "|"); // testing
+                    // set the current category to the new category
                     current_category = db_category;
                     
-                    // Get category icon image
+                    // get category icon image
                     StringBuilder category_file_name = new StringBuilder();
+
+                    // formats image as category in lowercase and replaces spaces with underscores as well as replaces '&' with "and"
                     for (int i = 0; i < current_category.length(); i++) {
                         char c = current_category.charAt(i);
                         if (Character.isLetter(c)) {
@@ -240,16 +280,26 @@ public class Controller implements ActionListener{
                             category_file_name.append("and");
                         }
                     }
-                    String category_image_path = "./images/" + category_file_name + ".png";
-                    JButton categoryButton = new JButton(resizeIcon(category_image_path, 60, 60));
-                    // System.out.println("Category image: " + category_image_path);
+
+                    // get the category image and resize it
+                    ImageIcon categoryImage = new ImageIcon("./images/" + category_file_name + ".png");
+                    categoryImage = new ImageIcon(categoryImage.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+
+                    // create and style a new button with the category image
+                    JButton categoryButton = new JButton(categoryImage);
+                    categoryButton.setPreferredSize(new Dimension(100, 100));
+                    // System.out.println("Category image: " + category_image_path); // testing
+
+                    // create a new action listener for the category button to populate the item panel with the category's items using a final variable
                     final String current_category_final = current_category;
                     categoryButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            populateItemPanel(current_category_final);
+                            populateCashierItemPanel(current_category_final);
                         }
                     });
+
+                    // add the category button to the navPanel
                     navPanel.add(categoryButton);
                 }
             }
@@ -257,12 +307,15 @@ public class Controller implements ActionListener{
             e.printStackTrace();
         }
     }
-
+    // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
-        if (cashierScreen.getOrderFieldsPanel() != null) {
+        // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
+        if (cashierScreen.getOrderPanel().isAncestorOf(cashierScreen.getOrderFieldsPanel())) {
             cashierScreen.getOrderFieldsPanel().removeAll();
             cashierScreen.getOrderPanel().remove(cashierScreen.getOrderFieldsPanel());
         }
+
+        // add items (JTextField) to the orderFieldsPanel by looping through the orderItems array
         for (int i = 0; i < orderItems.length; i++) {
             if (orderItems[i][0] != 0) {
                 JTextField orderItemTextField = new JTextField(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
@@ -272,107 +325,309 @@ public class Controller implements ActionListener{
                 cashierScreen.getOrderFieldsPanel().add(orderItemTextField);
             }
         }
+
+        // add the orderFieldsPanel to the orderPanel and revalidate and repaint the orderPanel for redraw
         cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
         cashierScreen.getOrderPanel().revalidate();
         cashierScreen.getOrderPanel().repaint();
+
+        // reinitialize the subtotal label in bottom panel
         populateCashierBottomPanel();
     }
-
+    // populate the bottom panel of the cashier screen with the cashier's name and the subtotal of the order
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
+
+        // remove the bottomPanel from the cashierScreen frame if it exists in cashierScreen
         if (cashierScreen.getFrame().isAncestorOf(bottomPanel)) {
             cashierScreen.getFrame().remove(bottomPanel);
         }
+
+        // if bottom panel populated with items, remove all items
         if (bottomPanel.getComponentCount() > 0) {
             bottomPanel.removeAll();
         }
-        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
-        bottomPanel.add(Box.createHorizontalGlue());
-        JLabel totalLabel = new JLabel("Total: " + model.sumItemPrices(orderItems));
+
+        // create a new button to complete the order
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
-        bottomPanel.add(totalLabel);
+
+        // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
+        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
+        bottomPanel.add(Box.createHorizontalGlue());
+        bottomPanel.add(new JLabel("Total: " + model.sumItemPrices(orderItems)));
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
+
+        // revalidate and repaint the bottomPanel for redraw and add back to the cashierScreen frame
         bottomPanel.revalidate();
         bottomPanel.repaint();
         cashierScreen.getFrame().add(bottomPanel, BorderLayout.SOUTH);
     }
-
+    // complete the cashier's order via orderComplete button, display subtotal, and switch to payment screen
     public void completeCashierOrder() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
+
+        // add action listener to orderComplete button to display subtotal and switch to payment screen when clicked
         orderCompleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // System.out.println("Order complete");
+                // System.out.println("Order complete"); // testing
                 String subtotal = String.valueOf(model.sumItemPrices(orderItems));
-                JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
+
+                // display total by converting subtotal to float and multiplying by 1.0825 (8.25% tax)
+                JOptionPane.showMessageDialog(null, "Total: " + Float.parseFloat(subtotal)*1.0825);
+
+                // insert order into database and display message based on success ; currently hardcoded to "credit"
                 if(model.insert_order(subtotal, orderItems,"credit") == true){
                     JOptionPane.showMessageDialog(null, "Order submitted");
                 }
                 else{
                     JOptionPane.showMessageDialog(null, "Order not submitted");
                 }
+
+                // switch to payment screen and dispose of the cashier screen
                 switchToPaymentScreen();
+
+                // dispose of the cashier screen
                 cashierScreen.getFrame().dispose();
             }
         });
     }
 
+
+    /* 
+     * MANAGER SCREEN METHODS
+     */
+    // sets the manager screen to visible and sets isManager to true
+    public void switchToManagerScreen() {
+        isManager = true;
+        managerScreen.getFrame().setVisible(true);
+    }
+    // populates the manager screen with a default navbar and adds action listeners for each button
     public void populateManagerNavBar() {
-        ImageIcon chartImageIcon = new ImageIcon("./images/chart.png");
-        chartImageIcon = new ImageIcon(chartImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
-        ImageIcon orderImageIcon = new ImageIcon("./images/order.png");
-        orderImageIcon = new ImageIcon(orderImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
-        ImageIcon trackImageIcon = new ImageIcon("./images/track.png");
-        trackImageIcon = new ImageIcon(trackImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
-        ImageIcon tableImageIcon = new ImageIcon("./images/table.png");
-        tableImageIcon = new ImageIcon(tableImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
-        JButton chartButton = new JButton(chartImageIcon);
-        chartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                populateManagerMainPanel("chart");
+        String[] buttonNames = {"chart", "order", "track", "table"};
+
+        // for each button name, create a new button with an image and add an action listener to populate the main panel with the corresponding content
+        for (int i = 0; i < buttonNames.length; i++) {
+            final int index = i;
+            ImageIcon imageIcon = new ImageIcon("./images/" + buttonNames[i] + ".png");
+            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
+            JButton button = new JButton(imageIcon);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    populateManagerMainPanel(buttonNames[index]);
+                }
+            });
+            // add buttons and vertical glue for spacing to the navPanel
+            managerScreen.getNavPanel().add(button);
+            if (i < buttonNames.length - 1) {
+                managerScreen.getNavPanel().add(Box.createVerticalGlue());
             }
-        });
-        JButton orderButton = new JButton(orderImageIcon);
-        orderButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                populateManagerMainPanel("order");
-            }
-        });
-        JButton trackButton = new JButton(trackImageIcon);
-        trackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                populateManagerMainPanel("track");
-            }
-        });
-        JButton tableButton = new JButton(tableImageIcon);
-        tableButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                populateManagerMainPanel("table");
-            }
-        });
-        managerScreen.getNavPanel().add(chartButton);
-        managerScreen.getNavPanel().add(Box.createVerticalGlue());
-        managerScreen.getNavPanel().add(orderButton);
-        managerScreen.getNavPanel().add(Box.createVerticalGlue());
-        managerScreen.getNavPanel().add(trackButton);
-        managerScreen.getNavPanel().add(Box.createVerticalGlue());
-        managerScreen.getNavPanel().add(tableButton);
+        }
+        // revalidate and repaint the navPanel for redraw
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
 
+    public void populateManagerMainPanel(String content) {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        if (mainPanel.getComponentCount() > 0) {
+            mainPanel.removeAll();
+        }
+        if (content.equals("chart")) {
+            populateManagerChartPanel();
+        }
+        else if (content.equals("order")) {
+            populateManagerOrderPanel();
+        }
+        else if (content.equals("track")) {
+            populateManagerTrackPanel();
+        }
+        else if (content.equals("table")) {
+            populateManagerTablePanel();
+            
+        }
+        // revalidate and repaint the mainPanel for redraw
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+    // populates the manager screen with a chart // TODO implement chart
+    public void populateManagerChartPanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        JTextArea chartTextArea = new JTextArea("Chart");
+        chartTextArea.setEditable(false);
+        chartTextArea.setPreferredSize(new Dimension(450, 500));
+        mainPanel.add(chartTextArea);
+    }
+    // populates the manager screen with the order panel
+    public void populateManagerOrderPanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        mainPanel.setLayout(new BorderLayout());
+    
+        // Panel for ingredient ID and count
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        JLabel ingredientIdLabel = new JLabel("Ingredient ID:");
+        JTextField ingredientIdField = new JTextField(10);
+
+        JLabel countLabel = new JLabel("Count:");
+        JTextField countField = new JTextField(10);
+
+        JButton commitButton = new JButton("Commit");
+
+        inputPanel.add(ingredientIdLabel);
+        inputPanel.add(ingredientIdField);
+        inputPanel.add(countLabel);
+        inputPanel.add(countField);
+        inputPanel.add(commitButton);
+
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+        
+        // Table to display results
+        JTable table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateTable(table);
+        // Add action listener to commit button
+        commitButton.addActionListener(e -> {
+            // Retrieve ingredient ID and count from text fields
+            String ingredientId = ingredientIdField.getText();
+            String count = countField.getText();
+            
+            if(model.addIngredient(ingredientId, count, phoneNumber) == true){
+                JOptionPane.showMessageDialog(null, "Stock updated");
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Stock not updated");
+            }
+            // Perform commit action here
+            // You may want to update the table based on the committed data
+            updateTable(table);
+        });
+    }
+    // populates the manager screen with the track panel
+    public void populateManagerTrackPanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        
+        // Add start date text area
+        JPanel startDatePanel = new JPanel();
+        startDatePanel.setLayout(new FlowLayout());
+        JLabel startDateLabel = new JLabel("Start Date yyyy-mm-dd:");
+        JTextField startDateField = new JTextField(10); 
+        startDatePanel.add(startDateLabel);
+        startDatePanel.add(startDateField);
+        mainPanel.add(startDatePanel);
+
+        // Add end date text area
+        JPanel endDatePanel = new JPanel();
+        endDatePanel.setLayout(new FlowLayout());
+        JLabel endDateLabel = new JLabel("End Date yyyy-mm-dd:");
+        JTextField endDateField = new JTextField(10); 
+        endDatePanel.add(endDateLabel);
+        endDatePanel.add(endDateField);
+        mainPanel.add(endDatePanel);
+
+        // Add a table
+        JTable table = new JTable(); // Initialize your table
+        table.setSize(1000, 400);    
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.add(scrollPane);
+        String[] columnNames = {"ID", "Date", "Time", "Subtotal", "Tax", "Total", "Payment Method"};
+        DefaultTableModel tablemodel = new DefaultTableModel(columnNames, 0);
+
+        // Add an action listener to a button to fetch data from SQL based on dates
+        JButton fetchDataButton = new JButton("Fetch Data");
+        fetchDataButton.addActionListener(e -> {
+            // Fetch data from SQL table based on start and end dates
+            String startDate = parseDate(startDateField.getText());
+            String endDate = parseDate(endDateField.getText());
+            // Query SQL table using startDate and endDate
+            ResultSet rs = model.getOrderDaytoDay(startDate, endDate);
+            try{
+            while (rs.next()) {
+                Object[] row = new Object[7]; // Assuming 7 columns in the result set
+                for (int i = 0; i < row.length; i++) {
+                    row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
+                }
+                tablemodel.addRow(row);
+            }
+            table.setModel(tablemodel);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();}
+        });
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
+        mainPanel.add(scrollPane);
+        mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
+        mainPanel.add(fetchDataButton);
+    }
+    // populates the manager screen with a table of CRUD operations for each table
+    public void populateManagerTablePanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        mainPanel.setLayout(new GridLayout(4, 4));
+        StringBuilder tableName = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            int remainder = i % 4;
+            if (remainder == 0) {
+                tableName.append("Create ");
+            }
+            else if (remainder == 1) {
+                tableName.append("Read ");
+            }
+            else if (remainder == 2) {
+                tableName.append("Update ");
+            }
+            else if (remainder == 3) {
+                tableName.append("Delete ");
+            }
+            if (i < 4) {
+                tableName.append("Users");
+            }
+            else if (i < 8) {
+                tableName.append("Orders");
+            }
+            else if (i < 12) {
+                tableName.append("Items");
+            }
+            else if (i < 16) {
+                tableName.append("Ingredients");
+            }
+            JButton tableButton = new JButton(tableName.toString());
+            tableButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Table: " + tableButton.getText());
+                }
+            });
+            mainPanel.add(tableButton);
+            tableName.setLength(0);
+        }
+    }
+
+
+    /*
+     * PAYMENT SCREEN METHODS
+     */
+    // sets the payment screen to visible
+    public void switchToPaymentScreen() {
+        paymentScreen.getFrame().setVisible(true);
+    }
+
+    /*
+     * HELPER METHODS
+     */
+    // parses a date string to a format that can be used in SQL queries
     private String parseDate(String dateString) {
         // Implement your date parsing logic here
         dateString = dateString.trim();
         dateString = dateString.replaceAll("/", "-");
         return dateString;
     }
+    // updates the table with the latest data from SQL
     private void updateTable(JTable table) {
         // Fetch data from SQL and update the table
         try {
@@ -388,169 +643,14 @@ public class Controller implements ActionListener{
                 rowData[3] = resultSet.getObject(4);
                 tableModel.addRow(rowData);//add it to table
             }
-    
             table.setModel(tableModel); // Set the updated table model
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    public void populateManagerMainPanel(String content) {
-        JPanel mainPanel = managerScreen.getMainPanel();
-        if (mainPanel.getComponentCount() > 0) {
-            mainPanel.removeAll();
-        }
-        if (content.equals("chart")) {
-            JTextArea chartTextArea = new JTextArea("Chart");
-            chartTextArea.setEditable(false);
-            chartTextArea.setPreferredSize(new Dimension(450, 500));
-            mainPanel.add(chartTextArea);
-        }
-        else if (content.equals("order")) {
-            mainPanel.setLayout(new BorderLayout());
-    
-            // Panel for ingredient ID and count
-            JPanel inputPanel = new JPanel();
-            inputPanel.setLayout(new FlowLayout());
-    
-            JLabel ingredientIdLabel = new JLabel("Ingredient ID:");
-            JTextField ingredientIdField = new JTextField(10);
-    
-            JLabel countLabel = new JLabel("Count:");
-            JTextField countField = new JTextField(10);
-    
-            JButton commitButton = new JButton("Commit");
-    
-            inputPanel.add(ingredientIdLabel);
-            inputPanel.add(ingredientIdField);
-            inputPanel.add(countLabel);
-            inputPanel.add(countField);
-            inputPanel.add(commitButton);
-    
-            mainPanel.add(inputPanel, BorderLayout.NORTH);
-            
-            // Table to display results
-            JTable table = new JTable();
-            JScrollPane scrollPane = new JScrollPane(table);
-            mainPanel.add(scrollPane, BorderLayout.CENTER);
-            updateTable(table);
-            // Add action listener to commit button
-            commitButton.addActionListener(e -> {
-                // Retrieve ingredient ID and count from text fields
-                String ingredientId = ingredientIdField.getText();
-                String count = countField.getText();
-                
-                if(model.addIngredient(ingredientId, count, phoneNumber) == true){
-                    JOptionPane.showMessageDialog(null, "Stock updated");
-                }
-                else{
-                    JOptionPane.showMessageDialog(null, "Stock not updated");
-                }
-                // Perform commit action here
-                // You may want to update the table based on the committed data
-                updateTable(table);
-            });
-        }
-        else if (content.equals("track")) {
-                        // Add start date text area
-            JPanel startDatePanel = new JPanel();
-            startDatePanel.setLayout(new FlowLayout());
-            JLabel startDateLabel = new JLabel("Start Date yyyy-mm-dd:");
-            JTextField startDateField = new JTextField(10); 
-            startDatePanel.add(startDateLabel);
-            startDatePanel.add(startDateField);
-            mainPanel.add(startDatePanel);
-
-            // Add end date text area
-            JPanel endDatePanel = new JPanel();
-            endDatePanel.setLayout(new FlowLayout());
-            JLabel endDateLabel = new JLabel("End Date yyyy-mm-dd:");
-            JTextField endDateField = new JTextField(10); 
-            endDatePanel.add(endDateLabel);
-            endDatePanel.add(endDateField);
-            mainPanel.add(endDatePanel);
-
-            // Add a table
-            JTable table = new JTable(); // Initialize your table
-            table.setSize(1000, 400);    
-            JScrollPane scrollPane = new JScrollPane(table);
-            mainPanel.add(scrollPane);
-            String[] columnNames = {"ID", "Date", "Time", "Subtotal", "Tax", "Total", "Payment Method"};
-            DefaultTableModel tablemodel = new DefaultTableModel(columnNames, 0);
-
-            // Add an action listener to a button to fetch data from SQL based on dates
-            JButton fetchDataButton = new JButton("Fetch Data");
-            fetchDataButton.addActionListener(e -> {
-                // Fetch data from SQL table based on start and end dates
-                String startDate = parseDate(startDateField.getText());
-                String endDate = parseDate(endDateField.getText());
-                // Query SQL table using startDate and endDate
-                ResultSet rs = model.getOrderDaytoDay(startDate, endDate);
-                try{
-                while (rs.next()) {
-                    Object[] row = new Object[7]; // Assuming 7 columns in the result set
-                    for (int i = 0; i < row.length; i++) {
-                        row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
-                    }
-                    tablemodel.addRow(row);
-                }
-                table.setModel(tablemodel);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();}
-            });
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
-            mainPanel.add(scrollPane);
-            mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
-            mainPanel.add(fetchDataButton);
-        }
-        else if (content.equals("table")) {
-            mainPanel.setLayout(new GridLayout(4, 4));
-            StringBuilder tableName = new StringBuilder();
-            for (int i = 0; i < 16; i++) {
-                int remainder = i % 4;
-                if (remainder == 0) {
-                    tableName.append("Create ");
-                }
-                else if (remainder == 1) {
-                    tableName.append("Read ");
-                }
-                else if (remainder == 2) {
-                    tableName.append("Update ");
-                }
-                else if (remainder == 3) {
-                    tableName.append("Delete ");
-                }
-                if (i < 4) {
-                    tableName.append("Users");
-                }
-                else if (i < 8) {
-                    tableName.append("Orders");
-                }
-                else if (i < 12) {
-                    tableName.append("Items");
-                }
-                else if (i < 16) {
-                    tableName.append("Ingredients");
-                }
-                JButton tableButton = new JButton(tableName.toString());
-                tableButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("Table: " + tableButton.getText());
-                    }
-                });
-                mainPanel.add(tableButton);
-                tableName.setLength(0);
-            }
-        }
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
+        // to override the abstract method
     }
 }

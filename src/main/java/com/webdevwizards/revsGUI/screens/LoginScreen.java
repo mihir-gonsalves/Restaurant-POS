@@ -56,23 +56,33 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumber.setMaximumSize(new Dimension(150, 30));
         phoneNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        // This will format the phone number as the user types it in
-        phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                formatPhoneNumber();
-            }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                formatPhoneNumber();
-            }
+        // add delay to format phone number so that it isn't so slow and jumpy
+        // Timer timer = new Timer(500, new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         formatPhoneNumber();
+        //     }
+        // });
+        // timer.setRepeats(false);
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                formatPhoneNumber();
-            }
-        });
+        // // This will format the phone number as the user types it in
+        // phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
+        //     @Override
+        //     public void insertUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+
+        //     @Override
+        //     public void removeUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+
+        //     @Override
+        //     public void changedUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+        // });
 
         btnLogin = new JButton("Login");
         btnLogin.setFont(font2);
@@ -120,18 +130,18 @@ public class LoginScreen extends JFrame implements ActionListener {
 
     // from XXXXXXXXXX to (XXX) XXX-XXXX
     private void formatPhoneNumber() {
-        String number = phoneNumber.getText().replaceAll("[^\\d]", "");
-        if (number.length() > 0) {
-            StringBuilder formattedNumber = new StringBuilder("(");
-            for (int i = 0; i < Math.min(number.length(), 10); i++) {
-                if (i == 3) {
-                    formattedNumber.append(") ");
-                } else if (i == 6) {
-                    formattedNumber.append("-");
-                }
-                formattedNumber.append(number.charAt(i));
-            }
-            phoneNumber.setText(formattedNumber.toString());
-        }
+        // String number = phoneNumber.getText().replaceAll("[^\\d]", "");
+        // if (number.length() > 0) {
+        //     StringBuilder formattedNumber = new StringBuilder("(");
+        //     for (int i = 0; i < Math.min(number.length(), 10); i++) {
+        //         if (i == 3) {
+        //             formattedNumber.append(") ");
+        //         } else if (i == 6) {
+        //             formattedNumber.append("-");
+        //         }
+        //         formattedNumber.append(number.charAt(i));
+        //     }
+        //     phoneNumber.setText(formattedNumber.toString());
+        // }
     }
 }
