@@ -104,11 +104,8 @@ public class PaymentScreen extends JFrame implements ActionListener {
         btnPlaceOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnPlaceOrder.addActionListener(this);
 
-
         // add panel to frame
         frame.add(mainPanel);
-
-        frame.setVisible(true);
     }
 
     // if button is pressed

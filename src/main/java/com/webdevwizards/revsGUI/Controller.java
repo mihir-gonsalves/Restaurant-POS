@@ -309,14 +309,9 @@ public class Controller implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
                 String subtotal = String.valueOf(model.sumItemPrices(orderItems));
-                if(model.insert_order(subtotal,orderItems,"credit") == false){
-                    JOptionPane.showMessageDialog(null, "Order failed");
-                }
-                else{
-                    JOptionPane.showMessageDialog(null, "Order complete");
-
-                
-                }
+                JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
+                switchToPaymentScreen();
+                cashierScreen.getFrame().dispose();
             }
         });
     }
