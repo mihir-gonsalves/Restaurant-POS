@@ -12,6 +12,9 @@ public class testGUI extends JFrame implements ActionListener{
     PopupFactory pf;
     private static final String INSERT_ORDER_QUERY = "INSERT INTO c_orders (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_ORDER_ITEM_QUERY = "INSERT INTO c_oti (c_order_id, item_id, item_quantity) VALUES (?, ?, ?)";
+    private static final String SELECT_INGREDIENT= "SELECT ingredient_id, ingredient_quantity FROM item_to_ingredient_list WHERE item_id = ?;";
+    private static final String SELECT_INGREDIENT_NAME = "SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?;";
+    private static final String UPDATE_INGREDIENT_COUNT= "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
     
     public testGUI() {
         SwingUtilities.invokeLater(() -> {
@@ -194,26 +197,32 @@ public class testGUI extends JFrame implements ActionListener{
                 preparedStatementInsert.setDouble(5, 1.0825 * Double.parseDouble(subtotal));
                 // Set payment type
                 preparedStatementInsert.setString(6, "Credit");
-                // Execute the query
+                // Execute the query 
                 
                 
                 preparedStatementInsert.executeUpdate();
-
+                    
                 ResultSet rs = preparedStatementInsert.getGeneratedKeys();
+                int[][] orderItems = {{10, 1}, {11, 2}, {12, 3}};
                 if (rs.next()) {
                     // Retrieve the auto-generated c_order_id
                     int c_order_id = rs.getInt("c_order_id");
                     System.out.println("Generated c_order_id: " + c_order_id);
-                    PreparedStatement preparedStatementInsertOrderItem = connection.prepareStatement(INSERT_ORDER_ITEM_QUERY);
-                    // Add order items to the database
-                    preparedStatementInsertOrderItem.setInt(1, c_order_id);
-                    // Replace "Item Name" with actual item name
-                    preparedStatementInsertOrderItem.setInt(2, 10);
-                    // Replace "Item Quantity" with actual item quantity
-                    preparedStatementInsertOrderItem.setInt(3, 1);
-                    preparedStatementInsertOrderItem.executeUpdate();
+                    for (int i = 0; i < orderItems.length; i++) {
+                        // Prepare the query to insert order items
 
+                        PreparedStatement preparedStatementInsertOrderItem = connection.prepareStatement(INSERT_ORDER_ITEM_QUERY);
+                        // Add order items to the database
+                        preparedStatementInsertOrderItem.setInt(1, c_order_id);
+                        // Replace "Item Name" with actual item name
+                        preparedStatementInsertOrderItem.setInt(2, orderItems[i][0]);
+                        // Replace "Item Quantity" with actual item quantity
+                        preparedStatementInsertOrderItem.setInt(3, orderItems[i][1]);
+                        preparedStatementInsertOrderItem.executeUpdate();
+                    }
                 }
+                
+
 
                 // Display success message
                 JOptionPane.showMessageDialog(frame, "Order placed successfully!");
