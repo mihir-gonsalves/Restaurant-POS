@@ -10,11 +10,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
+
 
 
 import java.awt.*;
@@ -23,6 +27,11 @@ import java.sql.ResultSet;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.webdevwizards.revsGUI.screens.*;
+
+import main.java.com.webdevwizards.revsGUI.screens.CashierScreen;
+import main.java.com.webdevwizards.revsGUI.screens.LoginScreen;
+import main.java.com.webdevwizards.revsGUI.screens.ManagerScreen;
+import main.java.com.webdevwizards.revsGUI.screens.PaymentScreen;
 
 import com.webdevwizards.revsGUI.database.Model;
 
@@ -303,7 +312,6 @@ public class Controller implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
                 String subtotal = String.valueOf(model.sumItemPrices(orderItems));
-                System.out.println(orderItems);
                 JOptionPane.showMessageDialog(null, "Subtotal: " + subtotal);
                 if(model.insert_order(subtotal, orderItems,"credit") == true){
                     JOptionPane.showMessageDialog(null, "Order submitted");
@@ -322,6 +330,8 @@ public class Controller implements ActionListener{
         chartImageIcon = new ImageIcon(chartImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
         ImageIcon orderImageIcon = new ImageIcon("./images/order.png");
         orderImageIcon = new ImageIcon(orderImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
+        ImageIcon trackImageIcon = new ImageIcon("./images/track.png");
+        trackImageIcon = new ImageIcon(trackImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
         ImageIcon tableImageIcon = new ImageIcon("./images/table.png");
         tableImageIcon = new ImageIcon(tableImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
         JButton chartButton = new JButton(chartImageIcon);
@@ -338,6 +348,13 @@ public class Controller implements ActionListener{
                 populateManagerMainPanel("order");
             }
         });
+        JButton trackButton = new JButton(trackImageIcon);
+        trackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                populateManagerMainPanel("track");
+            }
+        });
         JButton tableButton = new JButton(tableImageIcon);
         tableButton.addActionListener(new ActionListener() {
             @Override
@@ -349,11 +366,20 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().add(Box.createVerticalGlue());
         managerScreen.getNavPanel().add(orderButton);
         managerScreen.getNavPanel().add(Box.createVerticalGlue());
+        managerScreen.getNavPanel().add(trackButton);
+        managerScreen.getNavPanel().add(Box.createVerticalGlue());
         managerScreen.getNavPanel().add(tableButton);
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
 
+    private String parseDate(String dateString) {
+        // Implement your date parsing logic here
+        dateString = dateString.trim();
+        dateString = dateString.replaceAll("/", "-");
+        return dateString;
+    }
+    
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
         if (mainPanel.getComponentCount() > 0) {
@@ -366,10 +392,64 @@ public class Controller implements ActionListener{
             mainPanel.add(chartTextArea);
         }
         else if (content.equals("order")) {
-            JTextArea orderTextArea = new JTextArea("Order");
-            orderTextArea.setEditable(false);
-            orderTextArea.setPreferredSize(new Dimension(450, 500));
-            mainPanel.add(orderTextArea);
+                        JTextArea chartTextArea = new JTextArea("Chart");
+            chartTextArea.setEditable(false);
+            chartTextArea.setPreferredSize(new Dimension(450, 500));
+            mainPanel.add(chartTextArea);
+        }
+        else if (content.equals("track")) {
+                        // Add start date text area
+            JPanel startDatePanel = new JPanel();
+            startDatePanel.setLayout(new FlowLayout());
+            JLabel startDateLabel = new JLabel("Start Date yyyy-mm-dd:");
+            JTextField startDateField = new JTextField(10); 
+            startDatePanel.add(startDateLabel);
+            startDatePanel.add(startDateField);
+            mainPanel.add(startDatePanel);
+
+            // Add end date text area
+            JPanel endDatePanel = new JPanel();
+            endDatePanel.setLayout(new FlowLayout());
+            JLabel endDateLabel = new JLabel("End Date yyyy-mm-dd:");
+            JTextField endDateField = new JTextField(10); 
+            endDatePanel.add(endDateLabel);
+            endDatePanel.add(endDateField);
+            mainPanel.add(endDatePanel);
+
+            // Add a table
+            JTable table = new JTable(); // Initialize your table
+            table.setSize(1000, 400);    
+            JScrollPane scrollPane = new JScrollPane(table);
+            mainPanel.add(scrollPane);
+            String[] columnNames = {"ID", "Date", "Time", "Subtotal", "Tax", "Total", "Payment Method"};
+            DefaultTableModel tablemodel = new DefaultTableModel(columnNames, 0);
+
+            // Add an action listener to a button to fetch data from SQL based on dates
+            JButton fetchDataButton = new JButton("Fetch Data");
+            fetchDataButton.addActionListener(e -> {
+                // Fetch data from SQL table based on start and end dates
+                String startDate = parseDate(startDateField.getText());
+                String endDate = parseDate(endDateField.getText());
+                // Query SQL table using startDate and endDate
+                ResultSet rs = model.getOrderDaytoDay(startDate, endDate);
+                try{
+                while (rs.next()) {
+                    Object[] row = new Object[7]; // Assuming 7 columns in the result set
+                    for (int i = 0; i < row.length; i++) {
+                        row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
+                    }
+                    tablemodel.addRow(row);
+                }
+                table.setModel(tablemodel);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();}
+            });
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+            mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
+            mainPanel.add(scrollPane);
+            mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
+            mainPanel.add(fetchDataButton);
         }
         else if (content.equals("table")) {
             mainPanel.setLayout(new GridLayout(4, 4));
@@ -404,109 +484,7 @@ public class Controller implements ActionListener{
                 tableButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        JPanel popUpPanel = new JPanel();
-                        JFrame frame = managerScreen.getFrame();
-                        String action = tableButton.getText().split(" ")[0];
-                        String tableType = tableButton.getText().split(" ")[1];
-
-                        // Get the screen size
-                        Dimension frameSize = frame.getSize();
-                        int size = (int) (frameSize.getWidth() - 600 * 1.1f);
-                        popUpPanel.setPreferredSize(new Dimension(size, size));
-                        popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10)); // Add a border
-                        popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
-                        JLabel popUpLabel = new JLabel(tableButton.getText());
-                        popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        popUpPanel.add(popUpLabel);
-                        if (action == "Create") {
-                            if (tableType == "Users") {
-                                // JTextField nameField = new JTextField("Name");
-                                // JTextField phoneNumberField = new JTextField("Phone Number");
-                                // JTextField isManagerField = new JTextField("Is Manager (t or f)");
-                                // JButton createButton = new JButton("Create User");
-                                // createButton.addActionListener(new ActionListener() {
-                                //     @Override
-                                //     public void actionPerformed(ActionEvent e) {
-                                //         if (model.insert_user(nameField.getText(), phoneNumberField.getText(), isManagerField.getText())) {
-                                //             JOptionPane.showMessageDialog(null, "User created");
-                                //         }
-                                //         else {
-                                //             JOptionPane.showMessageDialog(null, "User not created");
-                                //         }
-                                //     }
-                                // });
-                            }
-                            else if (tableType == "Orders") {
-                                // JTextField orderSubtotalField = new JTextField("Order Subtotal");
-                                // JTextField orderTypeField = new JTextField("Order Type");
-                                // JTextField orderItemsField = new JTextField("Order Items (item_id, quantity)");
-                                
-                                // JButton createButton = new JButton("Create Order");
-                                // createButton.addActionListener(new ActionListener() {
-                                //     @Override
-                                //     public void actionPerformed(ActionEvent e) {
-                                //         if (model.insert_order(orderIDField.getText(), orderTotalField.getText(), orderTypeField.getText())) {
-                                //             JOptionPane.showMessageDialog(null, "Order created");
-                                //         }
-                                //         else {
-                                //             JOptionPane.showMessageDialog(null, "Order not created");
-                                //         }
-                                //     }
-                                // });
-                            }
-                            else if (tableType == "Items") {
-                                // JTextField itemNameField = new JTextField("Item Name");
-                                // JTextField itemPriceField = new JTextField("Item Price");
-                                // JTextField itemCategoryField = new JTextField("Item Category");
-                                // JButton createButton = new JButton("Create Item");
-                                // createButton.addActionListener(new ActionListener() {
-                                //     @Override
-                                //     public void actionPerformed(ActionEvent e) {
-                                //         if (model.insert_item(itemNameField.getText(), itemPriceField.getText(), itemCategoryField.getText())) {
-                                //             JOptionPane.showMessageDialog(null, "Item created");
-                                //         }
-                                //         else {
-                                //             JOptionPane.showMessageDialog(null, "Item not created");
-                                //         }
-                                //     }
-                                // });
-                            }
-                            else if (tableType == "Ingredients") {
-                                // JTextField ingredientNameField = new JTextField("Ingredient Name");
-                                // JTextField ingredientPriceField = new JTextField("Ingredient Price");
-                                // JButton createButton = new JButton("Create Ingredient");
-                                // createButton.addActionListener(new ActionListener() {
-                                //     @Override
-                                //     public void actionPerformed(ActionEvent e) {
-                                //         if (model.insert_ingredient(ingredientNameField.getText(), ingredientPriceField.getText())) {
-                                //             JOptionPane.showMessageDialog(null, "Ingredient created");
-                                //         }
-                                //         else {
-                                //             JOptionPane.showMessageDialog(null, "Ingredient not created");
-                                //         }
-                                //     }
-                                // });
-                            }
-                        }
-                        else if (action == "Read") {
-                            
-                        }
-                        else if (action == "Update") {
-
-                        }
-                        else if (action == "Delete") {
-
-                        }
-                        JButton popUpButton = new JButton(action);
-                        popUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        popUpButton.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                // System.out.println("Item added to order: " + item_name);
-                                // TODO
-                            }
-                        });
-                        popUpPanel.add(popUpButton);
+                        System.out.println("Table: " + tableButton.getText());
                     }
                 });
                 mainPanel.add(tableButton);
