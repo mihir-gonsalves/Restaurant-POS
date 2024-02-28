@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
@@ -32,6 +34,7 @@ public class Controller implements ActionListener{
     private boolean isManager;
     private Popup po;
     private PopupFactory pf;
+    private int[][] orderItems;
 
 
     public static void main(String[] args) {
@@ -90,6 +93,7 @@ public class Controller implements ActionListener{
         this.paymentScreen.getFrame().setVisible(false);
         this.isManager = false;
         this.pf = new PopupFactory();
+        this.orderItems = new int[10][2];
     }
 
     public void switchToLoginScreen() {
@@ -169,6 +173,15 @@ public class Controller implements ActionListener{
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     // System.out.println("Item added to order: " + item_name);
+                                    model.getItemID(item_name);
+                                    for (int i = 0; i < orderItems.length; i++) {
+                                        if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
+                                            orderItems[i][0] = model.getItemID(item_name);
+                                            orderItems[i][1] = orderItems[i][1] + 1;
+                                            populateOrderPanel();
+                                            break;
+                                        }
+                                    }
                                     po.hide();
                                 }
                             });
@@ -245,6 +258,25 @@ public class Controller implements ActionListener{
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void populateOrderPanel() {
+        if (cashierScreen.getOrderFieldsPanel() != null) {
+            cashierScreen.getOrderFieldsPanel().removeAll();
+            cashierScreen.getOrderPanel().remove(cashierScreen.getOrderFieldsPanel());
+        }
+        for (int i = 0; i < orderItems.length; i++) {
+            if (orderItems[i][0] != 0) {
+                JTextField orderItemTextField = new JTextField(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
+                orderItemTextField.setEditable(false);
+                orderItemTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                orderItemTextField.setPreferredSize(new Dimension(200 , 60));
+                cashierScreen.getOrderFieldsPanel().add(orderItemTextField);
+            }
+        }
+        cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
+        cashierScreen.getOrderPanel().revalidate();
+        cashierScreen.getOrderPanel().repaint();
     }
 
     public void completeOrder() {

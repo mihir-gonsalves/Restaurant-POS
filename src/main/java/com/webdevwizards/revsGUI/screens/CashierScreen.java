@@ -12,6 +12,8 @@ public class CashierScreen extends JFrame{
     JFrame frame;
     JPanel itemsPanel;
     JPanel navPanel;
+    JPanel orderPanel;
+    JPanel orderFieldsPanel;
     JButton orderCompleteButton;
     
     
@@ -50,23 +52,16 @@ public class CashierScreen extends JFrame{
         middlePanel.add(itemsPanel, BorderLayout.CENTER);
 
         // Right panel for order items
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BorderLayout()); // Changed to BorderLayout for better organization
-        rightPanel.setPreferredSize(new Dimension(200, 600));
+        orderPanel = new JPanel();
+        orderPanel.setLayout(new BorderLayout()); // Changed to BorderLayout for better organization
+        orderPanel.setPreferredSize(new Dimension(200, 600));
 
         JLabel orderItemsLabel = new JLabel("Order Items");
-        rightPanel.add(orderItemsLabel, BorderLayout.NORTH);
+        orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
 
         // Panel for adding text fields
-        JPanel textFieldsPanel = new JPanel();
-        textFieldsPanel.setLayout(new GridLayout(3, 1)); // Use GridLayout to organize text fields
-
-        // Add empty fields for ordered items
-        for (int i = 0; i < 3; i++) {
-            textFieldsPanel.add(new JTextField());
-        }
-
-        rightPanel.add(textFieldsPanel, BorderLayout.CENTER);
+        JPanel orderFieldsPanel = new JPanel();
+        orderFieldsPanel.setLayout(new GridLayout(3, 1)); // Use GridLayout to organize text fields
 
         // Bottom panel for cashier and subtotal
         JPanel bottomPanel = new JPanel();
@@ -80,7 +75,7 @@ public class CashierScreen extends JFrame{
 
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
-        frame.add(rightPanel, BorderLayout.EAST);
+        frame.add(orderPanel, BorderLayout.EAST);
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.pack();
@@ -96,6 +91,18 @@ public class CashierScreen extends JFrame{
 
     public JPanel getNavPanel() {
         return navPanel;
+    }
+
+    public JPanel getOrderPanel() {
+        return orderPanel;
+    }
+    
+    public JPanel getOrderFieldsPanel() {
+        if (orderFieldsPanel == null) {
+            orderFieldsPanel = new JPanel();
+            orderFieldsPanel.setLayout(new GridLayout(3, 1));
+        }
+        return orderFieldsPanel;
     }
 
     public JButton getOrderCompleteButton() {

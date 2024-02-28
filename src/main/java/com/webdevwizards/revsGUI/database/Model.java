@@ -223,6 +223,7 @@ public class Model {
             }
         }
     }
+
     public boolean insert_order(String subtotal, int[][] orderItems, String paymenttype) {
         try{
             PreparedStatement preparedStatementInsert = conn.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -349,6 +350,34 @@ public class Model {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
             return null;
+        }
+    }
+
+    public static int getItemID(String item_name){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select item_id from menu_items where item_name = ?");
+            statement.setString(1, item_name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public static String getItemName(int item_id){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select item_name from menu_items where item_id = ?");
+            statement.setInt(1, item_id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return "-1";
         }
     }
 
