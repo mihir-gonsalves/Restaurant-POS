@@ -64,7 +64,6 @@ public class LoginScreen extends JFrame implements ActionListener {
         frame.setVisible(true);
 
         //closing the connection
-        btnLogin
     }
 
     // if button is pressed

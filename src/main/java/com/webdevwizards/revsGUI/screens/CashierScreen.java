@@ -8,12 +8,11 @@ import com.webdevwizards.revsGUI.database.Model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CashierScreen extends JFrame implements ActionListener{
+public class CashierScreen extends JFrame{
     JFrame frame;
-    Popup po;
-    PopupFactory pf;
     JPanel itemsPanel;
     JPanel navPanel;
+    JButton orderCompleteButton;
     
     
     public CashierScreen() {
@@ -31,8 +30,6 @@ public class CashierScreen extends JFrame implements ActionListener{
         //     navPanel.add(new JButton(resizeIcon("./images/icon_" + i + ".png", 70, 70)));
         // }
 
-        populateNavBar();
-
         // Middle panel for items
         JPanel middlePanel = new JPanel(new BorderLayout()); // Changed to BorderLayout
         middlePanel.setPreferredSize(new Dimension(600, 600));
@@ -48,18 +45,7 @@ public class CashierScreen extends JFrame implements ActionListener{
         JScrollPane itemsScrollPane = new JScrollPane(itemsPanel);
 
         middlePanel.add(itemsScrollPane, BorderLayout.CENTER); // Changed this line to add the scroll pane instead of itemsPanel directly
-
-        // Used in function populateItemPanel
-        pf = new PopupFactory();
-
-        // Populate the items panel with items with category "Burgers"
-        populateItemPanel("Burgers"); // change this to interact with navbar buttons
         
-        
-        // Add empty panels for future modifications
-        for(int i=0; i<7; i++) { // Adjust this number based on how many cells you want to leave empty
-            itemsPanel.add(new JPanel());
-        }
         
         middlePanel.add(itemsPanel, BorderLayout.CENTER);
 
@@ -89,7 +75,8 @@ public class CashierScreen extends JFrame implements ActionListener{
         
         bottomPanel.add(new JLabel("Cashier Name: Ritchey"));
         bottomPanel.add(new JLabel(" Order Subtotal: $0.00"));
-        bottomPanel.add(new JButton(" Order Complete"));
+        orderCompleteButton = new JButton(" Order Complete");
+        bottomPanel.add(orderCompleteButton);
 
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
@@ -100,68 +87,19 @@ public class CashierScreen extends JFrame implements ActionListener{
         frame.setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        String s = e.getActionCommand();
-        if (s.equals("Order Complete")) {
-            // Create a new popup
-            pf = new PopupFactory();
-            po = pf.getPopup(frame, new JLabel("Order Complete"), 50, 50);
-            po.show();
-        }
-    }
-
-    public static ImageIcon resizeIcon(String iconPath, int width, int height) {
-        ImageIcon icon = new ImageIcon(iconPath);
-        Image img = icon.getImage();
-        Image resizedImage = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
-        return new ImageIcon(resizedImage);
-    }
-
-    public void populateNavBar() {
-        Model db = new Model();
-        ResultSet rs = db.executeQuery("SELECT * FROM menu_items ORDER BY category;");
-        String current_category = "";
-        try {
-            while (rs.next()) {
-                String db_category = rs.getString("category");
-                // System.out.println("Category: " + db_category);
-                if (!db_category.equals(current_category)) {
-                    // System.out.println("|" + db_category + "|" + " is not equal to " + "|" + current_category + "|");
-                    current_category = db_category;
-                    
-                    // Get category icon image
-                    StringBuilder category_file_name = new StringBuilder();
-                    for (int i = 0; i < current_category.length(); i++) {
-                        char c = current_category.charAt(i);
-                        if (Character.isLetter(c)) {
-                            category_file_name.append(Character.toLowerCase(c));
-                        }
-                        else if (c == ' ') {
-                            category_file_name.append('_');
-                        }
-                        else if (c == '&') {
-                            category_file_name.append("and");
-                        }
-                    }
-                    String category_image_path = "./images/" + category_file_name + ".png";
-                    JButton categoryButton = new JButton(resizeIcon(category_image_path, 60, 60));
-                    // System.out.println("Category image: " + category_image_path);
-                    final String current_category_final = current_category;
-                    categoryButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            populateItemPanel(current_category_final);
-                        }
-                    });
-                    navPanel.add(categoryButton);
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    public JFrame getFrame() {
+        return frame;
     }
 
     public JPanel getItemsPanel() {
         return itemsPanel;
+    }
+
+    public JPanel getNavPanel() {
+        return navPanel;
+    }
+
+    public JButton getOrderCompleteButton() {
+        return orderCompleteButton;
     }
 }

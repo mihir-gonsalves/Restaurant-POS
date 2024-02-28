@@ -18,13 +18,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.webdevwizards.revsGUI.screens.*;
-
-import main.java.com.webdevwizards.revsGUI.screens.CashierScreen;
-import main.java.com.webdevwizards.revsGUI.screens.LoginScreen;
-import main.java.com.webdevwizards.revsGUI.screens.ManagerScreen;
-import main.java.com.webdevwizards.revsGUI.screens.TestScreen;
 
 import com.webdevwizards.revsGUI.database.Model;
 
@@ -34,15 +29,18 @@ public class Controller implements ActionListener{
     private CashierScreen cashierScreen;
     private ManagerScreen managerScreen;
     private TestScreen testScreen;
+    private PaymentScreen paymentScreen;
     private boolean isManager;
+    private Popup po;
+    private PopupFactory pf;
 
 
     public static void main(String[] args) {
         // setup and display the login screen
-        FlatDarkLaf.setup();
+        FlatLightLaf.setup();
         Controller controller = new Controller();
         controller.initialize();
-        switchToLoginScreen();
+        controller.switchToLoginScreen();
 
         // switch to appropriate screen based on login's phone number
         controller.loginScreen.getLoginButton().addActionListener(new ActionListener() {
@@ -50,12 +48,12 @@ public class Controller implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 if (controller.model.login(controller.loginScreen.getPhoneNumber())) {
                     controller.loginScreen.dispose();
+                    controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
                     if (controller.model.isManager()) {
-                        controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
-                        switchToManagerScreen();
+                        controller.switchToManagerScreen();
                     } else {
                         controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
-                        switchToCashierScreen();
+                        controller.switchToCashierScreen();
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid phone number");
@@ -67,7 +65,9 @@ public class Controller implements ActionListener{
 
         }
         else {
-
+            controller.populateNavBar();
+            controller.populateItemPanel("Burgers");
+            controller.completeOrder();
         }
 
 
@@ -82,34 +82,53 @@ public class Controller implements ActionListener{
     public void initialize() {
         this.model = new Model();
         this.loginScreen = new LoginScreen();
+        this.loginScreen.setVisible(false);
         this.cashierScreen = new CashierScreen();
+        this.cashierScreen.setVisible(false);
         this.managerScreen = new ManagerScreen();
+        this.managerScreen.setVisible(false);
         this.testScreen = new TestScreen();
+        this.testScreen.setVisible(false);
+        this.paymentScreen = new PaymentScreen();
+        this.paymentScreen.setVisible(false);
         this.isManager = false;
+        this.pf = new PopupFactory();
     }
 
-    public static void switchToLoginScreen() {
+    public void switchToLoginScreen() {
         this.loginScreen.setVisible(true);
     }
 
-    public static void switchToCashierScreen() {
+    public void switchToCashierScreen() {
         this.isManager = false;
         this.cashierScreen.setVisible(true);
     }
 
-    public static void switchToManagerScreen() {
+    public void switchToManagerScreen() {
         this.isManager = true;
         this.managerScreen.setVisible(true);
     }
 
-    public static void switchToTestScreen() {
+    public void switchToTestScreen() {
         this.testScreen.setVisible(true);
+    }
+
+    public void switchToPaymentScreen() {
+        this.paymentScreen.setVisible(true);
+    }
+
+    public static ImageIcon resizeIcon(String iconPath, int width, int height) {
+        ImageIcon icon = new ImageIcon(iconPath);
+        Image img = icon.getImage();
+        Image resizedImage = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
     }
 
     public void populateItemPanel(String category) {
         // Get items and sort by category
-        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;");
+        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // EDIT THIS LATER
         JPanel itemsPanel = cashierScreen.getItemsPanel();
+        JFrame frame = cashierScreen.getFrame();
         itemsPanel.removeAll();
         
         try {
@@ -144,7 +163,7 @@ public class Controller implements ActionListener{
                             JPanel popUpPanel = new JPanel();
 
                             // Get the screen size
-                            Dimension frameSize = loginScreen.getFrame().getSize();
+                            Dimension frameSize = frame.getSize();
                             int size = (int) (frameSize.getWidth() - 600 * 1.1f);
                             popUpPanel.setPreferredSize(new Dimension(size, size));
                             popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10)); // Add a border
@@ -189,6 +208,63 @@ public class Controller implements ActionListener{
         }
         itemsPanel.revalidate();
         itemsPanel.repaint();
+    }
+
+    public void populateNavBar() {
+        ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // EDIT THIS LATER
+        JPanel navPanel = cashierScreen.getNavPanel();
+        String current_category = "";
+        try {
+            while (rs.next()) {
+                String db_category = rs.getString("category");
+                // System.out.println("Category: " + db_category);
+                if (!db_category.equals(current_category)) {
+                    // System.out.println("|" + db_category + "|" + " is not equal to " + "|" + current_category + "|");
+                    current_category = db_category;
+                    
+                    // Get category icon image
+                    StringBuilder category_file_name = new StringBuilder();
+                    for (int i = 0; i < current_category.length(); i++) {
+                        char c = current_category.charAt(i);
+                        if (Character.isLetter(c)) {
+                            category_file_name.append(Character.toLowerCase(c));
+                        }
+                        else if (c == ' ') {
+                            category_file_name.append('_');
+                        }
+                        else if (c == '&') {
+                            category_file_name.append("and");
+                        }
+                    }
+                    String category_image_path = "./images/" + category_file_name + ".png";
+                    JButton categoryButton = new JButton(resizeIcon(category_image_path, 60, 60));
+                    // System.out.println("Category image: " + category_image_path);
+                    final String current_category_final = current_category;
+                    categoryButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            populateItemPanel(current_category_final);
+                        }
+                    });
+                    navPanel.add(categoryButton);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void completeOrder() {
+        JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
+        orderCompleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // System.out.println("Order complete");
+                JOptionPane.showMessageDialog(null, "Order complete");
+                cashierScreen.setVisible(false);
+                switchToPaymentScreen();
+            }
+        });
     }
 
     @Override

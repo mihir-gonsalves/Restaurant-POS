@@ -12,7 +12,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import com.webdevwizards.revsGUI.database.DatabaseManager;
+import com.webdevwizards.revsGUI.database.Model;
 
 public class TestScreen extends JFrame {
     private JTable table;
@@ -77,7 +77,7 @@ public class TestScreen extends JFrame {
     }
     private void TableQuery(String query) {
         try {
-            DatabaseManager db = new DatabaseManager();
+            Model db = new Model();
             ResultSet rs = db.executeQuery(query);
             if (rs != null) {
                 ResultSetMetaData data = rs.getMetaData();

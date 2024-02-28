@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 public class Model {
     private static Connection conn = null;
     private static boolean initialized = false;
+    public String phoneNumber;
 
     public Model() {
         this.initialize();
@@ -78,6 +79,50 @@ public class Model {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to close database connection.");
         }
+    }
+
+    public boolean login(String phoneNumber) {
+        try {
+            String sql = "SELECT * FROM users WHERE phone_number = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, phoneNumber);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isManager() {
+        try {
+            String sql = "SELECT * FROM users WHERE phone_number = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, phoneNumber);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                if (rs.getString("ismanager").equals("t")) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        return;
     }
 
 }

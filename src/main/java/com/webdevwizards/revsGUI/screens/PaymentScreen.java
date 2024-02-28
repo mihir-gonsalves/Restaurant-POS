@@ -1,4 +1,4 @@
-package main.java.com.webdevwizards.revsGUI.screens;
+package com.webdevwizards.revsGUI.screens;
 
 import javax.swing.*;
 
