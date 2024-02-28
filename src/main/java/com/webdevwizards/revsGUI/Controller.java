@@ -27,12 +27,6 @@ import java.sql.ResultSet;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.webdevwizards.revsGUI.screens.*;
-
-import main.java.com.webdevwizards.revsGUI.screens.CashierScreen;
-import main.java.com.webdevwizards.revsGUI.screens.LoginScreen;
-import main.java.com.webdevwizards.revsGUI.screens.ManagerScreen;
-import main.java.com.webdevwizards.revsGUI.screens.PaymentScreen;
-
 import com.webdevwizards.revsGUI.database.Model;
 
 public class Controller implements ActionListener{
@@ -379,6 +373,27 @@ public class Controller implements ActionListener{
         dateString = dateString.replaceAll("/", "-");
         return dateString;
     }
+    private void updateTable(JTable table) {
+        // Fetch data from SQL and update the table
+        try {
+            ResultSet resultSet = model.getAllIngredients();
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.setColumnIdentifiers(new String[]{"ingredient_id", "ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
+    
+            while (resultSet.next()) {
+                Object[] rowData = new Object[4];
+                rowData[0] = resultSet.getObject(1); 
+                rowData[1] = resultSet.getObject(2);
+                rowData[2] = resultSet.getObject(3);
+                rowData[3] = resultSet.getObject(4);
+                tableModel.addRow(rowData);//add it to table
+            }
+    
+            table.setModel(tableModel); // Set the updated table model
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -392,10 +407,49 @@ public class Controller implements ActionListener{
             mainPanel.add(chartTextArea);
         }
         else if (content.equals("order")) {
-                        JTextArea chartTextArea = new JTextArea("Chart");
-            chartTextArea.setEditable(false);
-            chartTextArea.setPreferredSize(new Dimension(450, 500));
-            mainPanel.add(chartTextArea);
+            mainPanel.setLayout(new BorderLayout());
+    
+            // Panel for ingredient ID and count
+            JPanel inputPanel = new JPanel();
+            inputPanel.setLayout(new FlowLayout());
+    
+            JLabel ingredientIdLabel = new JLabel("Ingredient ID:");
+            JTextField ingredientIdField = new JTextField(10);
+    
+            JLabel countLabel = new JLabel("Count:");
+            JTextField countField = new JTextField(10);
+    
+            JButton commitButton = new JButton("Commit");
+    
+            inputPanel.add(ingredientIdLabel);
+            inputPanel.add(ingredientIdField);
+            inputPanel.add(countLabel);
+            inputPanel.add(countField);
+            inputPanel.add(commitButton);
+    
+            mainPanel.add(inputPanel, BorderLayout.NORTH);
+            
+            // Table to display results
+            JTable table = new JTable();
+            JScrollPane scrollPane = new JScrollPane(table);
+            mainPanel.add(scrollPane, BorderLayout.CENTER);
+            updateTable(table);
+            // Add action listener to commit button
+            commitButton.addActionListener(e -> {
+                // Retrieve ingredient ID and count from text fields
+                String ingredientId = ingredientIdField.getText();
+                String count = countField.getText();
+                
+                if(model.addIngredient(ingredientId, count) == true){
+                    JOptionPane.showMessageDialog(null, "Stock updated");
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Stock not updated");
+                }
+                // Perform commit action here
+                // You may want to update the table based on the committed data
+                updateTable(table);
+            });
         }
         else if (content.equals("track")) {
                         // Add start date text area

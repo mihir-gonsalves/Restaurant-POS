@@ -298,6 +298,44 @@
                 return null;
             }
         }
+
+
+
+        public static ResultSet getAllIngredients(){
+            try{
+                PreparedStatement statement = conn.prepareStatement("select * from ingredients order by ingredient_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+        public static boolean addIngredient(String ingredient_id, String ingredient_quantity){
+            try{
+                PreparedStatement statement = conn.prepareStatement("SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?");
+                statement.setInt(1, Integer.parseInt(ingredient_id));
+                ResultSet rs = statement.executeQuery();
+                if(rs.next()){
+                    int current_stock = rs.getInt(1);
+                    int new_stock = current_stock + Integer.parseInt(ingredient_quantity);
+                    PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?");
+                    statement2.setInt(1, new_stock);
+                    statement2.setInt(2, Integer.parseInt(ingredient_id));
+                    statement2.execute();
+                    statement2.close();
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return false;
+            }
+        }
     
         public static ResultSet viewItem(int item_id){
             try{
