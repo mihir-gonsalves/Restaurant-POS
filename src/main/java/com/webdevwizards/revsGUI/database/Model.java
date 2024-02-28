@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 
 
 public class Model {
-    private static Connection conn = null;
+    public static Connection conn = null;
     private static boolean initialized = false;
     public String phoneNumber;
     private static final String INSERT_ORDER_QUERY = "INSERT INTO c_orders (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
@@ -63,6 +63,10 @@ public class Model {
             JOptionPane.showMessageDialog(null, "Failed to open database connection.");
             System.exit(1);
         }
+    }
+
+    public Connection getConnection() {
+        return conn;
     }
 
     // Execute and return query results
@@ -173,8 +177,8 @@ public class Model {
     }
 
     public boolean insert_order(String subtotal, int[][] orderItems, String paymenttype) {
-        try (Connection connection = Model.getConnection());
-        PreparedStatement preparedStatementInsert = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = this.getConnection()) {
+            PreparedStatement preparedStatementInsert = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
             // Set order details
             setOrderDetails(preparedStatementInsert, subtotal, paymenttype);
             preparedStatementInsert.executeUpdate();
