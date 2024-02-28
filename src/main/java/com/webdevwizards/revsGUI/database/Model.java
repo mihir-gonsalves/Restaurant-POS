@@ -83,7 +83,7 @@ public class Model {
 
     public boolean login(String phoneNumber) {
         try {
-            String sql = "SELECT * FROM users WHERE phone_number = ?";
+            String sql = "SELECT * FROM users WHERE phonenumber = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, phoneNumber);
             ResultSet rs = pstmt.executeQuery();

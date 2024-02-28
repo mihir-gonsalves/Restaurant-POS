@@ -61,8 +61,6 @@ public class LoginScreen extends JFrame implements ActionListener {
         // set the size of frame
         frame.setSize(400, 400);
 
-        frame.setVisible(true);
-
         //closing the connection
     }
 

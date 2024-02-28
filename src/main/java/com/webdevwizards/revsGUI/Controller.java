@@ -28,7 +28,6 @@ public class Controller implements ActionListener{
     private LoginScreen loginScreen;
     private CashierScreen cashierScreen;
     private ManagerScreen managerScreen;
-    private TestScreen testScreen;
     private PaymentScreen paymentScreen;
     private boolean isManager;
     private Popup po;
@@ -47,7 +46,7 @@ public class Controller implements ActionListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (controller.model.login(controller.loginScreen.getPhoneNumber())) {
-                    controller.loginScreen.dispose();
+                    controller.loginScreen.getFrame().dispose();
                     controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
                     if (controller.model.isManager()) {
                         controller.switchToManagerScreen();
@@ -82,39 +81,33 @@ public class Controller implements ActionListener{
     public void initialize() {
         this.model = new Model();
         this.loginScreen = new LoginScreen();
-        this.loginScreen.setVisible(false);
+        this.loginScreen.getFrame().setVisible(false);
         this.cashierScreen = new CashierScreen();
-        this.cashierScreen.setVisible(false);
+        this.cashierScreen.getFrame().setVisible(false);
         this.managerScreen = new ManagerScreen();
-        this.managerScreen.setVisible(false);
-        this.testScreen = new TestScreen();
-        this.testScreen.setVisible(false);
+        this.managerScreen.getFrame().setVisible(false);
         this.paymentScreen = new PaymentScreen();
-        this.paymentScreen.setVisible(false);
+        this.paymentScreen.getFrame().setVisible(false);
         this.isManager = false;
         this.pf = new PopupFactory();
     }
 
     public void switchToLoginScreen() {
-        this.loginScreen.setVisible(true);
+        this.loginScreen.getFrame().setVisible(true);
     }
 
     public void switchToCashierScreen() {
         this.isManager = false;
-        this.cashierScreen.setVisible(true);
+        this.cashierScreen.getFrame().setVisible(true);
     }
 
     public void switchToManagerScreen() {
         this.isManager = true;
-        this.managerScreen.setVisible(true);
-    }
-
-    public void switchToTestScreen() {
-        this.testScreen.setVisible(true);
+        this.managerScreen.getFrame().setVisible(true);
     }
 
     public void switchToPaymentScreen() {
-        this.paymentScreen.setVisible(true);
+        this.paymentScreen.getFrame().setVisible(true);
     }
 
     public static ImageIcon resizeIcon(String iconPath, int width, int height) {
