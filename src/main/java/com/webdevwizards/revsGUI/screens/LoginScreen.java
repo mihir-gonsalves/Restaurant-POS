@@ -27,13 +27,17 @@ public class LoginScreen extends JFrame implements ActionListener {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width, screenSize.height);
 
+        Font  font1  = new Font("Arial", Font.BOLD,  24);
+        Font  font2  = new Font("Arial", Font.PLAIN,  16);
 
         // the panel will lay compenents out from top to bottom
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // label for screen (replaces title that was removed by setUndecorated)
         lblScreen = new JLabel("Rev's American Grill: Login Screen");
+        lblScreen.setFont(font1);
         lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // the panel will lay compenents out from left to right
@@ -41,22 +45,29 @@ public class LoginScreen extends JFrame implements ActionListener {
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
 
         lblNumber = new JLabel("Phone Number:");
-        lblNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblNumber.setFont(font2);
+        lblNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         phoneNumber = new JTextField(10);
-        phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+        phoneNumber.setFont(font2);
+        phoneNumber.setMaximumSize(new Dimension(150, 30));
+        phoneNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         btnLogin = new JButton("Login");
-        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        btnLogin.setFont(font2);
+        btnLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
+        btnLogin.addActionListener(this);
 
         // add components to inputPanel
         inputPanel.add(lblNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         inputPanel.add(phoneNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         inputPanel.add(btnLogin);
 
         // add components to mainPanel
         mainPanel.add(lblScreen);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(inputPanel);
 
         // add panel to frame
