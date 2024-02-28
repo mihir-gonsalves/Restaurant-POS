@@ -17,6 +17,7 @@ public class LoginScreen extends JFrame implements ActionListener {
     private JPanel inputPanel; // panel for lblNumber and phoneNumber textfield
 
     private JButton btnLogin; 
+    private JToggleButton btnFullscreen;
 
     public LoginScreen() {
         frame = new JFrame("Rev's American Grill: Login");
@@ -49,14 +50,12 @@ public class LoginScreen extends JFrame implements ActionListener {
 
         lblNumber = new JLabel("Phone Number:");
         lblNumber.setFont(font2);
-        lblNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
+        lblNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         phoneNumber = new JTextField(10);
         phoneNumber.setFont(font2);
         phoneNumber.setMaximumSize(new Dimension(150, 30));
-        phoneNumber.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-
+        phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
         // add delay to format phone number so that it isn't so slow and jumpy
         // Timer timer = new Timer(500, new ActionListener() {
         //     @Override
@@ -86,20 +85,31 @@ public class LoginScreen extends JFrame implements ActionListener {
 
         btnLogin = new JButton("Login");
         btnLogin.setFont(font2);
-        btnLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
-        btnLogin.addActionListener(this);
+        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add components to inputPanel
-        inputPanel.add(lblNumber);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(phoneNumber);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(btnLogin);
+        // inputPanel.add(lblNumber);
+        // inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        // inputPanel.add(phoneNumber);
+        // // inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        
+        // inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // add components to mainPanel
+        btnFullscreen = new JToggleButton("Exit Fullscreen");
+        btnFullscreen.setFont(font2);
+        btnFullscreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // add components to mainPanel with glue in between to center the components
         mainPanel.add(lblScreen);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        mainPanel.add(inputPanel);
+        mainPanel.add(Box.createVerticalGlue());
+        // mainPanel.add(inputPanel);
+        mainPanel.add(lblNumber);
+        mainPanel.add(phoneNumber);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainPanel.add(btnLogin);
+        mainPanel.add(Box.createVerticalGlue());
+        mainPanel.add(btnFullscreen);
+        mainPanel.add(Box.createVerticalGlue());
 
         // add panel to frame
         frame.add(mainPanel);
@@ -126,6 +136,10 @@ public class LoginScreen extends JFrame implements ActionListener {
 
     public String getPhoneNumber() {
         return phoneNumber.getText();
+    }
+
+    public JToggleButton getFullscreenButton() {
+        return btnFullscreen;
     }
 
     // from XXXXXXXXXX to (XXX) XXX-XXXX

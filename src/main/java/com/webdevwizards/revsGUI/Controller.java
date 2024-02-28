@@ -6,6 +6,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,8 +19,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
-
-
 
 import java.awt.*;
 import java.awt.event.*;
@@ -40,6 +39,8 @@ public class Controller implements ActionListener{
     private PopupFactory pf;
     private int[][] orderItems;
     private String phoneNumber;
+    private int preferredWidth;
+    private int preferredHeight;
 
 
     public static void main(String[] args) {
@@ -48,6 +49,7 @@ public class Controller implements ActionListener{
         Controller controller = new Controller();
         controller.initialize();
         controller.switchToLoginScreen();
+        controller.getPreferredSize();
         controller.switchFromLoginScreen();
         
     }
@@ -59,18 +61,23 @@ public class Controller implements ActionListener{
 
     // initializes the model and all screens
     public void initialize() {
-        this.model = new Model();
-        this.loginScreen = new LoginScreen();
-        this.loginScreen.getFrame().setVisible(false);
-        this.cashierScreen = new CashierScreen();
-        this.cashierScreen.getFrame().setVisible(false);
-        this.managerScreen = new ManagerScreen();
-        this.managerScreen.getFrame().setVisible(false);
-        this.paymentScreen = new PaymentScreen();
-        this.paymentScreen.getFrame().setVisible(false);
-        this.isManager = false;
-        this.pf = new PopupFactory();
-        this.orderItems = new int[10][2];
+        model = new Model();
+        loginScreen = new LoginScreen();
+        loginScreen.getFrame().setVisible(false);
+        cashierScreen = new CashierScreen();
+        cashierScreen.getFrame().setVisible(false);
+        managerScreen = new ManagerScreen();
+        managerScreen.getFrame().setVisible(false);
+        paymentScreen = new PaymentScreen();
+        paymentScreen.getFrame().setVisible(false);
+        isManager = false;
+        pf = new PopupFactory();
+        orderItems = new int[10][2];
+
+        // set preferred width and height to maximum screen size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        preferredWidth = screenSize.width;
+        preferredHeight = screenSize.height;
     }
 
 
@@ -79,7 +86,43 @@ public class Controller implements ActionListener{
      */
     // sets the login screen to visible
     public void switchToLoginScreen() {
-        this.loginScreen.getFrame().setVisible(true);
+        loginScreen.getFrame().setVisible(true);
+    }
+    // get preferred size of the frame from fullscreen button then set preferred values and the size of the frame
+    public void getPreferredSize() {
+        JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
+        fullscreenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fullscreenButton.isSelected()) {
+                    // set preferred width and height to half of the screen size
+                    preferredWidth = (int) (preferredWidth * 0.5);
+                    preferredHeight = (int) (preferredHeight * 0.5);
+                    fullscreenButton.setText("Fullscreen");
+                } else {
+                    // set preferred width and height to full screen size
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    preferredWidth = screenSize.width;
+                    preferredHeight = screenSize.height;
+                    fullscreenButton.setText("Exit Fullscreen");
+                }
+                // set the size of the frames to the preferred width and height
+                loginScreen.getFrame().setSize(preferredWidth, preferredHeight);
+                cashierScreen.getFrame().setSize(preferredWidth, preferredHeight);
+                managerScreen.getFrame().setSize(preferredWidth, preferredHeight);
+                paymentScreen.getFrame().setSize(preferredWidth, preferredHeight);
+
+                // revalidate and repaint the frames for redraw
+                loginScreen.getFrame().revalidate();
+                loginScreen.getFrame().repaint();
+                cashierScreen.getFrame().revalidate();
+                cashierScreen.getFrame().repaint();
+                managerScreen.getFrame().revalidate();
+                managerScreen.getFrame().repaint();
+                paymentScreen.getFrame().revalidate();
+                paymentScreen.getFrame().repaint();
+            }
+        });
     }
     // switch to appropriate screen based on login's phone number
     public void switchFromLoginScreen() {
@@ -89,18 +132,17 @@ public class Controller implements ActionListener{
 
                 // if the phone number is valid, switch to the appropriate screen
                 if (model.login(loginScreen.getPhoneNumber())) {
-
-                    // dispose of the login screen
-                    loginScreen.getFrame().dispose();
                     phoneNumber = loginScreen.getPhoneNumber();
 
-                    // if the user is a manager, switch to the manager screen and populate with defaults
+                    // if the user is a manager, switch to the manager screen and populate with defaults, get rid of the login screen 
                     if (model.isManager(phoneNumber)) {
                         switchToManagerScreen();
+                        loginScreen.getFrame().dispose();
                         populateManagerNavBar();
                         populateManagerMainPanel("chart");
-                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults
+                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults, get rid of the login screen, and completeOrder 
                         switchToCashierScreen();
+                        loginScreen.getFrame().dispose();
                         populateCashierNavBar();
                         populateCashierItemPanel("Burgers");
                         completeCashierOrder();
