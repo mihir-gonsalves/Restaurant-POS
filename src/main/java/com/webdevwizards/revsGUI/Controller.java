@@ -440,7 +440,7 @@ public class Controller implements ActionListener{
                 String ingredientId = ingredientIdField.getText();
                 String count = countField.getText();
                 
-                if(model.addIngredient(ingredientId, count) == true){
+                if(model.addIngredient(ingredientId, count, phoneNumber) == true){
                     JOptionPane.showMessageDialog(null, "Stock updated");
                 }
                 else{
