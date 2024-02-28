@@ -64,7 +64,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         frame.add(panel);
 
         // set the size of frame
-        frame.setSize(250, 250);
+        frame.setSize(450, 450);
     }
 
     // if button is pressed
