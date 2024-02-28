@@ -87,7 +87,7 @@ public class Model {
 
     public boolean login(String phoneNumber) {
         try {
-            String sql = "SELECT * FROM users WHERE phone_number = ?";
+            String sql = "SELECT * FROM users WHERE phonenumber = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, phoneNumber);
             ResultSet rs = pstmt.executeQuery();
@@ -224,10 +224,10 @@ public class Model {
         }
     }
     public boolean insert_order(String subtotal, int[][] orderItems, String paymenttype) {
-        try (Connection connection = conn;
-        PreparedStatement preparedStatementInsert = connection.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+        try{
+            PreparedStatement preparedStatementInsert = conn.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
             // Set order details
-            if(selectIngredient(orderItems, connection) == false){
+            if(selectIngredient(orderItems, conn) == false){
                 return false;
             }
             setOrderDetails(preparedStatementInsert, subtotal, paymenttype);
@@ -235,10 +235,12 @@ public class Model {
             ResultSet rs = preparedStatementInsert.getGeneratedKeys();
             if(rs.next()){
                 int order_id = rs.getInt(1);
-                insert_order_item(order_id, orderItems, connection);
+                insert_order_item(order_id, orderItems, conn);
             }
             return true;
-        } catch (SQLException e) {
+            
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
