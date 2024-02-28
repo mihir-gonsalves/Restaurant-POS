@@ -202,4 +202,113 @@ public class Model {
         }
     }
 
+    public static boolean updateItemPrice(int item_id, double price){ //When manager needs to update the price of a menu_item
+        try{
+            PreparedStatement statement = conn.prepareStatement("update menu_items set item_price = ? where item_id = ?");
+            statement.setDouble(1, price);
+            statement.setInt(2, item_id);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateItemCategory(int item_id, String category){ //When manager needs to update the price of a menu_item
+        try{
+            PreparedStatement statement = conn.prepareStatement("update menu_items set category  = ? where item_id = ?");
+            statement.setString(1, category);
+            statement.setInt(2, item_id);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateItemName(int item_id, String item_name){ //When manager needs to update the price of a menu_item
+        try{
+            PreparedStatement statement = conn.prepareStatement("update menu_items set item_name = ? where item_id = ?");
+            statement.setString(1, item_name);
+            statement.setInt(2, item_id);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateIngredientName(int ingredient_id, String ingredient_name){ //When manager needs to update the price of a menu_item
+        try{
+            PreparedStatement statement = conn.prepareStatement("update ingredients set ingredient_name = ? where ingredient_id = ?");
+            statement.setString(1, ingredient_name);
+            statement.setInt(2, ingredient_id);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateIngredientPrice(int ingredient_id, double price){ //When manager needs to update the price of a menu_item
+        try{
+            PreparedStatement statement = conn.prepareStatement("update ingredients set ingredient_unit_price = ? where ingredient_id = ?");
+            statement.setDouble(1, price);
+            statement.setInt(2, ingredient_id);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+    public static ResultSet viewIngredient(int ingredient_id){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select * from ingredients where ingredient_id = ?");
+            statement.setInt(1, ingredient_id);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static ResultSet viewItem(int item_id){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select * from menu_items where item_id = ?");
+            statement.setInt(1, item_id);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+
 }
