@@ -394,6 +394,30 @@ public class Controller implements ActionListener{
             ex.printStackTrace();
         }
     }
+    private void updateTableMenu(JTable table) {
+        // Fetch data from SQL and update the table
+        try {
+            ResultSet resultSet = model.getAllMenus();
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.setColumnIdentifiers(new String[]{"item_id", "item_name", "item_price", "item_category"}); // Set column names
+    
+            while (resultSet.next()) {
+                Object[] rowData = new Object[4];
+                rowData[0] = resultSet.getObject(1); 
+                rowData[1] = resultSet.getObject(2);
+                rowData[2] = resultSet.getObject(3);
+                rowData[3] = resultSet.getObject(4);
+                tableModel.addRow(rowData);//add it to table
+            }
+    
+            table.setModel(tableModel); // Set the updated table model
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    
     
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -506,44 +530,94 @@ public class Controller implements ActionListener{
             mainPanel.add(fetchDataButton);
         }
         else if (content.equals("table")) {
-            mainPanel.setLayout(new GridLayout(4, 4));
-            StringBuilder tableName = new StringBuilder();
-            for (int i = 0; i < 16; i++) {
-                int remainder = i % 4;
-                if (remainder == 0) {
-                    tableName.append("Create ");
-                }
-                else if (remainder == 1) {
-                    tableName.append("Read ");
-                }
-                else if (remainder == 2) {
-                    tableName.append("Update ");
-                }
-                else if (remainder == 3) {
-                    tableName.append("Delete ");
-                }
-                if (i < 4) {
-                    tableName.append("Users");
-                }
-                else if (i < 8) {
-                    tableName.append("Orders");
-                }
-                else if (i < 12) {
-                    tableName.append("Items");
-                }
-                else if (i < 16) {
-                    tableName.append("Ingredients");
-                }
-                JButton tableButton = new JButton(tableName.toString());
-                tableButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("Table: " + tableButton.getText());
+            mainPanel.setLayout(new BorderLayout());
+    
+            // Panel for ingredient ID and count
+            JPanel inputPanel = new JPanel();
+            inputPanel.setLayout(new FlowLayout());
+
+            JLabel CorULabelk = new JLabel("Create or Update:");
+            JTextField CorULabelField = new JTextField(10);
+
+            JLabel itemIdLabel = new JLabel("Item ID:(only for update)");
+            JTextField itemIdField = new JTextField(10);
+            
+            JLabel itemNameLabel = new JLabel("Item Name:");
+            JTextField itemNameField = new JTextField(10);
+
+            JLabel priceLabel = new JLabel("Price:");
+            JTextField priceField = new JTextField(10);
+
+            JLabel categoryLabel = new JLabel("Category:");
+            JTextField categoryField = new JTextField(10);
+    
+            JButton commitButton = new JButton("Commit");
+    
+            inputPanel.add(CorULabelk);
+            inputPanel.add(CorULabelField);
+            inputPanel.add(itemIdLabel);
+            inputPanel.add(itemIdField);
+
+            inputPanel.add(itemNameLabel);
+            inputPanel.add(itemNameField);
+
+            inputPanel.add(priceLabel);
+            inputPanel.add(priceField);
+
+            inputPanel.add(categoryLabel);
+            inputPanel.add(categoryField);
+
+            inputPanel.add(commitButton);
+    
+            mainPanel.add(inputPanel, BorderLayout.NORTH);
+            
+            // Table to display results
+            JTable table = new JTable();
+            JScrollPane scrollPane = new JScrollPane(table);
+            mainPanel.add(scrollPane, BorderLayout.CENTER);
+            updateTableMenu(table);
+            // Add action listener to commit button
+            commitButton.addActionListener(e -> {
+                // Retrieve ingredient ID and count from text fields
+                String CorULabel = CorULabelField.getText();
+                int itemId = Integer.parseInt(itemIdField.getText());
+                String itemName = itemNameField.getText();
+                String price = priceField.getText();
+                String category = categoryField.getText();
+                if (CorULabel.equals("Create")){
+                    if(model.createItem(itemId, itemName, price, category) == true){
+                        JOptionPane.showMessageDialog(null, "Stock updated");
                     }
-                });
-                mainPanel.add(tableButton);
-                tableName.setLength(0);
-            }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Stock not updated");
+                    }
+                    updateTableMenu(table);
+                }
+                else{
+                    try{
+                        if(itemName != null){
+                            model.updateItem(itemId, "item_name", itemName);
+                        }
+                        if(price != null){
+                            model.updateItem(itemId, "item_price", price);
+                        }
+                        if(category != null){
+                            model.updateItem(itemId, "category", category);
+                        }
+
+                    
+                        JOptionPane.showMessageDialog(null, "Stock updated");
+                    
+                        // Perform commit action here
+                        // You may want to update the table based on the committed data
+                        updateTableMenu(table);
+                 }
+                    catch (Exception ex){
+                        JOptionPane.showMessageDialog(null, "Stock not updated");
+                    }
+                }
+            });
+            
         }
         mainPanel.revalidate();
         mainPanel.repaint();

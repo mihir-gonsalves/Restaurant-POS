@@ -12,9 +12,9 @@
     import java.util.Map;
     import java.util.Properties;
     import javax.swing.JOptionPane;
-import javax.naming.spi.DirStateFactory.Result;
-import javax.swing.JFrame;
-    
+    import javax.naming.spi.DirStateFactory.Result;
+    import javax.swing.JFrame;
+        
     
     
     
@@ -254,7 +254,12 @@ import javax.swing.JFrame;
             try{
                 PreparedStatement statement = conn.prepareStatement("update menu_items set ? = ? where item_id = ?");
                 statement.setString(1, category);
-                statement.setString(2, check);
+                System.out.println(check);
+                if (category.equals("item_price")) {
+                    statement.setDouble(2, Double.parseDouble(check));
+                } else {
+                    statement.setString(2, check);
+                }
                 statement.setInt(3,item_id);
                 statement.execute();
                 statement.close();
@@ -266,7 +271,25 @@ import javax.swing.JFrame;
                 return false;
             }
         }
+
+        public static boolean createItem(int item_id, String item_name, String item_price, String item_category){ //When manager needs to update the price of a menu_item
+            try{
+                PreparedStatement statement = conn.prepareStatement("INSERT INTO menu_items (item_id, item_name, item_price, category) VALUES (?, ?, ?, ?)");
+                statement.setInt(1, item_id);
+                statement.setString(2, item_name);
+                statement.setDouble(3, Double.parseDouble(item_price));
+                statement.setString(4, item_category);
+
+                statement.execute();
+                statement.close();
+                return true;
     
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return false;
+            }
+        }
         public static boolean updateIngredient(int ingredient_id, String category, String value){ //When manager needs to update the price of a menu_item
             try{
                 PreparedStatement statement = conn.prepareStatement("update ingredients set ? = ? where ingredient_id = ?");
@@ -311,6 +334,18 @@ import javax.swing.JFrame;
                 return null;
             }
         }
+        public static ResultSet getAllMenus(){
+            try{
+                PreparedStatement statement = conn.prepareStatement("select * from menu_items order by item_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+
         public static boolean addIngredient(String ingredient_id, String ingredient_quantity, String phoneNumber){
             try{
                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM ingredients WHERE ingredient_id = ?");
@@ -379,7 +414,8 @@ import javax.swing.JFrame;
                 return -1;
             }
         }
-    
+        
+        
         public static String getItemName(int item_id){
             try{
                 PreparedStatement statement = conn.prepareStatement("select item_name from menu_items where item_id = ?");
