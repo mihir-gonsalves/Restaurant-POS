@@ -142,6 +142,9 @@ public class Model {
 
             // Insert order items
             for (int i = 0; i < orderItems.length; i++) {
+                if (orderItems[i][0] == 0) {
+                    continue;
+                }
                 try (PreparedStatement preparedStatementInsertItem = connection.prepareStatement(INSERT_ORDER_ITEM_QUERY)) {
                     preparedStatementInsertItem.setInt(1, order_id);
                     preparedStatementInsertItem.setInt(2, orderItems[i][0]);
@@ -177,6 +180,9 @@ public class Model {
     private boolean selectIngredient(int[][] orderItems , Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT)) {
             for (int i = 0; i < orderItems.length; i++) {
+                if (orderItems[i][0] == 0) {
+                    continue;
+                }
                 int item_id = orderItems[i][0];
                 int count = orderItems[i][1];
                 preparedStatement.setInt(1, item_id);
@@ -242,27 +248,13 @@ public class Model {
             return false;
         }
     }
-    public static boolean updateItemPrice(int item_id, double price){ //When manager needs to update the price of a menu_item
-        try{
-            PreparedStatement statement = conn.prepareStatement("update menu_items set item_price = ? where item_id = ?");
-            statement.setDouble(1, price);
-            statement.setInt(2, item_id);
-            statement.execute();
-            statement.close();
-            return true;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean updateItemCategory(int item_id, String category){ //When manager needs to update the price of a menu_item
+    public static boolean updateItem(int item_id, String category, String check){ //When manager needs to update the price of a menu_item
         try{
-            PreparedStatement statement = conn.prepareStatement("update menu_items set category  = ? where item_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update menu_items set ? = ? where item_id = ?");
             statement.setString(1, category);
-            statement.setInt(2, item_id);
+            statement.setString(2, check);
+            statement.setInt(3,item_id);
             statement.execute();
             statement.close();
             return true;
@@ -274,43 +266,12 @@ public class Model {
         }
     }
 
-    public static boolean updateItemName(int item_id, String item_name){ //When manager needs to update the price of a menu_item
+    public static boolean updateIngredient(int ingredient_id, String category, String value){ //When manager needs to update the price of a menu_item
         try{
-            PreparedStatement statement = conn.prepareStatement("update menu_items set item_name = ? where item_id = ?");
-            statement.setString(1, item_name);
-            statement.setInt(2, item_id);
-            statement.execute();
-            statement.close();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean updateIngredientName(int ingredient_id, String ingredient_name){ //When manager needs to update the price of a menu_item
-        try{
-            PreparedStatement statement = conn.prepareStatement("update ingredients set ingredient_name = ? where ingredient_id = ?");
-            statement.setString(1, ingredient_name);
-            statement.setInt(2, ingredient_id);
-            statement.execute();
-            statement.close();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean updateIngredientPrice(int ingredient_id, double price){ //When manager needs to update the price of a menu_item
-        try{
-            PreparedStatement statement = conn.prepareStatement("update ingredients set ingredient_unit_price = ? where ingredient_id = ?");
-            statement.setDouble(1, price);
-            statement.setInt(2, ingredient_id);
+            PreparedStatement statement = conn.prepareStatement("update ingredients set ? = ? where ingredient_id = ?");
+            statement.setString(1, category);
+            statement.setString(2, value);
+            statement.setInt(3, ingredient_id);
             statement.execute();
             statement.close();
             return true;
@@ -421,7 +382,39 @@ public class Model {
         }
     }
 
+    public static boolean insertUser(String phonenumber, String name, boolean ismanager){
+        try{
+            PreparedStatement statement = conn.prepareStatement("insert into users (phonenumber, name, ismanager) values (?, ?, ?)");
+            statement.setString(1, phonenumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, ismanager);
+            statement.execute();
+            statement.close();
+            return true;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean delete(String table, int id, int value){
+        try{
+            PreparedStatement statement = conn.prepareStatement("delete from ? where ? = ?");
+            statement.setString(1, table);
+            statement.setInt(2, id);
+            statement.setInt(3, value);
+            statement.execute();
+            statement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return false;
+        }
+    }
 
 }
 

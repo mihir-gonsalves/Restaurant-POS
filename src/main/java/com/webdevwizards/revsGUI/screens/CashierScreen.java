@@ -19,7 +19,7 @@ public class CashierScreen extends JFrame{
     
     
     public CashierScreen() {
-        frame = new JFrame("Point of Sale");
+        frame = new JFrame("Rev's GUI: Cashier Screen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -61,7 +61,7 @@ public class CashierScreen extends JFrame{
         orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
 
         // Panel for adding text fields
-        JPanel orderFieldsPanel = new JPanel();
+        orderFieldsPanel = new JPanel();
         orderFieldsPanel.setLayout(new GridLayout(3, 1)); // Use GridLayout to organize text fields
 
         frame.add(navPanel, BorderLayout.WEST);
