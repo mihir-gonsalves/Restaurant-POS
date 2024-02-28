@@ -14,6 +14,7 @@ public class CashierScreen extends JFrame{
     JPanel navPanel;
     JPanel orderPanel;
     JPanel orderFieldsPanel;
+    JPanel bottomPanel;
     JButton orderCompleteButton;
     
     
@@ -67,12 +68,6 @@ public class CashierScreen extends JFrame{
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
 
-        
-        bottomPanel.add(new JLabel("Cashier Name: Ritchey"));
-        bottomPanel.add(new JLabel(" Order Subtotal: $0.00"));
-        orderCompleteButton = new JButton(" Order Complete");
-        bottomPanel.add(orderCompleteButton);
-
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(middlePanel, BorderLayout.CENTER);
         frame.add(orderPanel, BorderLayout.EAST);
@@ -96,6 +91,14 @@ public class CashierScreen extends JFrame{
     public JPanel getOrderPanel() {
         return orderPanel;
     }
+
+    public JPanel getBottomPanel() {
+        if (bottomPanel == null) {
+            bottomPanel = new JPanel();
+            bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
+        }
+        return bottomPanel;
+    }
     
     public JPanel getOrderFieldsPanel() {
         if (orderFieldsPanel == null) {
@@ -106,6 +109,9 @@ public class CashierScreen extends JFrame{
     }
 
     public JButton getOrderCompleteButton() {
+        if (orderCompleteButton == null) {
+            orderCompleteButton = new JButton("Order Complete");
+        }
         return orderCompleteButton;
     }
     

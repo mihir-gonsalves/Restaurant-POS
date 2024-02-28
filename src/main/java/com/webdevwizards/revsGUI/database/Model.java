@@ -102,7 +102,7 @@ public class Model {
         }
     }
 
-    public boolean isManager() {
+    public boolean isManager(String phoneNumber) {
         try {
             String sql = "SELECT * FROM users WHERE phonenumber = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -124,10 +124,6 @@ public class Model {
         }
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return;
-    }
     private static final String INSERT_ORDER_QUERY = "INSERT INTO c_orders (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_ORDER_ITEM_QUERY = "INSERT INTO c_oti (c_order_id, item_id, item_quantity) VALUES (?, ?, ?)";
     private static final String SELECT_INGREDIENT= "SELECT ingredient_id, ingredient_quantity FROM item_to_ingredient_list WHERE item_id = ?;";
@@ -371,6 +367,50 @@ public class Model {
         try{
             PreparedStatement statement = conn.prepareStatement("select item_name from menu_items where item_id = ?");
             statement.setInt(1, item_id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return "-1";
+        }
+    }
+
+    public static String getItemPrice(int item_id){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select item_price from menu_items where item_id = ?");
+            statement.setInt(1, item_id);
+            System.out.println("item_id: " + item_id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getString("item_price");
+            } else {
+                throw new SQLException("No item found with id " + item_id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return "-1";
+        }
+    }
+
+    public static float sumItemPrices(int[][] orderItems) {
+        float sum = 0;
+        for (int i = 0; i < orderItems.length; i++) {
+            int item_id = orderItems[i][0];
+            int quantity = orderItems[i][1];
+            if (item_id != 0) {
+                sum += Float.parseFloat(getItemPrice(item_id)) * quantity;
+            }
+        }
+        return sum;
+    }
+
+    public static String getUserName(String phoneNumber){
+        try{
+            PreparedStatement statement = conn.prepareStatement("select name from users where phonenumber = ?");
+            statement.setString(1, phoneNumber);
             ResultSet rs = statement.executeQuery();
             rs.next();
             return rs.getString(1);
