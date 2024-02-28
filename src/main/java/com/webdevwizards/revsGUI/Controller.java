@@ -404,7 +404,109 @@ public class Controller implements ActionListener{
                 tableButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("Table: " + tableButton.getText());
+                        JPanel popUpPanel = new JPanel();
+                        JFrame frame = managerScreen.getFrame();
+                        String action = tableButton.getText().split(" ")[0];
+                        String tableType = tableButton.getText().split(" ")[1];
+
+                        // Get the screen size
+                        Dimension frameSize = frame.getSize();
+                        int size = (int) (frameSize.getWidth() - 600 * 1.1f);
+                        popUpPanel.setPreferredSize(new Dimension(size, size));
+                        popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10)); // Add a border
+                        popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
+                        JLabel popUpLabel = new JLabel(tableButton.getText());
+                        popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        popUpPanel.add(popUpLabel);
+                        if (action == "Create") {
+                            if (tableType == "Users") {
+                                // JTextField nameField = new JTextField("Name");
+                                // JTextField phoneNumberField = new JTextField("Phone Number");
+                                // JTextField isManagerField = new JTextField("Is Manager (t or f)");
+                                // JButton createButton = new JButton("Create User");
+                                // createButton.addActionListener(new ActionListener() {
+                                //     @Override
+                                //     public void actionPerformed(ActionEvent e) {
+                                //         if (model.insert_user(nameField.getText(), phoneNumberField.getText(), isManagerField.getText())) {
+                                //             JOptionPane.showMessageDialog(null, "User created");
+                                //         }
+                                //         else {
+                                //             JOptionPane.showMessageDialog(null, "User not created");
+                                //         }
+                                //     }
+                                // });
+                            }
+                            else if (tableType == "Orders") {
+                                // JTextField orderSubtotalField = new JTextField("Order Subtotal");
+                                // JTextField orderTypeField = new JTextField("Order Type");
+                                // JTextField orderItemsField = new JTextField("Order Items (item_id, quantity)");
+                                
+                                // JButton createButton = new JButton("Create Order");
+                                // createButton.addActionListener(new ActionListener() {
+                                //     @Override
+                                //     public void actionPerformed(ActionEvent e) {
+                                //         if (model.insert_order(orderIDField.getText(), orderTotalField.getText(), orderTypeField.getText())) {
+                                //             JOptionPane.showMessageDialog(null, "Order created");
+                                //         }
+                                //         else {
+                                //             JOptionPane.showMessageDialog(null, "Order not created");
+                                //         }
+                                //     }
+                                // });
+                            }
+                            else if (tableType == "Items") {
+                                // JTextField itemNameField = new JTextField("Item Name");
+                                // JTextField itemPriceField = new JTextField("Item Price");
+                                // JTextField itemCategoryField = new JTextField("Item Category");
+                                // JButton createButton = new JButton("Create Item");
+                                // createButton.addActionListener(new ActionListener() {
+                                //     @Override
+                                //     public void actionPerformed(ActionEvent e) {
+                                //         if (model.insert_item(itemNameField.getText(), itemPriceField.getText(), itemCategoryField.getText())) {
+                                //             JOptionPane.showMessageDialog(null, "Item created");
+                                //         }
+                                //         else {
+                                //             JOptionPane.showMessageDialog(null, "Item not created");
+                                //         }
+                                //     }
+                                // });
+                            }
+                            else if (tableType == "Ingredients") {
+                                // JTextField ingredientNameField = new JTextField("Ingredient Name");
+                                // JTextField ingredientPriceField = new JTextField("Ingredient Price");
+                                // JButton createButton = new JButton("Create Ingredient");
+                                // createButton.addActionListener(new ActionListener() {
+                                //     @Override
+                                //     public void actionPerformed(ActionEvent e) {
+                                //         if (model.insert_ingredient(ingredientNameField.getText(), ingredientPriceField.getText())) {
+                                //             JOptionPane.showMessageDialog(null, "Ingredient created");
+                                //         }
+                                //         else {
+                                //             JOptionPane.showMessageDialog(null, "Ingredient not created");
+                                //         }
+                                //     }
+                                // });
+                            }
+                        }
+                        else if (action == "Read") {
+                            
+                        }
+                        else if (action == "Update") {
+
+                        }
+                        else if (action == "Delete") {
+
+                        }
+                        JButton popUpButton = new JButton(action);
+                        popUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        popUpButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // System.out.println("Item added to order: " + item_name);
+                                // TODO
+                            }
+                        });
+                        popUpPanel.add(popUpButton);
                     }
                 });
                 mainPanel.add(tableButton);
