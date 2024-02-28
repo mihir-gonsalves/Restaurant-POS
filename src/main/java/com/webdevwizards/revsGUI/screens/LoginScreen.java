@@ -34,7 +34,7 @@ public class LoginScreen extends JFrame implements ActionListener {
     public LoginScreen()
     {
         // create a new frame
-        frame = new JFrame("Login");
+        frame = new JFrame("Rev's GUI: Login Screen");
 
         // create a panel
         panel = new JPanel();

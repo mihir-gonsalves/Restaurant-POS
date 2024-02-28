@@ -55,27 +55,19 @@ public class Controller implements ActionListener{
                     controller.phoneNumber = controller.loginScreen.getPhoneNumber();
                     if (controller.model.isManager(controller.phoneNumber)) {
                         controller.switchToManagerScreen();
+                        controller.populateManagerNavBar();
+                        controller.populateManagerMainPanel("chart");
                     } else {
                         controller.switchToCashierScreen();
+                        controller.populateCashierNavBar();
+                        controller.populateItemPanel("Burgers");
+                        controller.completeCashierOrder();
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid phone number");
                 }
             }
         });
-
-        if (controller.isManager) {
-
-        }
-        else {
-            controller.populateNavBar();
-            controller.populateItemPanel("Burgers");
-            controller.completeOrder();
-        }
-
-
-        
-
     }
 
     public Controller() {
@@ -181,7 +173,7 @@ public class Controller implements ActionListener{
                                         if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
                                             orderItems[i][0] = model.getItemID(item_name);
                                             orderItems[i][1] = orderItems[i][1] + 1;
-                                            populateOrderPanel();
+                                            populateCashierOrderPanel();
                                             break;
                                         }
                                     }
@@ -219,7 +211,7 @@ public class Controller implements ActionListener{
         itemsPanel.repaint();
     }
 
-    public void populateNavBar() {
+    public void populateCashierNavBar() {
         ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // EDIT THIS LATER
         JPanel navPanel = cashierScreen.getNavPanel();
         String current_category = "";
@@ -263,7 +255,7 @@ public class Controller implements ActionListener{
         }
     }
 
-    public void populateOrderPanel() {
+    public void populateCashierOrderPanel() {
         if (cashierScreen.getOrderFieldsPanel() != null) {
             cashierScreen.getOrderFieldsPanel().removeAll();
             cashierScreen.getOrderPanel().remove(cashierScreen.getOrderFieldsPanel());
@@ -280,10 +272,10 @@ public class Controller implements ActionListener{
         cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
         cashierScreen.getOrderPanel().revalidate();
         cashierScreen.getOrderPanel().repaint();
-        populateBottomPanel();
+        populateCashierBottomPanel();
     }
 
-    public void populateBottomPanel() {
+    public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
         if (cashierScreen.getFrame().isAncestorOf(bottomPanel)) {
             cashierScreen.getFrame().remove(bottomPanel);
@@ -304,7 +296,7 @@ public class Controller implements ActionListener{
         cashierScreen.getFrame().add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    public void completeOrder() {
+    public void completeCashierOrder() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.addActionListener(new ActionListener() {
             @Override
@@ -323,6 +315,104 @@ public class Controller implements ActionListener{
                 cashierScreen.getFrame().dispose();
             }
         });
+    }
+
+    public void populateManagerNavBar() {
+        ImageIcon chartImageIcon = new ImageIcon("./images/chart.png");
+        chartImageIcon = new ImageIcon(chartImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
+        ImageIcon orderImageIcon = new ImageIcon("./images/order.png");
+        orderImageIcon = new ImageIcon(orderImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
+        ImageIcon tableImageIcon = new ImageIcon("./images/table.png");
+        tableImageIcon = new ImageIcon(tableImageIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH));
+        JButton chartButton = new JButton(chartImageIcon);
+        chartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                populateManagerMainPanel("chart");
+            }
+        });
+        JButton orderButton = new JButton(orderImageIcon);
+        orderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                populateManagerMainPanel("order");
+            }
+        });
+        JButton tableButton = new JButton(tableImageIcon);
+        tableButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                populateManagerMainPanel("table");
+            }
+        });
+        managerScreen.getNavPanel().add(chartButton);
+        managerScreen.getNavPanel().add(Box.createVerticalGlue());
+        managerScreen.getNavPanel().add(orderButton);
+        managerScreen.getNavPanel().add(Box.createVerticalGlue());
+        managerScreen.getNavPanel().add(tableButton);
+        managerScreen.getNavPanel().revalidate();
+        managerScreen.getNavPanel().repaint();
+    }
+
+    public void populateManagerMainPanel(String content) {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        if (mainPanel.getComponentCount() > 0) {
+            mainPanel.removeAll();
+        }
+        if (content.equals("chart")) {
+            JTextArea chartTextArea = new JTextArea("Chart");
+            chartTextArea.setEditable(false);
+            chartTextArea.setPreferredSize(new Dimension(450, 500));
+            mainPanel.add(chartTextArea);
+        }
+        else if (content.equals("order")) {
+            JTextArea orderTextArea = new JTextArea("Order");
+            orderTextArea.setEditable(false);
+            orderTextArea.setPreferredSize(new Dimension(450, 500));
+            mainPanel.add(orderTextArea);
+        }
+        else if (content.equals("table")) {
+            mainPanel.setLayout(new GridLayout(4, 4));
+            StringBuilder tableName = new StringBuilder();
+            for (int i = 0; i < 16; i++) {
+                int remainder = i % 4;
+                if (remainder == 0) {
+                    tableName.append("Create ");
+                }
+                else if (remainder == 1) {
+                    tableName.append("Read ");
+                }
+                else if (remainder == 2) {
+                    tableName.append("Update ");
+                }
+                else if (remainder == 3) {
+                    tableName.append("Delete ");
+                }
+                if (i < 4) {
+                    tableName.append("Users");
+                }
+                else if (i < 8) {
+                    tableName.append("Orders");
+                }
+                else if (i < 12) {
+                    tableName.append("Items");
+                }
+                else if (i < 16) {
+                    tableName.append("Ingredients");
+                }
+                JButton tableButton = new JButton(tableName.toString());
+                tableButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("Table: " + tableButton.getText());
+                    }
+                });
+                mainPanel.add(tableButton);
+                tableName.setLength(0);
+            }
+        }
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     @Override
