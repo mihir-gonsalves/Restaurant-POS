@@ -35,6 +35,7 @@ public class Controller implements ActionListener{
     private Popup po;
     private PopupFactory pf;
     private int[][] orderItems;
+    private String phoneNumber;
 
 
     public static void main(String[] args) {
@@ -50,11 +51,10 @@ public class Controller implements ActionListener{
             public void actionPerformed(ActionEvent e) {
                 if (controller.model.login(controller.loginScreen.getPhoneNumber())) {
                     controller.loginScreen.getFrame().dispose();
-                    controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
-                    if (controller.model.isManager()) {
+                    controller.phoneNumber = controller.loginScreen.getPhoneNumber();
+                    if (controller.model.isManager(controller.phoneNumber)) {
                         controller.switchToManagerScreen();
                     } else {
-                        controller.model.setPhoneNumber(controller.loginScreen.getPhoneNumber());
                         controller.switchToCashierScreen();
                     }
                 } else {
@@ -277,6 +277,19 @@ public class Controller implements ActionListener{
         cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
         cashierScreen.getOrderPanel().revalidate();
         cashierScreen.getOrderPanel().repaint();
+        populateBottomPanel();
+    }
+
+    public void populateBottomPanel() {
+        JPanel bottomPanel = cashierScreen.getBottomPanel();
+        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
+        JLabel totalLabel = new JLabel("Total: " + model.sumItemPrices(orderItems));
+        JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
+        orderCompleteButton.setText("Complete Order");
+        bottomPanel.add(totalLabel);
+        bottomPanel.add(orderCompleteButton);
+        bottomPanel.revalidate();
+        bottomPanel.repaint();
     }
 
     public void completeOrder() {
@@ -285,12 +298,13 @@ public class Controller implements ActionListener{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // System.out.println("Order complete");
-                int[][] orderItems = {{10, 1}, {11, 2}, {12, 3}};
-                if(model.insert_order("11",orderItems,"credit") == false){
+                String subtotal = String.valueOf(model.sumItemPrices(orderItems));
+                if(model.insert_order(subtotal,orderItems,"credit") == false){
                     JOptionPane.showMessageDialog(null, "Order failed");
                 }
                 else{
                     JOptionPane.showMessageDialog(null, "Order complete");
+
                 
                 }
             }
