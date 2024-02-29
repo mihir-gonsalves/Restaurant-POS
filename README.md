@@ -37,16 +37,6 @@ First clean the space that Maven will build onto so that compilation can be comp
 mvn clean package 
 ```
 
-```you can also use the following command to use Maven's Parallel Build feature-
-mvn clean package -T 4         
-```
-```
-Here, 4 indicates the number of cores in your system.
-If you are a windows user, you can check the number of cores present in your system using the cmd prompt window with the following command-
-
-wmic cpu get NumberOfCores, NumberOfLogicalProcessors
-```
-
 Then, in the same directory, run the application with the following command:
 
 ```bash
@@ -58,9 +48,28 @@ To recompile the project run the following command:
 ```bash
 mvn package
 ```
-```you can also use the following command to use Maven's Parallel Build feature-
-mvn package -T 4            
+
+If compilation is taking too long, you can force multiple cores to run compilation by add the **-T** flag
+
+For example (using 4 cores):
+
+```bash
+mvn clean package -T 4
 ```
+
+<br>
+
+## TODOs
+
+### Optimizations:
+- Including specific imports as opposed to * (all) in a library
+- Refactoring code by removing redundancies
+- Add comments to explain why a code block was implemented
+- Rewriting files to make the codebase succinct by including all shared functions within one file
+
+### Bug Fixes:
+- Payment Screen is not working as intended
+- Updating inventory through the manager screen does not actually update inventory in database
 
 <br>
 
