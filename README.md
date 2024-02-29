@@ -59,6 +59,20 @@ mvn clean package -T 4
 
 <br>
 
+## TODOs
+
+### Optimizations:
+- Including specific imports as opposed to * (all) in a library
+- Refactoring code by removing redundancies
+- Add comments to explain why a code block was implemented
+- Rewriting files to make the codebase succinct by including all shared functions within one file
+
+### Bug Fixes:
+- Payment Screen is not working as intended
+- Updating inventory through the manager screen does not actually update inventory in database
+
+<br>
+
 ## Underlying Details
 Extra details about how the project's GUI and Database were created.
 
