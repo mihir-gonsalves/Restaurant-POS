@@ -49,6 +49,7 @@ public class Controller implements ActionListener{
         Controller controller = new Controller();
         controller.initialize();
         controller.switchToLoginScreen();
+<<<<<<< Updated upstream
         controller.getPreferredSize();
         controller.switchFromLoginScreen();
         
@@ -180,6 +181,73 @@ public class Controller implements ActionListener{
     }
 
 
+=======
+        controller.switchFromLoginScreen();
+        
+    }
+
+    // constructor
+    public Controller() {
+        // not necessary
+    }
+
+    // initializes the model and all screens
+    public void initialize() {
+        this.model = new Model();
+        this.loginScreen = new LoginScreen();
+        this.loginScreen.getFrame().setVisible(false);
+        this.cashierScreen = new CashierScreen();
+        this.cashierScreen.getFrame().setVisible(false);
+        this.managerScreen = new ManagerScreen();
+        this.managerScreen.getFrame().setVisible(false);
+        this.paymentScreen = new PaymentScreen();
+        this.paymentScreen.getFrame().setVisible(false);
+        this.isManager = false;
+        this.pf = new PopupFactory();
+        this.orderItems = new int[10][2];
+    }
+
+
+    /* 
+     * LOGIN SCREEN METHODS
+     */
+    // sets the login screen to visible
+    public void switchToLoginScreen() {
+        this.loginScreen.getFrame().setVisible(true);
+    }
+    // switch to appropriate screen based on login's phone number
+    public void switchFromLoginScreen() {
+        loginScreen.getLoginButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // if the phone number is valid, switch to the appropriate screen
+                if (model.login(loginScreen.getPhoneNumber())) {
+
+                    // dispose of the login screen
+                    loginScreen.getFrame().dispose();
+                    phoneNumber = loginScreen.getPhoneNumber();
+
+                    // if the user is a manager, switch to the manager screen and populate with defaults
+                    if (model.isManager(phoneNumber)) {
+                        switchToManagerScreen();
+                        populateManagerNavBar();
+                        populateManagerMainPanel("chart");
+                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults
+                        switchToCashierScreen();
+                        populateCashierNavBar();
+                        populateCashierItemPanel("Burgers");
+                        completeCashierOrder();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid phone number");
+                }
+            }
+        });
+    }
+
+
+>>>>>>> Stashed changes
     /* 
      * CASHIER SCREEN METHODS
      */
@@ -188,6 +256,10 @@ public class Controller implements ActionListener{
         isManager = false;
         cashierScreen.getFrame().setVisible(true);
     }
+<<<<<<< Updated upstream
+=======
+    // populates the cashier screen with items based on category
+>>>>>>> Stashed changes
     public void populateCashierItemPanel(String category) {
         // Get items and sort by category
         ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -237,7 +309,10 @@ public class Controller implements ActionListener{
                     itemPanel.add(itemButton, BorderLayout.CENTER);
     
                     // add action listener to the image button to display a popup with the item name and an "Add to Order" button
+<<<<<<< Updated upstream
                     
+=======
+>>>>>>> Stashed changes
                     itemButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -247,7 +322,11 @@ public class Controller implements ActionListener{
                             Dimension frameSize = frame.getSize();
 
                             // sets the size and style of the popup panel
+<<<<<<< Updated upstream
                             int size = (int) (frameSize.getWidth() / 2);
+=======
+                            int size = (int) (frameSize.getWidth() - 600 * 1.1f);
+>>>>>>> Stashed changes
                             popUpPanel.setPreferredSize(new Dimension(size, size));
                             popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
                             popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
@@ -255,11 +334,19 @@ public class Controller implements ActionListener{
                             // create and style the label and button for the popup
                             JLabel popUpLabel = new JLabel("Item: " + item_name);
                             popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+<<<<<<< Updated upstream
                             JButton orderButton = new JButton("Add to Order");
                             orderButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                             // add action listener to the "Add to Order" button to add the item to the order and close the popup
                             orderButton.addActionListener(new ActionListener() {
+=======
+                            JButton popUpButton = new JButton("Add to Order");
+                            popUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                            // add action listener to the "Add to Order" button to add the item to the order and close the popup
+                            popUpButton.addActionListener(new ActionListener() {
+>>>>>>> Stashed changes
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     // System.out.println("Item added to order: " + item_name);
@@ -280,6 +367,7 @@ public class Controller implements ActionListener{
                                 }
                             });
 
+<<<<<<< Updated upstream
                             JButton cancelButton = new JButton("Cancel");
                             cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -299,6 +387,13 @@ public class Controller implements ActionListener{
                             popUpPanel.add(Box.createVerticalStrut(30));
                             popUpPanel.add(cancelButton);
                             popUpPanel.add(Box.createVerticalGlue());
+=======
+                            // add the label and button to the popup panel with some vertical spacing
+                            popUpPanel.add(Box.createVerticalStrut(20));
+                            popUpPanel.add(popUpLabel);
+                            popUpPanel.add(Box.createVerticalStrut(20));
+                            popUpPanel.add(popUpButton);
+>>>>>>> Stashed changes
                     
                             // sets the location of the popup panel (centered on the main frame)
                             Point frameLocation = frame.getLocation();
@@ -325,7 +420,10 @@ public class Controller implements ActionListener{
         }
 
         // revalidate and repaint the itemsPanel for redraw
+<<<<<<< Updated upstream
         updateFontSizes(itemsPanel, frame); // have to do this because otherwise on category change it reverts to normal size
+=======
+>>>>>>> Stashed changes
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
@@ -342,6 +440,10 @@ public class Controller implements ActionListener{
             while (rs.next()) {
                 String db_category = rs.getString("category");
                 if (!db_category.equals(current_category)) {
+<<<<<<< Updated upstream
+=======
+                    // System.out.println("|" + db_category + "|" + " DNE " + "|" + current_category + "|"); // testing
+>>>>>>> Stashed changes
                     // set the current category to the new category
                     current_category = db_category;
                     
@@ -391,6 +493,7 @@ public class Controller implements ActionListener{
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
+<<<<<<< Updated upstream
         JPanel orderPanel = cashierScreen.getOrderPanel();
         JPanel orderFieldsPanel = cashierScreen.getOrderFieldsPanel();
         if (orderPanel.getComponentCount() > 0) {
@@ -404,6 +507,13 @@ public class Controller implements ActionListener{
 
         
 
+=======
+        if (cashierScreen.getOrderPanel().isAncestorOf(cashierScreen.getOrderFieldsPanel())) {
+            cashierScreen.getOrderFieldsPanel().removeAll();
+            cashierScreen.getOrderPanel().remove(cashierScreen.getOrderFieldsPanel());
+        }
+
+>>>>>>> Stashed changes
         // add items (JTextField) to the orderFieldsPanel by looping through the orderItems array
         for (int i = 0; i < orderItems.length; i++) {
             if (orderItems[i][0] != 0) {
@@ -416,6 +526,7 @@ public class Controller implements ActionListener{
                 orderFieldsPanel.add(orderItemTextArea);
             }
         }
+<<<<<<< Updated upstream
         // // create scroll pane so that the text fields can be scrolled if there are too many
         // JScrollPane orderFieldsScrollPane = new JScrollPane(orderFieldsPanel);
         // orderFieldsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -426,6 +537,13 @@ public class Controller implements ActionListener{
         updateFontSizes(orderPanel, cashierScreen.getFrame()); // do this because removing all elements
         orderPanel.revalidate();
         orderPanel.repaint();
+=======
+
+        // add the orderFieldsPanel to the orderPanel and revalidate and repaint the orderPanel for redraw
+        cashierScreen.getOrderPanel().add(cashierScreen.getOrderFieldsPanel(), BorderLayout.CENTER);
+        cashierScreen.getOrderPanel().revalidate();
+        cashierScreen.getOrderPanel().repaint();
+>>>>>>> Stashed changes
 
         // reinitialize the subtotal label in bottom panel
         populateCashierBottomPanel();
@@ -434,31 +552,53 @@ public class Controller implements ActionListener{
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
 
+<<<<<<< Updated upstream
+=======
+        // remove the bottomPanel from the cashierScreen frame if it exists in cashierScreen
+        if (cashierScreen.getFrame().isAncestorOf(bottomPanel)) {
+            cashierScreen.getFrame().remove(bottomPanel);
+        }
+
+>>>>>>> Stashed changes
         // if bottom panel populated with items, remove all items
         if (bottomPanel.getComponentCount() > 0) {
             bottomPanel.removeAll();
         }
 
         // create a new button to complete the order
+<<<<<<< Updated upstream
         cashierScreen.setOrderCompleteButton(null);
+=======
+>>>>>>> Stashed changes
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
 
         // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
         bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
         bottomPanel.add(Box.createHorizontalGlue());
+<<<<<<< Updated upstream
         bottomPanel.add(new JLabel("Subtotal: " + model.sumItemPrices(orderItems)));
+=======
+        bottomPanel.add(new JLabel("Total: " + model.sumItemPrices(orderItems)));
+>>>>>>> Stashed changes
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
 
         // revalidate and repaint the bottomPanel for redraw and add back to the cashierScreen frame
+<<<<<<< Updated upstream
         // auto update fonts 
         updateFontSizes(bottomPanel, cashierScreen.getFrame());
+=======
+>>>>>>> Stashed changes
         bottomPanel.revalidate();
         bottomPanel.repaint();
     }
     // complete the cashier's order via orderComplete button, display subtotal, and switch to payment screen
+<<<<<<< Updated upstream
     public void switchFromCashierPanel() {
+=======
+    public void completeCashierOrder() {
+>>>>>>> Stashed changes
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
 
         // add action listener to orderComplete button to display subtotal and switch to payment screen when clicked
@@ -563,6 +703,48 @@ public class Controller implements ActionListener{
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new FlowLayout());
 
+<<<<<<< Updated upstream
+=======
+    public void populateManagerMainPanel(String content) {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        if (mainPanel.getComponentCount() > 0) {
+            mainPanel.removeAll();
+        }
+        if (content.equals("chart")) {
+            populateManagerChartPanel();
+        }
+        else if (content.equals("order")) {
+            populateManagerOrderPanel();
+        }
+        else if (content.equals("track")) {
+            populateManagerTrackPanel();
+        }
+        else if (content.equals("table")) {
+            populateManagerTablePanel();
+            
+        }
+        // revalidate and repaint the mainPanel for redraw
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+    // populates the manager screen with a chart // TODO implement chart
+    public void populateManagerChartPanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        JTextArea chartTextArea = new JTextArea("Chart");
+        chartTextArea.setEditable(false);
+        chartTextArea.setPreferredSize(new Dimension(450, 500));
+        mainPanel.add(chartTextArea);
+    }
+    // populates the manager screen with the order panel
+    public void populateManagerOrderPanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        mainPanel.setLayout(new BorderLayout());
+    
+        // Panel for ingredient ID and count
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+>>>>>>> Stashed changes
         JLabel ingredientIdLabel = new JLabel("Ingredient ID:");
         JTextField ingredientIdField = new JTextField(10);
 
@@ -576,6 +758,10 @@ public class Controller implements ActionListener{
         inputPanel.add(countLabel);
         inputPanel.add(countField);
         inputPanel.add(commitButton);
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         
         // Table to display results
@@ -740,6 +926,7 @@ public class Controller implements ActionListener{
             ex.printStackTrace();
         }
     }
+<<<<<<< Updated upstream
     // update font size of all components of a panel recursively
     private void updateFontSizes(Component c, JFrame f) {
         if (c instanceof Container) {
@@ -760,6 +947,8 @@ public class Controller implements ActionListener{
             f.repaint();
         }
     }
+=======
+>>>>>>> Stashed changes
 
     @Override
     public void actionPerformed(ActionEvent e) {

@@ -62,6 +62,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumber.setMaximumSize(new Dimension(140, 30));
         phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+<<<<<<< Updated upstream
         // code below limits the number of characters that can be input to 10 and restricts the character type to numbers
         ((AbstractDocument) phoneNumber.getDocument()).setDocumentFilter(new DocumentFilter() {
             final int maxCharacters = 10;
@@ -79,6 +80,35 @@ public class LoginScreen extends JFrame implements ActionListener {
                 }
             }
         });
+=======
+
+        // add delay to format phone number so that it isn't so slow and jumpy
+        // Timer timer = new Timer(500, new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         formatPhoneNumber();
+        //     }
+        // });
+        // timer.setRepeats(false);
+
+        // // This will format the phone number as the user types it in
+        // phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
+        //     @Override
+        //     public void insertUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+
+        //     @Override
+        //     public void removeUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+
+        //     @Override
+        //     public void changedUpdate(DocumentEvent e) {
+        //         formatPhoneNumber();
+        //     }
+        // });
+>>>>>>> Stashed changes
 
         btnLogin = new JButton("Login");
         btnLogin.setFont(font2);
@@ -133,7 +163,25 @@ public class LoginScreen extends JFrame implements ActionListener {
         return phoneNumber.getText();
     }
 
+<<<<<<< Updated upstream
     public JToggleButton getFullscreenButton() {
         return btnFullscreen;
+=======
+    // from XXXXXXXXXX to (XXX) XXX-XXXX
+    private void formatPhoneNumber() {
+        // String number = phoneNumber.getText().replaceAll("[^\\d]", "");
+        // if (number.length() > 0) {
+        //     StringBuilder formattedNumber = new StringBuilder("(");
+        //     for (int i = 0; i < Math.min(number.length(), 10); i++) {
+        //         if (i == 3) {
+        //             formattedNumber.append(") ");
+        //         } else if (i == 6) {
+        //             formattedNumber.append("-");
+        //         }
+        //         formattedNumber.append(number.charAt(i));
+        //     }
+        //     phoneNumber.setText(formattedNumber.toString());
+        // }
+>>>>>>> Stashed changes
     }
 }
