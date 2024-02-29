@@ -2,9 +2,14 @@ package com.webdevwizards.revsGUI.screens;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.AttributeSet;
 
 public class LoginScreen extends JFrame implements ActionListener {
     private JLabel lblScreen;
@@ -14,7 +19,7 @@ public class LoginScreen extends JFrame implements ActionListener {
     
     private JFrame frame;
     private JPanel mainPanel;
-    private JPanel inputPanel; // panel for lblNumber and phoneNumber textfield
+    private JPanel inputPanel; // panel for lblNumber, phoneNumber, and btnLogin (below) 
 
     private JButton btnLogin; 
     private JToggleButton btnFullscreen;
@@ -31,16 +36,16 @@ public class LoginScreen extends JFrame implements ActionListener {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(screenSize.width, screenSize.height);
 
-        Font  font1  = new Font("Arial", Font.BOLD,  24);
-        Font  font2  = new Font("Arial", Font.PLAIN,  16);
+        Font font1 = new Font("Arial", Font.BOLD, 32);
+        Font font2 = new Font("Arial", Font.PLAIN, 16);
 
         // the panel will lay compenents out from top to bottom
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(180, 20, 20, 20));
 
         // label for screen (replaces title that was removed by setUndecorated)
-        lblScreen = new JLabel("Rev's American Grill: Login Screen");
+        lblScreen = new JLabel("Welcome to Rev's American Grill");
         lblScreen.setFont(font1);
         lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -54,46 +59,40 @@ public class LoginScreen extends JFrame implements ActionListener {
 
         phoneNumber = new JTextField(10);
         phoneNumber.setFont(font2);
-        phoneNumber.setMaximumSize(new Dimension(150, 30));
+        phoneNumber.setMaximumSize(new Dimension(130, 30));
         phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // add delay to format phone number so that it isn't so slow and jumpy
-        // Timer timer = new Timer(500, new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         formatPhoneNumber();
-        //     }
-        // });
-        // timer.setRepeats(false);
 
-        // // This will format the phone number as the user types it in
-        // phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
-        //     @Override
-        //     public void insertUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
+        // code below limits the number of characters that can be input to 10 and restricts the character type to numbers
+        ((AbstractDocument) phoneNumber.getDocument()).setDocumentFilter(new DocumentFilter() {
+            final int maxCharacters = 10;
 
-        //     @Override
-        //     public void removeUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrset)
+                    throws BadLocationException {
+                int currentLength = fb.getDocument().getLength();
+                int futureLength = currentLength - length + text.length();
 
-        //     @Override
-        //     public void changedUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
-        // });
+                if (futureLength <= maxCharacters && text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrset);
+                } else {
+                    Toolkit.getDefaultToolkit().beep(); // BEEP BEEP BEEP BEEP BEEP on invalids lol
+                }
+            }
+        });
 
         btnLogin = new JButton("Login");
         btnLogin.setFont(font2);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add components to inputPanel
-        // inputPanel.add(lblNumber);
-        // inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        // inputPanel.add(phoneNumber);
-        // // inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        inputPanel.add(lblNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        inputPanel.add(phoneNumber);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        inputPanel.add(btnLogin);
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         
-        // inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnFullscreen = new JToggleButton("Exit Fullscreen");
         btnFullscreen.setFont(font2);
@@ -102,11 +101,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         // add components to mainPanel with glue in between to center the components
         mainPanel.add(lblScreen);
         mainPanel.add(Box.createVerticalGlue());
-        // mainPanel.add(inputPanel);
-        mainPanel.add(lblNumber);
-        mainPanel.add(phoneNumber);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainPanel.add(btnLogin);
+        mainPanel.add(inputPanel);
         mainPanel.add(Box.createVerticalGlue());
         mainPanel.add(btnFullscreen);
         mainPanel.add(Box.createVerticalGlue());
@@ -140,22 +135,5 @@ public class LoginScreen extends JFrame implements ActionListener {
 
     public JToggleButton getFullscreenButton() {
         return btnFullscreen;
-    }
-
-    // from XXXXXXXXXX to (XXX) XXX-XXXX
-    private void formatPhoneNumber() {
-        // String number = phoneNumber.getText().replaceAll("[^\\d]", "");
-        // if (number.length() > 0) {
-        //     StringBuilder formattedNumber = new StringBuilder("(");
-        //     for (int i = 0; i < Math.min(number.length(), 10); i++) {
-        //         if (i == 3) {
-        //             formattedNumber.append(") ");
-        //         } else if (i == 6) {
-        //             formattedNumber.append("-");
-        //         }
-        //         formattedNumber.append(number.charAt(i));
-        //     }
-        //     phoneNumber.setText(formattedNumber.toString());
-        // }
     }
 }
