@@ -74,6 +74,9 @@ public class CashierScreen extends JFrame{
         frame.pack();
     }
 
+    /*
+     * GETTERS AND SETTERS
+     */
     public JFrame getFrame() {
         return frame;
     }
@@ -117,5 +120,4 @@ public class CashierScreen extends JFrame{
     public void setOrderCompleteButton(JButton orderCompleteButton) {
         this.orderCompleteButton = orderCompleteButton;
     }
-    
 }

@@ -59,7 +59,7 @@ public class LoginScreen extends JFrame implements ActionListener {
 
         phoneNumber = new JTextField(10);
         phoneNumber.setFont(font2);
-        phoneNumber.setMaximumSize(new Dimension(130, 30));
+        phoneNumber.setMaximumSize(new Dimension(140, 30));
         phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // code below limits the number of characters that can be input to 10 and restricts the character type to numbers

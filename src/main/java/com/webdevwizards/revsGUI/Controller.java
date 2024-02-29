@@ -188,7 +188,6 @@ public class Controller implements ActionListener{
         isManager = false;
         cashierScreen.getFrame().setVisible(true);
     }
-    // populates the cashier screen with items based on category
     public void populateCashierItemPanel(String category) {
         // Get items and sort by category
         ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -217,7 +216,7 @@ public class Controller implements ActionListener{
                     // formats image as item_name in lowercase and replaces spaces with underscores
                     for (int i = 0; i < item_name.length(); i++) {
                         char c = item_name.charAt(i);
-                        if (Character.isLetter(c)) {
+                        if (Character.isLetterOrDigit(c)) {
                             item_image.append(Character.toLowerCase(c));
                         }
                         else if (c == ' ') {
@@ -524,7 +523,7 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
-
+    // populates the manager screen with content
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
         if (mainPanel.getComponentCount() > 0) {
@@ -577,7 +576,6 @@ public class Controller implements ActionListener{
         inputPanel.add(countLabel);
         inputPanel.add(countField);
         inputPanel.add(commitButton);
-
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         
         // Table to display results

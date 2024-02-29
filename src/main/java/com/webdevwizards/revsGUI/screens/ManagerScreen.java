@@ -1,10 +1,14 @@
 package com.webdevwizards.revsGUI.screens;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.ResultSet;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 
@@ -57,10 +61,13 @@ public class ManagerScreen extends JFrame implements ActionListener{
         }
     }
 
+    
+    /*
+     * GETTERS AND SETTERS
+     */
     public JFrame getFrame() {
         return frame;
     }
-
     public JPanel getNavPanel() {
         if (navPanel == null) {
             navPanel = new JPanel();
@@ -68,9 +75,7 @@ public class ManagerScreen extends JFrame implements ActionListener{
         }
         return navPanel;
     }
-
     public JPanel getMainPanel() {
         return mainPanel;
     }
-
 }
