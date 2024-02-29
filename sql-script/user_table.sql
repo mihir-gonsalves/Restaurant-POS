@@ -1,0 +1,1 @@
+create table users (user_id SERIAL primary key, phonenumber varchar(20), name varchar(25), ismanager boolean);

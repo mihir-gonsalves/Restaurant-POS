@@ -75,19 +75,20 @@ try:
     cur = conn.cursor()
 
     my_script = '''CREATE TABLE ingredients(
-                     ingredient_id    INT,
+                     ingredient_id    SERIAL PRIMARY KEY,
                      ingredient_name  VARCHAR(50),
                      ingredient_current_stock INT,
-                     ingredient_unit_price DECIMAL(15,2))
+                     ingredient_unit_price DECIMAL(15,2)
+                     )
     '''
     cur.execute(my_script)
 
-    insert_script = 'INSERT INTO ingredients (ingredient_id, ingredient_name, ingredient_current_stock, ingredient_unit_price) VALUES (%s, %s, %s, %s)'
+    insert_script = 'INSERT INTO ingredients (ingredient_name, ingredient_current_stock, ingredient_unit_price) VALUES (%s, %s, %s)'
 
     for i in range(1, 49):
         random_int = random.randint(8, 92)
-        random_decimal = random.uniform(1.86, 8.99)
-        insert_value = (i, id_ingredients[i], random_int, random_decimal)
+        random_decimal = random.uniform(1.86, 4.02)
+        insert_value = (id_ingredients[i], random_int, random_decimal)
         cur.execute(insert_script, insert_value)
 
     conn.commit()

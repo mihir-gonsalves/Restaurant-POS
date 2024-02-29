@@ -1,0 +1,4 @@
+config-local.properties
+target/
+
+/config.properties
