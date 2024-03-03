@@ -1,24 +1,7 @@
 package com.webdevwizards.revsGUI;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -563,41 +546,157 @@ public class Controller implements ActionListener{
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new FlowLayout());
 
-        JLabel ingredientIdLabel = new JLabel("Ingredient ID:");
-        JTextField ingredientIdField = new JTextField(10);
+        //COMBOBOX
+        String[] dropDownList = {"Choose An Option", "Add New Inventory", "Add New Menu Item", "Update Inventory", "Update Menu Item"};
+        JComboBox comboBox = new JComboBox(dropDownList);
 
-        JLabel countLabel = new JLabel("Count:");
+        JLabel IdLabel = new JLabel("ID:");
+        JTextField IdField = new JTextField(10);
+
+        JLabel nameLabel = new JLabel("Name:");
+        JTextField nameField = new JTextField(10);
+
+        JLabel countLabel = new JLabel("Add Stock:");
         JTextField countField = new JTextField(10);
+
+        JLabel priceLabel = new JLabel("Cost:");
+        JTextField priceField = new JTextField(10);
+
+        JLabel categoryLabel = new JLabel("Category:");
+        JTextField categoryField = new JTextField(10);
 
         JButton commitButton = new JButton("Commit");
 
-        inputPanel.add(ingredientIdLabel);
-        inputPanel.add(ingredientIdField);
+        inputPanel.add(comboBox);
+        inputPanel.add(IdLabel);
+        inputPanel.add(IdField);
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameField);
         inputPanel.add(countLabel);
         inputPanel.add(countField);
+        inputPanel.add(priceLabel);
+        inputPanel.add(priceField);
+        inputPanel.add(categoryLabel);
+        inputPanel.add(categoryField);
         inputPanel.add(commitButton);
+
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         
-        // Table to display results
+        // Table to display results. Used in viewTable
         JTable table = new JTable();
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-        updateTable(table);
-        // Add action listener to commit button
-        commitButton.addActionListener(e -> {
-            // Retrieve ingredient ID and count from text fields
-            String ingredientId = ingredientIdField.getText();
-            String count = countField.getText();
+
+        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
+            priceField.setBackground(Color.white); categoryField.setBackground(Color.white); nameField.setBackground(Color.white);
+            countField.setBackground(Color.white); priceField.setBackground(Color.white); IdField.setBackground(Color.white);
+
+            priceField.setEditable(true); categoryField.setEditable(true); nameField.setEditable(true);
+            countField.setEditable(true); priceField.setEditable(true); IdField.setEditable(true);
             
-            if(model.addIngredient(ingredientId, count, phoneNumber) == true){
-                JOptionPane.showMessageDialog(null, "Stock updated");
+            if(comboBox.getSelectedItem().equals("Add New Inventory")){
+                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
+                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
+                viewTable(table, false);
+            } else if(comboBox.getSelectedItem().equals("Add New Menu Item")){
+                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
+                countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
+                viewTable(table, true);
+            } else if(comboBox.getSelectedItem().equals("Update Inventory")){
+                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
+                viewTable(table, false);
+            } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
+                countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
+                viewTable(table, true);
             }
-            else{
-                JOptionPane.showMessageDialog(null, "Stock not updated");
+        });
+
+        commitButton.addActionListener(e -> { //Verifying inputs and then choosing action
+            int ID = 0; int count = 0; Double price = 0.00; String category = ""; String name = "";
+
+            boolean flagID, flagCount, flagCategory, flagPrice, flagName; //The flags are used so we can optionally update some fields in the SQL statement (see updateMenuItem and updateInventory SQL statements)
+            if(IdField.getText().trim().isEmpty()){
+                flagID = false;
+            } else{
+                flagID = true;
+                ID = Integer.parseInt(IdField.getText());
             }
-            // Perform commit action here
-            // You may want to update the table based on the committed data
-            updateTable(table);
+
+            if(priceField.getText().trim().isEmpty()){
+                flagPrice = false;
+            } else{
+                flagPrice = true;
+                price = Double.parseDouble(priceField.getText());
+            }
+
+            if(categoryField.getText().trim().isEmpty()){
+                flagCategory = false;
+            } else{
+                flagCategory = true;
+                category = categoryField.getText();
+            }
+
+            if(countField.getText().trim().isEmpty()){
+                flagCount = false;
+            } else{
+                flagCount = true;
+                count = Integer.parseInt(countField.getText());
+            }
+
+            if(nameField.getText().trim().isEmpty()){
+                flagName = false;
+            } else{
+                flagName = true;
+                name = nameField.getText();
+            }
+
+            if(comboBox.getSelectedItem().equals("Add New Menu Item")){ //Need to do some more work here: Phase 4
+                if(flagName == false || flagPrice == false || flagCategory == false){ //If any of these fields don't have a value
+                    JOptionPane.showMessageDialog(null, "Please make sure all fields have values");
+                    return;
+                }
+                if(model.addNewItem(name, price, category)){
+                    JOptionPane.showMessageDialog(null, "New menu item added");
+                    viewTable(table, true);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Unable to add menu item");
+                }
+
+            } else if(comboBox.getSelectedItem().equals("Update Inventory")){
+                if(flagID == false){
+                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
+                    return;
+                }
+                if(model.updateInventory(ID, name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
+                    JOptionPane.showMessageDialog(null, "Inventory Updated");
+                    viewTable(table, false);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Unable to update inventory");
+                }
+            } else if(comboBox.getSelectedItem().equals("Add New Inventory")){
+                if(flagName == false || flagPrice == false || flagCount == false){
+                    JOptionPane.showMessageDialog(null, "Please make sure all fields have values");
+                    return;
+                }
+                if(model.addNewInventory(name, count, price)){
+                    JOptionPane.showMessageDialog(null, "New Inventory Added");
+                    viewTable(table, false);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Unable to add new inventory");
+                }
+            } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
+                if(flagID == false){
+                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
+                    return;
+                }
+                if(model.updateMenuItem(ID, name, price, category, flagName, flagPrice, flagCategory)){
+                    JOptionPane.showMessageDialog(null, "Menu Item Updated");
+                    viewTable(table, true);
+                } else{
+                    JOptionPane.showMessageDialog(null, "Unable to update menu item");
+                }
+            }
+
         });
     }
     // populates the manager screen with the track panel
@@ -720,24 +819,44 @@ public class Controller implements ActionListener{
         return dateString;
     }
     // updates the table with the latest data from SQL
-    private void updateTable(JTable table) {
-        // Fetch data from SQL and update the table
-        try {
-            ResultSet resultSet = model.getAllIngredients();
-            DefaultTableModel tableModel = new DefaultTableModel();
-            tableModel.setColumnIdentifiers(new String[]{"ingredient_id", "ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
-    
-            while (resultSet.next()) {
-                Object[] rowData = new Object[4];
-                rowData[0] = resultSet.getObject(1); 
-                rowData[1] = resultSet.getObject(2);
-                rowData[2] = resultSet.getObject(3);
-                rowData[3] = resultSet.getObject(4);
-                tableModel.addRow(rowData);//add it to table
+    private void viewTable(JTable table, boolean isItemTable) {
+        // Fetch data from SQL and view the table
+        if(isItemTable){ //if the function was called to display the menu_item table
+            try {
+                ResultSet resultSet = model.getAllMenuItems();
+                DefaultTableModel tableModel = new DefaultTableModel();
+                tableModel.setColumnIdentifiers(new String[]{"item_id", "item_name", "item_price", "category"}); // Set column names
+
+                while (resultSet.next()) {
+                    Object[] rowData = new Object[4];
+                    rowData[0] = resultSet.getObject(1);
+                    rowData[1] = resultSet.getObject(2);
+                    rowData[2] = resultSet.getObject(3);
+                    rowData[3] = resultSet.getObject(4);
+                    tableModel.addRow(rowData);//add it to table
+                }
+                table.setModel(tableModel); // Set the updated table model
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            table.setModel(tableModel); // Set the updated table model
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        }else{ //else if the function was called to display the ingredient table
+            try {
+                ResultSet resultSet = model.getAllIngredients();
+                DefaultTableModel tableModel = new DefaultTableModel();
+                tableModel.setColumnIdentifiers(new String[]{"ingredient_id", "ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
+
+                while (resultSet.next()) {
+                    Object[] rowData = new Object[4];
+                    rowData[0] = resultSet.getObject(1);
+                    rowData[1] = resultSet.getObject(2);
+                    rowData[2] = resultSet.getObject(3);
+                    rowData[3] = resultSet.getObject(4);
+                    tableModel.addRow(rowData);//add it to table
+                }
+                table.setModel(tableModel); // Set the updated table model
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
     // update font size of all components of a panel recursively
