@@ -249,57 +249,21 @@ import javax.swing.JFrame;
                 return false;
             }
         }
-    
-        public static boolean updateItem(int item_id, String category, String check){ //When manager needs to update the price of a menu_item
+        public static boolean addNewItem(String itemName, Double itemPrice, String category){
             try{
-                PreparedStatement statement = conn.prepareStatement("update menu_items set ? = ? where item_id = ?");
-                statement.setString(1, category);
-                statement.setString(2, check);
-                statement.setInt(3,item_id);
+                PreparedStatement statement = conn.prepareStatement("insert into menu_items (item_name, item_price, category) values (?, ?, ?)");
+                statement.setString(1,itemName);
+                statement.setDouble(2,itemPrice);
+                statement.setString(3,category);
                 statement.execute();
                 statement.close();
                 return true;
-    
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
                 return false;
             }
         }
-    
-        public static boolean updateIngredient(int ingredient_id, String category, String value){ //When manager needs to update the price of a menu_item
-            try{
-                PreparedStatement statement = conn.prepareStatement("update ingredients set ? = ? where ingredient_id = ?");
-                statement.setString(1, category);
-                statement.setString(2, value);
-                statement.setInt(3, ingredient_id);
-                statement.execute();
-                statement.close();
-                return true;
-    
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return false;
-            }
-        }
-    
-    
-        public static ResultSet viewIngredient(int ingredient_id){
-            try{
-                PreparedStatement statement = conn.prepareStatement("select * from ingredients where ingredient_id = ?");
-                statement.setInt(1, ingredient_id);
-                ResultSet rs = statement.executeQuery();
-                return rs;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return null;
-            }
-        }
-
-
-
         public static ResultSet getAllIngredients(){
             try{
                 PreparedStatement statement = conn.prepareStatement("select * from ingredients order by ingredient_id");
@@ -311,38 +275,76 @@ import javax.swing.JFrame;
                 return null;
             }
         }
-        public static boolean addIngredient(String ingredient_id, String ingredient_quantity, String phoneNumber){
+        public static ResultSet getAllMenuItems(){
+            try{
+                PreparedStatement statement = conn.prepareStatement("select * from menu_items order by item_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+
+        public static boolean addNewInventory(String ingredientName, int ingredientStock, Double ingredientPrice){
+            try{
+                PreparedStatement statement = conn.prepareStatement("insert into ingredients (ingredient_name, ingredient_current_stock, ingredient_unit_price) values (?, ?, ?)");
+                statement.setString(1,ingredientName);
+                statement.setInt(2,ingredientStock);
+                statement.setDouble(3,ingredientPrice);
+                statement.execute();
+                statement.close();
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return false;
+            }
+        }
+
+        public static boolean updateInventory(int ingredient_id, String ingredient_name, int stock, double price, String phoneNumber,
+                                              boolean flagName, boolean flagStock, boolean flagPrice){
             try{
                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM ingredients WHERE ingredient_id = ?");
-                int ingredient_num = Integer.parseInt(ingredient_quantity);
-                statement.setInt(1, Integer.parseInt(ingredient_id));
+                statement.setInt(1, ingredient_id);
                 ResultSet rs = statement.executeQuery();
                 Double ingredientPrice = 0.00;
+
                 if(rs.next()){
                     int current_stock = rs.getInt(3);
                     ingredientPrice = rs.getDouble(4);
-                    int new_stock = current_stock + Integer.parseInt(ingredient_quantity);
-                    PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?");
-                    statement2.setInt(1, new_stock);
-                    statement2.setInt(2, Integer.parseInt(ingredient_id));
+                    int new_stock = current_stock + stock;
+                    PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_name = CASE WHEN ? = true THEN ? ELSE ingredient_name END," +
+                                                                                    "ingredient_current_stock = CASE WHEN ? = true THEN ? ELSE ingredient_current_stock END," +
+                                                                                    "ingredient_unit_price = CASE WHEN ? = true THEN ? ELSE ingredient_unit_price END " +
+                                                                                    "WHERE ingredient_id = ?");
+                    statement2.setBoolean(1, flagName);
+                    statement2.setString(2, ingredient_name);
+                    statement2.setBoolean(3, flagStock);
+                    statement2.setInt(4, new_stock);
+                    statement2.setBoolean(5, flagPrice);
+                    statement2.setDouble(6, price);
+                    statement2.setInt(7, ingredient_id);
                     statement2.execute();
 
-                    
-                    Double order_total = ingredient_num * ingredientPrice;
-                    PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-                    statement3.setDate(1, new Date(System.currentTimeMillis()));
-                    statement3.setTime(2, new Time(System.currentTimeMillis()));
-                    statement3.setDouble(3, order_total);
-                    statement3.setString(4, phoneNumber);
+                    if(flagStock) { //Only if we updated the stock do we need to insert into manager_order and junction table
+                        Double order_total = stock * ingredientPrice;
+                        PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                        statement3.setDate(1, new Date(System.currentTimeMillis()));
+                        statement3.setTime(2, new Time(System.currentTimeMillis()));
+                        statement3.setDouble(3, order_total);
+                        statement3.setString(4, phoneNumber);
 
-                    statement3.execute();
-                    ResultSet rs3 = statement3.getGeneratedKeys();
-                    if(rs3.next()){
-                        PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
-                        statement4.setInt(1, rs3.getInt(1));
-                        statement4.setInt(2, Integer.parseInt(ingredient_id));
-                        statement4.setInt(3, ingredient_num);
-                        statement4.execute();
+                        statement3.execute();
+                        ResultSet rs3 = statement3.getGeneratedKeys();
+                        if (rs3.next()) {
+                            PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
+                            statement4.setInt(1, rs3.getInt(1));
+                            statement4.setInt(2, ingredient_id);
+                            statement4.setInt(3, stock);
+                            statement4.execute();
+                        }
                     }
                 }
                 return true;
@@ -352,20 +354,36 @@ import javax.swing.JFrame;
                 return false;
             }
         }
-    
-        public static ResultSet viewItem(int item_id){
+
+        public static boolean updateMenuItem(int itemID, String itemName, double price, String category,
+                                              boolean flagName, boolean flagPrice, boolean flagCategory){
             try{
-                PreparedStatement statement = conn.prepareStatement("select * from menu_items where item_id = ?");
-                statement.setInt(1, item_id);
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM menu_items WHERE item_id = ?");
+                statement.setInt(1, itemID);
                 ResultSet rs = statement.executeQuery();
-                return rs;
+
+                if(rs.next()){
+                    PreparedStatement statement2 = conn.prepareStatement("UPDATE menu_items SET item_name = CASE WHEN ? = true THEN ? ELSE item_name END," +
+                            "item_price = CASE WHEN ? = true THEN ? ELSE item_price END," +
+                            "category = CASE WHEN ? = true THEN ? ELSE category END " +
+                            "WHERE item_id = ?");
+                    statement2.setBoolean(1, flagName);
+                    statement2.setString(2, itemName);
+                    statement2.setBoolean(3, flagPrice);
+                    statement2.setDouble(4, price);
+                    statement2.setBoolean(5, flagCategory);
+                    statement2.setString(6, category);
+                    statement2.setInt(7, itemID);
+                    statement2.execute();
+
+                }
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return null;
+                return false;
             }
         }
-    
         public static int getItemID(String item_name){
             try{
                 PreparedStatement statement = conn.prepareStatement("select item_id from menu_items where item_name = ?");
