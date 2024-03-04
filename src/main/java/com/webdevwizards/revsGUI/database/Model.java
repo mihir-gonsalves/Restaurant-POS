@@ -287,6 +287,26 @@ import javax.swing.JFrame;
             }
         }
 
+        public static ResultSet getAllItemsAndIngredients() {
+            try {
+                PreparedStatement statement = conn.prepareStatement(
+                    "SELECT menu_items.item_name, menu_items.item_price, menu_items.category, " +
+                    "STRING_AGG(ingredients.ingredient_name || ' : ' || item_to_ingredient_list.ingredient_quantity, '; ') AS ingredients " +
+                    "FROM menu_items " +
+                    "JOIN item_to_ingredient_list ON menu_items.item_id = item_to_ingredient_list.item_id " +
+                    "JOIN ingredients ON item_to_ingredient_list.ingredient_id = ingredients.ingredient_id " +
+                    "GROUP BY menu_items.item_id, menu_items.item_name, menu_items.item_price, menu_items.category " +
+                    "ORDER BY menu_items.item_id"
+                );
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+
         public static boolean addNewInventory(String ingredientName, int ingredientStock, Double ingredientPrice){
             try{
                 PreparedStatement statement = conn.prepareStatement("insert into ingredients (ingredient_name, ingredient_current_stock, ingredient_unit_price) values (?, ?, ?)");

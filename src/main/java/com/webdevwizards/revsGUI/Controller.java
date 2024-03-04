@@ -8,7 +8,11 @@ import java.awt.event.*;
 import java.sql.ResultSet;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.webdevwizards.revsGUI.screens.*;
+
+import com.webdevwizards.revsGUI.screens.CashierScreen;
+import com.webdevwizards.revsGUI.screens.LoginScreen;
+import com.webdevwizards.revsGUI.screens.ManagerScreen;
+import com.webdevwizards.revsGUI.screens.PaymentScreen;
 import com.webdevwizards.revsGUI.database.Model;
 
 public class Controller implements ActionListener{
@@ -595,15 +599,16 @@ public class Controller implements ActionListener{
             
             if(comboBox.getSelectedItem().equals("Add New Inventory")){
                 categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
-                viewTable(table, false);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Add New Menu Item")){
                 countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
-                viewTable(table, true);
+                viewTable(table, 2);
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
                 categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
-                viewTable(table, false);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
                 countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText(""); 
+                viewTable(table, 2);
             }
         });
 
@@ -647,7 +652,7 @@ public class Controller implements ActionListener{
                 }
                 if(model.addNewItem(name, price, category)){
                     JOptionPane.showMessageDialog(null, "New menu item added");
-                    viewTable(table, true);
+                    viewTable(table, 2);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to add menu item");
                 }
@@ -655,7 +660,7 @@ public class Controller implements ActionListener{
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
                 if(model.updateInventory(name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
                     JOptionPane.showMessageDialog(null, "Inventory Updated");
-                    viewTable(table, false);
+                    viewTable(table, 3);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to update inventory");
                 }
@@ -666,14 +671,14 @@ public class Controller implements ActionListener{
                 }
                 if(model.addNewInventory(name, count, price)){
                     JOptionPane.showMessageDialog(null, "New Inventory Added");
-                    viewTable(table, false);
+                    viewTable(table, 3);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to add new inventory");
                 }
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
                 if(model.updateMenuItem(name, price, category, flagName, flagPrice, flagCategory)){
                     JOptionPane.showMessageDialog(null, "Menu Item Updated");
-                    viewTable(table, true);
+                    viewTable(table, 2);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to update menu item");
                 }
@@ -801,44 +806,65 @@ public class Controller implements ActionListener{
         return dateString;
     }
     // updates the table with the latest data from SQL
-    private void viewTable(JTable table, boolean isItemTable) {
+    // tableType 0 for users, 1 for orders, 2 for items, 3 for ingredients
+    private void viewTable(JTable table, int tableType) {
         // Fetch data from SQL and view the table
-        if(isItemTable){ //if the function was called to display the menu_item table
-            try {
-                ResultSet resultSet = model.getAllMenuItems();
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.setColumnIdentifiers(new String[]{"item_id", "item_name", "item_price", "category"}); // Set column names
+        switch (tableType) { //if the function was called to display the menu_item table
+            case 0:
+                break; //TODO
+            case 1:
+                break; // TODO
+            case 2:
+                try {
+                    ResultSet resultSet = model.getAllItemsAndIngredients();
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.setColumnIdentifiers(new String[]{"item_name", "item_price", "category", "ingredients"}); // Set column names
 
-                while (resultSet.next()) {
-                    Object[] rowData = new Object[4];
-                    rowData[0] = resultSet.getObject(1);
-                    rowData[1] = resultSet.getObject(2);
-                    rowData[2] = resultSet.getObject(3);
-                    rowData[3] = resultSet.getObject(4);
-                    tableModel.addRow(rowData);//add it to table
+                    while (resultSet.next()) {
+                        Object[] rowData = new Object[4];
+                        rowData[0] = resultSet.getObject(1);
+                        rowData[1] = resultSet.getObject(2);
+                        rowData[2] = resultSet.getObject(3);
+                        rowData[3] = resultSet.getObject(4);
+                        tableModel.addRow(rowData);//add it to table
+                        
+                    }
+                    table.setModel(tableModel); // Set the updated table model
+                    // change table column widths
+                    int tableWidth = table.getWidth();
+                    table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 2);
+                    break;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                table.setModel(tableModel); // Set the updated table model
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }else{ //else if the function was called to display the ingredient table
-            try {
-                ResultSet resultSet = model.getAllIngredients();
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.setColumnIdentifiers(new String[]{"ingredient_id", "ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
+            case 3: //else if the function was called to display the ingredient table
+                try {
+                    ResultSet resultSet = model.getAllIngredients();
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.setColumnIdentifiers(new String[]{"ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
 
-                while (resultSet.next()) {
-                    Object[] rowData = new Object[4];
-                    rowData[0] = resultSet.getObject(1);
-                    rowData[1] = resultSet.getObject(2);
-                    rowData[2] = resultSet.getObject(3);
-                    rowData[3] = resultSet.getObject(4);
-                    tableModel.addRow(rowData);//add it to table
+                    while (resultSet.next()) {
+                        Object[] rowData = new Object[3];
+                        // don't access first column because it contains ID which is not needed
+                        rowData[0] = resultSet.getObject(2);
+                        rowData[1] = resultSet.getObject(3);
+                        rowData[2] = resultSet.getObject(4);
+                        tableModel.addRow(rowData);//add it to table
+                    }
+                    table.setModel(tableModel); // Set the updated table model
+                    // change table column widths
+                    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    int tableWidth = table.getWidth();
+                    table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
+                    table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
+                    table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
+                    break;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                table.setModel(tableModel); // Set the updated table model
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
     // update font size of all components of a panel recursively
