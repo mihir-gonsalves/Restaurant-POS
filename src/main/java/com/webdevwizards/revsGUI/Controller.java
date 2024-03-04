@@ -568,6 +568,7 @@ public class Controller implements ActionListener{
         JLabel priceLabel = new JLabel("Cost:");
         JTextField priceField = new JTextField(10);
 
+        JLabel categoryLabel = new JLabel("Category:");
         String[] categoryDropDown = {"Choose An Option", "Value Meals", "Salads", "Limited Time Offer", "Shakes & More", "Burgers", "Appetizers", "Sandwiches", "Beverages"};
         JComboBox categoryBox = new JComboBox(categoryDropDown);
 
@@ -580,6 +581,7 @@ public class Controller implements ActionListener{
         inputPanel.add(countField);
         inputPanel.add(priceLabel);
         inputPanel.add(priceField);
+        inputPanel.add(categoryLabel);
         inputPanel.add(categoryBox);
         inputPanel.add(commitButton);
 
