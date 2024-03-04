@@ -434,6 +434,10 @@ public class Controller implements ActionListener{
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
 
+        // add event listener to orderComplete button
+        cashierScreen.setOrderCompleteButton(orderCompleteButton);
+        switchFromCashierPanel();
+
         // revalidate and repaint the bottomPanel for redraw and add back to the cashierScreen frame
         // auto update fonts 
         updateFontSizes(bottomPanel, cashierScreen.getFrame());
