@@ -6,9 +6,16 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.webdevwizards.revsGUI.screens.*;
+
+import com.webdevwizards.revsGUI.screens.CashierScreen;
+import com.webdevwizards.revsGUI.screens.LoginScreen;
+import com.webdevwizards.revsGUI.screens.ManagerScreen;
+import com.webdevwizards.revsGUI.screens.PaymentScreen;
 import com.webdevwizards.revsGUI.database.Model;
 
 public class Controller implements ActionListener{
@@ -34,7 +41,7 @@ public class Controller implements ActionListener{
         controller.switchToLoginScreen();
         controller.getPreferredSize();
         controller.switchFromLoginScreen();
-        
+
     }
 
     // constructor
@@ -50,7 +57,7 @@ public class Controller implements ActionListener{
         final JFrame loginFrame = loginScreen.getFrame();
         loginFrame.setVisible(false);
         updateFontSizes(loginFrame, loginFrame);
-  
+
         cashierScreen = new CashierScreen();
         final JFrame cashierFrame = cashierScreen.getFrame();
         cashierFrame.setVisible(false);
@@ -82,7 +89,7 @@ public class Controller implements ActionListener{
     }
 
 
-    /* 
+    /*
      * LOGIN SCREEN METHODS
      */
     // sets the login screen to visible
@@ -129,7 +136,7 @@ public class Controller implements ActionListener{
                 if (model.login(loginScreen.getPhoneNumber())) {
                     phoneNumber = loginScreen.getPhoneNumber();
 
-                    // if the user is a manager, switch to the manager screen and populate with defaults, get rid of the login screen 
+                    // if the user is a manager, switch to the manager screen and populate with defaults, get rid of the login screen
                     if (model.isManager(phoneNumber)) {
                         switchToManagerScreen();
                         managerScreen.getFrame().setSize(preferredWidth, preferredHeight);
@@ -137,11 +144,11 @@ public class Controller implements ActionListener{
                         populateManagerNavBar();
                         populateManagerMainPanel("order");
 
-                        // auto update fonts 
+                        // auto update fonts
                         for (Component c : managerScreen.getFrame().getComponents()) {
                             updateFontSizes(c, managerScreen.getFrame());
                         }
-                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults, get rid of the login screen, and completeOrder 
+                    } else { // if the user is a cashier, switch to the cashier screen and populate with defaults, get rid of the login screen, and completeOrder
                         switchToCashierScreen();
                         cashierScreen.getFrame().setSize(preferredWidth, preferredHeight);
                         loginScreen.getFrame().dispose();
@@ -149,7 +156,7 @@ public class Controller implements ActionListener{
                         populateCashierItemPanel("Burgers");
                         populateCashierBottomPanel();
                         populateCashierOrderPanel();
-                        // auto update fonts 
+                        // auto update fonts
                         for (Component c : cashierScreen.getFrame().getComponents()) {
                             updateFontSizes(c, cashierScreen.getFrame());
                         }
@@ -163,7 +170,7 @@ public class Controller implements ActionListener{
     }
 
 
-    /* 
+    /*
      * CASHIER SCREEN METHODS
      */
     // sets the cashier screen to visible and sets isManager to false
@@ -181,7 +188,7 @@ public class Controller implements ActionListener{
 
         // remove current items from the panel so they can be replaced
         itemsPanel.removeAll();
-        
+
         // try loop to get items from the database safely
         try {
 
@@ -206,7 +213,7 @@ public class Controller implements ActionListener{
                             item_image.append('_');
                         }
                     }
-                    
+
                     // append appropriate project root path and file extension
                     String item_image_path = "./images/" + item_image + ".png";
 
@@ -218,9 +225,9 @@ public class Controller implements ActionListener{
                     // create a new button with an image
                     JButton itemButton = new JButton(new ImageIcon(item_image_path));
                     itemPanel.add(itemButton, BorderLayout.CENTER);
-    
+
                     // add action listener to the image button to display a popup with the item name and an "Add to Order" button
-                    
+
                     itemButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -234,7 +241,7 @@ public class Controller implements ActionListener{
                             popUpPanel.setPreferredSize(new Dimension(size, size));
                             popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
                             popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
-                            
+
                             // create and style the label and button for the popup
                             JLabel popUpLabel = new JLabel("Item: " + item_name);
                             popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -282,12 +289,12 @@ public class Controller implements ActionListener{
                             popUpPanel.add(Box.createVerticalStrut(30));
                             popUpPanel.add(cancelButton);
                             popUpPanel.add(Box.createVerticalGlue());
-                    
+
                             // sets the location of the popup panel (centered on the main frame)
                             Point frameLocation = frame.getLocation();
                             int x = (int) (frameLocation.getX() + (frameSize.getWidth() - popUpPanel.getPreferredSize().getWidth()) / 2);
                             int y = (int) (frameLocation.getY() + (frameSize.getHeight() - popUpPanel.getPreferredSize().getHeight()) / 2);
-                    
+
                             // creates and shows the popup
                             po = pf.getPopup(frame, popUpPanel, x, y);
                             po.show();
@@ -302,7 +309,7 @@ public class Controller implements ActionListener{
                     // add the panel to the itemsPanel
                     itemsPanel.add(itemPanel);
                 }
-            } 
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -327,7 +334,7 @@ public class Controller implements ActionListener{
                 if (!db_category.equals(current_category)) {
                     // set the current category to the new category
                     current_category = db_category;
-                    
+
                     // get category icon image
                     StringBuilder category_file_name = new StringBuilder();
 
@@ -385,7 +392,7 @@ public class Controller implements ActionListener{
         orderItemsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
 
-        
+
 
         // add items (JTextField) to the orderFieldsPanel by looping through the orderItems array
         for (int i = 0; i < orderItems.length; i++) {
@@ -434,8 +441,12 @@ public class Controller implements ActionListener{
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
 
+        // add event listener to orderComplete button
+        cashierScreen.setOrderCompleteButton(orderCompleteButton);
+        switchFromCashierPanel();
+
         // revalidate and repaint the bottomPanel for redraw and add back to the cashierScreen frame
-        // auto update fonts 
+        // auto update fonts
         updateFontSizes(bottomPanel, cashierScreen.getFrame());
         bottomPanel.revalidate();
         bottomPanel.repaint();
@@ -472,7 +483,7 @@ public class Controller implements ActionListener{
     }
 
 
-    /* 
+    /*
      * MANAGER SCREEN METHODS
      */
     // sets the manager screen to visible and sets isManager to true
@@ -523,7 +534,7 @@ public class Controller implements ActionListener{
         }
         else if (content.equals("table")) {
             populateManagerTablePanel();
-            
+
         }
         // revalidate and repaint the mainPanel for redraw
         mainPanel.revalidate();
@@ -541,7 +552,7 @@ public class Controller implements ActionListener{
     public void populateManagerOrderPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
         mainPanel.setLayout(new BorderLayout());
-    
+
         // Panel for ingredient ID and count
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new FlowLayout());
@@ -549,9 +560,6 @@ public class Controller implements ActionListener{
         //COMBOBOX
         String[] dropDownList = {"Choose An Option", "Add New Inventory", "Add New Menu Item", "Update Inventory", "Update Menu Item"};
         JComboBox comboBox = new JComboBox(dropDownList);
-
-        JLabel IdLabel = new JLabel("ID:");
-        JTextField IdField = new JTextField(10);
 
         JLabel nameLabel = new JLabel("Name:");
         JTextField nameField = new JTextField(10);
@@ -563,13 +571,12 @@ public class Controller implements ActionListener{
         JTextField priceField = new JTextField(10);
 
         JLabel categoryLabel = new JLabel("Category:");
-        JTextField categoryField = new JTextField(10);
+        String[] categoryDropDown = {"Choose An Option", "Value Meals", "Salads", "Limited Time Offer", "Shakes & More", "Burgers", "Appetizers", "Sandwiches", "Beverages"};
+        JComboBox categoryBox = new JComboBox(categoryDropDown);
 
         JButton commitButton = new JButton("Commit");
 
         inputPanel.add(comboBox);
-        inputPanel.add(IdLabel);
-        inputPanel.add(IdField);
         inputPanel.add(nameLabel);
         inputPanel.add(nameField);
         inputPanel.add(countLabel);
@@ -577,50 +584,79 @@ public class Controller implements ActionListener{
         inputPanel.add(priceLabel);
         inputPanel.add(priceField);
         inputPanel.add(categoryLabel);
-        inputPanel.add(categoryField);
+        inputPanel.add(categoryBox);
         inputPanel.add(commitButton);
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
-        
+
         // Table to display results. Used in viewTable
         JTable table = new JTable();
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
-            priceField.setBackground(Color.white); categoryField.setBackground(Color.white); nameField.setBackground(Color.white);
-            countField.setBackground(Color.white); priceField.setBackground(Color.white); IdField.setBackground(Color.white);
+        //Window for associated ingredients with a new menu item
+        JFrame attachIngredientsFrame = new JFrame();
+        attachIngredientsFrame.setLayout(new BoxLayout(attachIngredientsFrame.getContentPane(), BoxLayout.PAGE_AXIS));
+        attachIngredientsFrame.setSize(600, 200);
+        attachIngredientsFrame.setTitle("Inventory Association");
 
-            priceField.setEditable(true); categoryField.setEditable(true); nameField.setEditable(true);
-            countField.setEditable(true); priceField.setEditable(true); IdField.setEditable(true);
-            
+        ResultSet rs = model.getAllIngredients();
+        Vector<String> ingredientNames = null;
+
+        try{
+            ingredientNames = populateVector(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+
+        JComboBox ingredientComboBox = new JComboBox(ingredientNames);
+        JPanel panelIngredientList = new JPanel();
+        JTextField ingredientList = new JTextField(25);
+        panelIngredientList.add(new JLabel("Inventory List:"));
+        panelIngredientList.add(ingredientList);
+        panelIngredientList.add(ingredientComboBox);
+
+        JPanel panelQuantityList = new JPanel();
+        JTextField quantityList = new JTextField(25);
+        panelQuantityList.add(new JLabel("Quantity List:"));
+        panelQuantityList.add(quantityList);
+
+        JPanel panelButton = new JPanel();
+        JButton btnConfirmInventoryAttachment = new JButton("Confirm");
+        panelButton.add(btnConfirmInventoryAttachment);
+
+        JPanel panelDescription = new JPanel();
+        JTextArea description = new JTextArea("1) Make sure the ingredients/inventory are already added\n2) Enter an ingredient only once and in the following format: Grilled Chicken, Hot Dog Bun, Red Onion, \n3) Enter quantities in the same format: 3, 2, 4, ");
+        description.setEditable(false);
+        panelDescription.add(description);
+
+        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
+            priceField.setBackground(Color.white); categoryBox.setBackground(Color.white); nameField.setBackground(Color.white);
+            countField.setBackground(Color.white); priceField.setBackground(Color.white);
+
+            priceField.setEditable(true); categoryBox.setEditable(true); nameField.setEditable(true);
+            countField.setEditable(true); priceField.setEditable(true);
+
             if(comboBox.getSelectedItem().equals("Add New Inventory")){
-                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
-                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
-                viewTable(table, false);
+                categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Add New Menu Item")){
-                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
                 countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
-                viewTable(table, true);
+                viewTable(table, 2);
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
-                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
-                viewTable(table, false);
+                categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
                 countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
-                viewTable(table, true);
+                viewTable(table, 2);
             }
         });
-
+        AtomicInteger itemID = new AtomicInteger();
         commitButton.addActionListener(e -> { //Verifying inputs and then choosing action
-            int ID = 0; int count = 0; Double price = 0.00; String category = ""; String name = "";
+            int count = 0; Double price = 0.00; String category = ""; String name = "";
 
-            boolean flagID, flagCount, flagCategory, flagPrice, flagName; //The flags are used so we can optionally update some fields in the SQL statement (see updateMenuItem and updateInventory SQL statements)
-            if(IdField.getText().trim().isEmpty()){
-                flagID = false;
-            } else{
-                flagID = true;
-                ID = Integer.parseInt(IdField.getText());
-            }
+            boolean flagCount, flagCategory, flagPrice, flagName; //The flags are used so we can optionally update some fields in the SQL statement (see updateMenuItem and updateInventory SQL statements)
 
             if(priceField.getText().trim().isEmpty()){
                 flagPrice = false;
@@ -629,11 +665,11 @@ public class Controller implements ActionListener{
                 price = Double.parseDouble(priceField.getText());
             }
 
-            if(categoryField.getText().trim().isEmpty()){
+            if(categoryBox.getSelectedItem().equals("Choose An Option")){
                 flagCategory = false;
             } else{
                 flagCategory = true;
-                category = categoryField.getText();
+                category = categoryBox.getSelectedItem().toString();
             }
 
             if(countField.getText().trim().isEmpty()){
@@ -656,20 +692,22 @@ public class Controller implements ActionListener{
                     return;
                 }
                 if(model.addNewItem(name, price, category)){
-                    JOptionPane.showMessageDialog(null, "New menu item added");
-                    viewTable(table, true);
+                    itemID.set(model.getItemID(name));
+
+                    attachIngredientsFrame.getContentPane().add(panelIngredientList);
+                    attachIngredientsFrame.getContentPane().add(panelQuantityList);
+                    attachIngredientsFrame.getContentPane().add(panelButton);
+                    attachIngredientsFrame.getContentPane().add(panelDescription);
+                    attachIngredientsFrame.setVisible(true);
+                    viewTable(table, 2);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to add menu item");
                 }
 
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
-                if(flagID == false){
-                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
-                    return;
-                }
-                if(model.updateInventory(ID, name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
+                if(model.updateInventory(name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
                     JOptionPane.showMessageDialog(null, "Inventory Updated");
-                    viewTable(table, false);
+                    viewTable(table, 3);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to update inventory");
                 }
@@ -680,34 +718,54 @@ public class Controller implements ActionListener{
                 }
                 if(model.addNewInventory(name, count, price)){
                     JOptionPane.showMessageDialog(null, "New Inventory Added");
-                    viewTable(table, false);
+                    viewTable(table, 3);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to add new inventory");
                 }
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
-                if(flagID == false){
-                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
-                    return;
-                }
-                if(model.updateMenuItem(ID, name, price, category, flagName, flagPrice, flagCategory)){
+                if(model.updateMenuItem(name, price, category, flagName, flagPrice, flagCategory)){
                     JOptionPane.showMessageDialog(null, "Menu Item Updated");
-                    viewTable(table, true);
                 } else{
                     JOptionPane.showMessageDialog(null, "Unable to update menu item");
                 }
             }
 
         });
+
+        ingredientComboBox.addActionListener(e -> {
+            String currentText = ingredientList.getText();
+            ingredientList.setText(currentText + ingredientComboBox.getSelectedItem() + ", ");
+        });
+        btnConfirmInventoryAttachment.addActionListener(e -> {
+            String[] associatedIngredients = ingredientList.getText().split(", ");
+            String[] quantities = quantityList.getText().split(", ");
+            if(quantities.length != associatedIngredients.length){
+                JOptionPane.showMessageDialog(null, "Number of Quantities and Ingredients don't match");
+                return;
+            }
+            try {
+                if(model.attachAssociatedInventoryToNewItem(itemID.get(), associatedIngredients, quantities)){
+                    JOptionPane.showMessageDialog(null, "New menu item added");
+                } else{
+                    JOptionPane.showMessageDialog(null, "Unable to attach the selected ingredients");
+                    return;
+                }
+                attachIngredientsFrame.dispose();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            viewTable(table, 2);
+        });
     }
     // populates the manager screen with the track panel
     public void populateManagerTrackPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
-        
+
         // Add start date text area
         JPanel startDatePanel = new JPanel();
         startDatePanel.setLayout(new FlowLayout());
         JLabel startDateLabel = new JLabel("Start Date yyyy-mm-dd:");
-        JTextField startDateField = new JTextField(10); 
+        JTextField startDateField = new JTextField(10);
         startDatePanel.add(startDateLabel);
         startDatePanel.add(startDateField);
         mainPanel.add(startDatePanel);
@@ -716,14 +774,14 @@ public class Controller implements ActionListener{
         JPanel endDatePanel = new JPanel();
         endDatePanel.setLayout(new FlowLayout());
         JLabel endDateLabel = new JLabel("End Date yyyy-mm-dd:");
-        JTextField endDateField = new JTextField(10); 
+        JTextField endDateField = new JTextField(10);
         endDatePanel.add(endDateLabel);
         endDatePanel.add(endDateField);
         mainPanel.add(endDatePanel);
 
         // Add a table
         JTable table = new JTable(); // Initialize your table
-        table.setSize(1000, 400);    
+        table.setSize(1000, 400);
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane);
         String[] columnNames = {"ID", "Date", "Time", "Subtotal", "Tax", "Total", "Payment Method"};
@@ -738,17 +796,17 @@ public class Controller implements ActionListener{
             // Query SQL table using startDate and endDate
             ResultSet rs = model.getOrderDaytoDay(startDate, endDate);
             try{
-            while (rs.next()) {
-                Object[] row = new Object[7]; // Assuming 7 columns in the result set
-                for (int i = 0; i < row.length; i++) {
-                    row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
+                while (rs.next()) {
+                    Object[] row = new Object[7]; // Assuming 7 columns in the result set
+                    for (int i = 0; i < row.length; i++) {
+                        row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
+                    }
+                    tablemodel.addRow(row);
                 }
-                tablemodel.addRow(row);
-            }
-            table.setModel(tablemodel);
+                table.setModel(tablemodel);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();}
+            } catch (Exception ex) {
+                ex.printStackTrace();}
         });
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
@@ -819,44 +877,65 @@ public class Controller implements ActionListener{
         return dateString;
     }
     // updates the table with the latest data from SQL
-    private void viewTable(JTable table, boolean isItemTable) {
+    // tableType 0 for users, 1 for orders, 2 for items, 3 for ingredients
+    private void viewTable(JTable table, int tableType) {
         // Fetch data from SQL and view the table
-        if(isItemTable){ //if the function was called to display the menu_item table
-            try {
-                ResultSet resultSet = model.getAllMenuItems();
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.setColumnIdentifiers(new String[]{"item_id", "item_name", "item_price", "category"}); // Set column names
+        switch (tableType) { //if the function was called to display the menu_item table
+            case 0:
+                break; //TODO
+            case 1:
+                break; // TODO
+            case 2:
+                try {
+                    ResultSet resultSet = model.getAllItemsAndIngredients();
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.setColumnIdentifiers(new String[]{"item_name", "item_price", "category", "ingredients"}); // Set column names
 
-                while (resultSet.next()) {
-                    Object[] rowData = new Object[4];
-                    rowData[0] = resultSet.getObject(1);
-                    rowData[1] = resultSet.getObject(2);
-                    rowData[2] = resultSet.getObject(3);
-                    rowData[3] = resultSet.getObject(4);
-                    tableModel.addRow(rowData);//add it to table
-                }
-                table.setModel(tableModel); // Set the updated table model
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }else{ //else if the function was called to display the ingredient table
-            try {
-                ResultSet resultSet = model.getAllIngredients();
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.setColumnIdentifiers(new String[]{"ingredient_id", "ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
+                    while (resultSet.next()) {
+                        Object[] rowData = new Object[4];
+                        rowData[0] = resultSet.getObject(1);
+                        rowData[1] = resultSet.getObject(2);
+                        rowData[2] = resultSet.getObject(3);
+                        rowData[3] = resultSet.getObject(4);
+                        tableModel.addRow(rowData);//add it to table
 
-                while (resultSet.next()) {
-                    Object[] rowData = new Object[4];
-                    rowData[0] = resultSet.getObject(1);
-                    rowData[1] = resultSet.getObject(2);
-                    rowData[2] = resultSet.getObject(3);
-                    rowData[3] = resultSet.getObject(4);
-                    tableModel.addRow(rowData);//add it to table
+                    }
+                    table.setModel(tableModel); // Set the updated table model
+                    // change table column widths
+                    int tableWidth = table.getWidth();
+                    table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 6);
+                    table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 2);
+                    break;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                table.setModel(tableModel); // Set the updated table model
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            case 3: //else if the function was called to display the ingredient table
+                try {
+                    ResultSet resultSet = model.getAllIngredients();
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.setColumnIdentifiers(new String[]{"ingredient_name", "ingredient_current_stock", "ingredient_unit_price"}); // Set column names
+
+                    while (resultSet.next()) {
+                        Object[] rowData = new Object[3];
+                        // don't access first column because it contains ID which is not needed
+                        rowData[0] = resultSet.getObject(2);
+                        rowData[1] = resultSet.getObject(3);
+                        rowData[2] = resultSet.getObject(4);
+                        tableModel.addRow(rowData);//add it to table
+                    }
+                    table.setModel(tableModel); // Set the updated table model
+                    // change table column widths
+                    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                    int tableWidth = table.getWidth();
+                    table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
+                    table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
+                    table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
+                    break;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
         }
     }
     // update font size of all components of a panel recursively
@@ -878,6 +957,16 @@ public class Controller implements ActionListener{
             f.revalidate();
             f.repaint();
         }
+    }
+
+
+    private Vector<String> populateVector(ResultSet rs) throws SQLException {
+        Vector<String> ingredientList = new Vector<>();
+        while(rs.next()){
+            ingredientList.add(rs.getString(2));
+        }
+
+        return ingredientList;
     }
 
     @Override
