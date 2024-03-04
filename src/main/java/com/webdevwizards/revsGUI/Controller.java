@@ -550,8 +550,6 @@ public class Controller implements ActionListener{
         String[] dropDownList = {"Choose An Option", "Add New Inventory", "Add New Menu Item", "Update Inventory", "Update Menu Item"};
         JComboBox comboBox = new JComboBox(dropDownList);
 
-        JLabel IdLabel = new JLabel("ID:");
-        JTextField IdField = new JTextField(10);
 
         JLabel nameLabel = new JLabel("Name:");
         JTextField nameField = new JTextField(10);
@@ -562,22 +560,19 @@ public class Controller implements ActionListener{
         JLabel priceLabel = new JLabel("Cost:");
         JTextField priceField = new JTextField(10);
 
-        JLabel categoryLabel = new JLabel("Category:");
-        JTextField categoryField = new JTextField(10);
+        String[] categoryDropDown = {"Choose An Option", "Value Meals", "Salads", "Limited Time Offer", "Shakes & More", "Burgers", "Appetizers", "Sandwiches", "Beverages"};
+        JComboBox categoryBox = new JComboBox(categoryDropDown);
 
         JButton commitButton = new JButton("Commit");
 
         inputPanel.add(comboBox);
-        inputPanel.add(IdLabel);
-        inputPanel.add(IdField);
         inputPanel.add(nameLabel);
         inputPanel.add(nameField);
         inputPanel.add(countLabel);
         inputPanel.add(countField);
         inputPanel.add(priceLabel);
         inputPanel.add(priceField);
-        inputPanel.add(categoryLabel);
-        inputPanel.add(categoryField);
+        inputPanel.add(categoryBox);
         inputPanel.add(commitButton);
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
@@ -588,26 +583,23 @@ public class Controller implements ActionListener{
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
-            priceField.setBackground(Color.white); categoryField.setBackground(Color.white); nameField.setBackground(Color.white);
-            countField.setBackground(Color.white); priceField.setBackground(Color.white); IdField.setBackground(Color.white);
+            priceField.setBackground(Color.white); categoryBox.setBackground(Color.white); nameField.setBackground(Color.white);
+            countField.setBackground(Color.white); priceField.setBackground(Color.white);
 
-            priceField.setEditable(true); categoryField.setEditable(true); nameField.setEditable(true);
-            countField.setEditable(true); priceField.setEditable(true); IdField.setEditable(true);
+            priceField.setEditable(true); categoryBox.setEditable(true); nameField.setEditable(true);
+            countField.setEditable(true); priceField.setEditable(true);
             
             if(comboBox.getSelectedItem().equals("Add New Inventory")){
-                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
-                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
+                categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
                 viewTable(table, false);
             } else if(comboBox.getSelectedItem().equals("Add New Menu Item")){
-                IdField.setEditable(false); IdField.setBackground(Color.lightGray); IdField.setText("");
                 countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
                 viewTable(table, true);
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
-                categoryField.setEditable(false); categoryField.setBackground(Color.lightGray); categoryField.setText("");
+                categoryBox.setEditable(false); categoryBox.setBackground(Color.lightGray);
                 viewTable(table, false);
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
-                countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText("");
-                viewTable(table, true);
+                countField.setEditable(false); countField.setBackground(Color.lightGray); countField.setText(""); 
             }
         });
 
@@ -615,12 +607,6 @@ public class Controller implements ActionListener{
             int ID = 0; int count = 0; Double price = 0.00; String category = ""; String name = "";
 
             boolean flagID, flagCount, flagCategory, flagPrice, flagName; //The flags are used so we can optionally update some fields in the SQL statement (see updateMenuItem and updateInventory SQL statements)
-            if(IdField.getText().trim().isEmpty()){
-                flagID = false;
-            } else{
-                flagID = true;
-                ID = Integer.parseInt(IdField.getText());
-            }
 
             if(priceField.getText().trim().isEmpty()){
                 flagPrice = false;
@@ -629,11 +615,11 @@ public class Controller implements ActionListener{
                 price = Double.parseDouble(priceField.getText());
             }
 
-            if(categoryField.getText().trim().isEmpty()){
+            if(categoryBox.getSelectedItem().equals("Choose An Option")){
                 flagCategory = false;
             } else{
                 flagCategory = true;
-                category = categoryField.getText();
+                category = categoryBox.getSelectedItem().toString();
             }
 
             if(countField.getText().trim().isEmpty()){
@@ -663,11 +649,7 @@ public class Controller implements ActionListener{
                 }
 
             } else if(comboBox.getSelectedItem().equals("Update Inventory")){
-                if(flagID == false){
-                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
-                    return;
-                }
-                if(model.updateInventory(ID, name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
+                if(model.updateInventory(name, count, price, phoneNumber, flagName, flagCount, flagPrice)){
                     JOptionPane.showMessageDialog(null, "Inventory Updated");
                     viewTable(table, false);
                 } else{
@@ -685,11 +667,7 @@ public class Controller implements ActionListener{
                     JOptionPane.showMessageDialog(null, "Unable to add new inventory");
                 }
             } else if(comboBox.getSelectedItem().equals("Update Menu Item")){
-                if(flagID == false){
-                    JOptionPane.showMessageDialog(null, "Enter a Valid ID value");
-                    return;
-                }
-                if(model.updateMenuItem(ID, name, price, category, flagName, flagPrice, flagCategory)){
+                if(model.updateMenuItem(name, price, category, flagName, flagPrice, flagCategory)){
                     JOptionPane.showMessageDialog(null, "Menu Item Updated");
                     viewTable(table, true);
                 } else{

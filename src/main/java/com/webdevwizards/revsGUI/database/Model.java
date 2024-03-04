@@ -303,11 +303,11 @@ import javax.swing.JFrame;
             }
         }
 
-        public static boolean updateInventory(int ingredient_id, String ingredient_name, int stock, double price, String phoneNumber,
+        public static boolean updateInventory( String ingredient_name, int stock, double price, String phoneNumber,
                                               boolean flagName, boolean flagStock, boolean flagPrice){
             try{
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM ingredients WHERE ingredient_id = ?");
-                statement.setInt(1, ingredient_id);
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM ingredients WHERE ingredient_name = ?");
+                statement.setString(1, ingredient_name);
                 ResultSet rs = statement.executeQuery();
                 Double ingredientPrice = 0.00;
 
@@ -315,18 +315,22 @@ import javax.swing.JFrame;
                     int current_stock = rs.getInt(3);
                     ingredientPrice = rs.getDouble(4);
                     int new_stock = current_stock + stock;
-                    PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_name = CASE WHEN ? = true THEN ? ELSE ingredient_name END," +
-                                                                                    "ingredient_current_stock = CASE WHEN ? = true THEN ? ELSE ingredient_current_stock END," +
+                    PreparedStatement statement2 = conn.prepareStatement("UPDATE ingredients SET ingredient_current_stock = CASE WHEN ? = true THEN ? ELSE ingredient_current_stock END," +
                                                                                     "ingredient_unit_price = CASE WHEN ? = true THEN ? ELSE ingredient_unit_price END " +
-                                                                                    "WHERE ingredient_id = ?");
-                    statement2.setBoolean(1, flagName);
-                    statement2.setString(2, ingredient_name);
-                    statement2.setBoolean(3, flagStock);
-                    statement2.setInt(4, new_stock);
-                    statement2.setBoolean(5, flagPrice);
-                    statement2.setDouble(6, price);
-                    statement2.setInt(7, ingredient_id);
+                                                                                    "WHERE ingredient_name = ?", Statement.RETURN_GENERATED_KEYS);
+                    
+                    statement2.setBoolean(1, flagStock);
+                    statement2.setInt(2, new_stock);
+                    statement2.setBoolean(3, flagPrice);
+                    statement2.setDouble(4, price);
+                    statement2.setString(5, ingredient_name);
                     statement2.execute();
+                    ResultSet Updateset = statement2.getGeneratedKeys();
+                    int ingredient_id = 0;
+                    if(Updateset.next()){
+                        ingredient_id = Updateset.getInt(1);
+                    }
+
 
                     if(flagStock) { //Only if we updated the stock do we need to insert into manager_order and junction table
                         Double order_total = stock * ingredientPrice;
@@ -355,25 +359,23 @@ import javax.swing.JFrame;
             }
         }
 
-        public static boolean updateMenuItem(int itemID, String itemName, double price, String category,
+        public static boolean updateMenuItem( String itemName, double price, String category,
                                               boolean flagName, boolean flagPrice, boolean flagCategory){
             try{
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM menu_items WHERE item_id = ?");
-                statement.setInt(1, itemID);
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM menu_items WHERE item_Name = ?");
+                statement.setString(1, itemName);
                 ResultSet rs = statement.executeQuery();
 
                 if(rs.next()){
-                    PreparedStatement statement2 = conn.prepareStatement("UPDATE menu_items SET item_name = CASE WHEN ? = true THEN ? ELSE item_name END," +
+                    PreparedStatement statement2 = conn.prepareStatement("UPDATE menu_items SET " +
                             "item_price = CASE WHEN ? = true THEN ? ELSE item_price END," +
-                            "category = CASE WHEN ? = true THEN ? ELSE category END " +
-                            "WHERE item_id = ?");
-                    statement2.setBoolean(1, flagName);
-                    statement2.setString(2, itemName);
-                    statement2.setBoolean(3, flagPrice);
-                    statement2.setDouble(4, price);
-                    statement2.setBoolean(5, flagCategory);
-                    statement2.setString(6, category);
-                    statement2.setInt(7, itemID);
+                            "category = CASE WHEN ? = true THEN ? ELSE category END " + 
+                            "WHERE item_name = ?");
+                    statement2.setBoolean(1, flagPrice);
+                    statement2.setDouble(2, price);
+                    statement2.setBoolean(3, flagCategory);
+                    statement2.setString(4, category);
+                    statement2.setString(5, itemName);
                     statement2.execute();
 
                 }
