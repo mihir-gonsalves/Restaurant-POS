@@ -578,20 +578,20 @@ public class Controller implements ActionListener{
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
             if(comboBox.getSelectedItem().equals("Users")){
-                viewTable(table, 0);
                 usersPopUp(table);
+                viewTable(table, 0);
             } else if(comboBox.getSelectedItem().equals("Manager Orders")){
-                viewTable(table, 1);
                 managerOrdersPopUp(table);
+                viewTable(table, 1);
             } else if (comboBox.getSelectedItem().equals("Customer Orders")) {
                 viewTable(table, 2);
                 customerOrdersPopUp(table);
             } else if (comboBox.getSelectedItem().equals("Items")) {
-                viewTable(table, 3);
                 itemsPopUp(table);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Ingredients")){
-                viewTable(table, 4);
                 ingredientsPopUp(table);
+                viewTable(table, 4);
             }
         });  
     }
@@ -758,10 +758,10 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                usersPopUp(table);
                 break;
             case 1: // MANAGER ORDERS
                 try {
@@ -798,10 +798,10 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 4);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 4);
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 4);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                managerOrdersPopUp(table);
                 break;
             case 2: // CUSTOMER ORDERS
                 try {
@@ -842,10 +842,10 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(4).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(5).setPreferredWidth(tableWidth / 6);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                customerOrdersPopUp(table);
                 break;
             case 3: // ITEMS
                 try {
@@ -883,10 +883,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 2);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                itemsPopUp(table);
+                break;
             case 4: // INGREDIENTS
                 try {
                     ResultSet resultSet = model.getAllIngredients();
@@ -920,10 +921,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                ingredientsPopUp(table);
+                break;
         }
     }
 
@@ -949,108 +951,164 @@ public class Controller implements ActionListener{
                     popupMenu.add(deleteItem);
                     popupMenu.add(createItem);
 
-                    // TODO add action listeners to items
+                    // add action listeners to items
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             // create a JDialog
-                            // JDialog updateUserPopupDialog = new JDialog();
-                            // updateUserPopupDialog.setTitle("Update User");
-                            // updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
-                            // updateUserPopupDialog.setLocationRelativeTo(null);
+                            JDialog updateUserPopupDialog = new JDialog();
+                            updateUserPopupDialog.setTitle("Update User");
+                            updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateUserPopupDialog.setLocationRelativeTo(null);
 
-                            // // create Container of Dialog's content pane for layout purposes  
-                            // Container updateUserPopup = updateUserPopupDialog.getContentPane();
-                            // updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
+                            // create Container of Dialog's content pane for layout purposes  
+                            Container updateUserPopup = updateUserPopupDialog.getContentPane();
+                            updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
                             
-                            // // create and collect date label and field 
-                            // JPanel datePanel = new JPanel();
-                            // JLabel dateLabel = new JLabel("Order Date: ");
-                            // JTextField dateField = new JTextField(10);
-                            // dateField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_date"));
-                            // datePanel.add(dateLabel);
-                            // datePanel.add(dateField);
+                            // create and collect phoneNumber label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoneNumberLabel = new JLabel("User Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText(model.getObject("users", "user_id", id, "phonenumber"));
+                            phoneNumberPanel.add(phoneNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
 
-                            // // create and collect time label and field 
-                            // JPanel timePanel = new JPanel();
-                            // JLabel timeLabel = new JLabel("Order Time: ");
-                            // JTextField timeField = new JTextField(12);
-                            // timeField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_time"));
-                            // timePanel.add(timeLabel);
-                            // timePanel.add(timeField);
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("User's Name: ");
+                            JTextField nameField = new JTextField(20);
+                            nameField.setText(model.getObject("users", "user_id", id, "name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
 
-                            // // create and collect subtotal label and field 
-                            // JPanel subtotalPanel = new JPanel();
-                            // JLabel subtotalLabel = new JLabel("Order Subtotal: ");
-                            // JTextField subtotalField = new JTextField(7);
-                            // subtotalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_subtotal"));
-                            // subtotalPanel.add(subtotalLabel);
-                            // subtotalPanel.add(subtotalField);
+                            // create and collect isManager label and field 
+                            JPanel isManagerPanel = new JPanel();
+                            JLabel isManagerLabel = new JLabel("User Manager Status: ");
+                            String[] managerStatus = {"true", "false"};
+                            JComboBox isManagerComboBox = new JComboBox(managerStatus);
+                            boolean isManager = Boolean.parseBoolean(model.getObject("users", "user_id", id, "ismanager"));
+                            isManagerComboBox.setSelectedItem(String.valueOf(isManager));
+                            isManagerPanel.add(isManagerLabel);
+                            isManagerPanel.add(isManagerComboBox);
 
-                            // // create and collect tax label and field 
-                            // JPanel taxPanel = new JPanel();
-                            // JLabel taxLabel = new JLabel("Order Tax: ");
-                            // JTextField taxField = new JTextField(6);
-                            // taxField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_tax"));
-                            // taxPanel.add(taxLabel);
-                            // taxPanel.add(taxField);
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String phoneNumber = phoneNumberField.getText();
+                                    String name = nameField.getText();
+                                    boolean isManager = isManagerComboBox.getSelectedItem().equals("true");
+                                    model.updateUser(id, phoneNumber, name, isManager);
+                                    updateUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
 
-                            // // create and collect total label and field 
-                            // JPanel totalPanel = new JPanel();
-                            // JLabel totalLabel = new JLabel("Order Total: ");
-                            // JTextField totalField = new JTextField(7);
-                            // totalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_total"));
-                            // totalPanel.add(totalLabel);
-                            // totalPanel.add(totalField);
-
-                            // // create and collect payment method label and field 
-                            // JPanel paymentMethodPanel = new JPanel();
-                            // JLabel paymentMethodLabel = new JLabel("Payment Method: ");
-                            // JTextField paymentMethodField = new JTextField(10);
-                            // paymentMethodField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_payment_type"));
-                            // paymentMethodPanel.add(paymentMethodLabel);
-                            // paymentMethodPanel.add(paymentMethodField);
-
-                            // // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
-                            // JButton commitButton = new JButton("Commit");
-                            // commitButton.addActionListener(new ActionListener() {
-                            //     @Override
-                            //     public void actionPerformed(ActionEvent e) {
-                            //         // update the order in the database and also the table 
-                            //         String date = dateField.getText();
-                            //         String time = timeField.getText();
-                            //         String subtotal = subtotalField.getText();
-                            //         String tax = taxField.getText();
-                            //         String total = totalField.getText();
-                            //         String paymentMethod = paymentMethodField.getText();
-                            //         model.updateUser(id, date, time, subtotal, tax, total, paymentMethod);
-                            //         updateUserPopupDialog.dispose();
-                            //         viewTable(table, tableType);
-                            //     }
-                            // });
-
-                            // // add all panels to the popup and display the popup 
-                            // updateUserPopup.add(datePanel);
-                            // updateUserPopup.add(timePanel);
-                            // updateUserPopup.add(subtotalPanel);
-                            // updateUserPopup.add(taxPanel);
-                            // updateUserPopup.add(totalPanel);
-                            // updateUserPopup.add(paymentMethodPanel);
-                            // updateUserPopup.add(commitButton);
-                            // updateUserPopup.setVisible(true);
-                            // updateUserPopupDialog.setVisible(true);
+                            // add all panels to the popup and display the popup 
+                            updateUserPopup.add(phoneNumberPanel);
+                            updateUserPopup.add(namePanel);
+                            updateUserPopup.add(isManagerPanel);
+                            updateUserPopup.add(commitButton);
+                            updateUserPopup.setVisible(true);
+                            updateUserPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
+                            
+                            // create a JDialog
+                            JDialog deleteUserPopupDialog = new JDialog();
+                            deleteUserPopupDialog.setTitle("Delete User");
+                            deleteUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteUserPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteUserPopup = deleteUserPopupDialog.getContentPane();
+                            deleteUserPopup.setLayout(new BoxLayout(deleteUserPopup, BoxLayout.Y_AXIS));
+                            JLabel deleteUserLabel = new JLabel("Are you sure you want to delete this user: " + model.getObject("users", "user_id", id, "name") + "?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteUser(id);
+                                    deleteUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteUserPopup.add(deleteUserLabel);
+                            deleteUserPopup.add(confirmButton);
+                            deleteUserPopup.setVisible(true);
+                            deleteUserPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
+                            // create a JDialog
+                            JDialog updateUserPopupDialog = new JDialog();
+                            updateUserPopupDialog.setTitle("Update User");
+                            updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateUserPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes  
+                            Container updateUserPopup = updateUserPopupDialog.getContentPane();
+                            updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect phoneNumber label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoneNumberLabel = new JLabel("User Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText("1234567890");
+                            phoneNumberPanel.add(phoneNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("User's Name: ");
+                            JTextField nameField = new JTextField(20);
+                            nameField.setText("<first name> <last name>");
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect isManager label and field 
+                            JPanel isManagerPanel = new JPanel();
+                            JLabel isManagerLabel = new JLabel("User Manager Status: ");
+                            String[] managerStatus = {"true", "false"};
+                            JComboBox isManagerComboBox = new JComboBox(managerStatus);
+                            isManagerComboBox.setSelectedItem("false");
+                            isManagerPanel.add(isManagerLabel);
+                            isManagerPanel.add(isManagerComboBox);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String phoneNumber = phoneNumberField.getText();
+                                    String name = nameField.getText();
+                                    boolean isManager = isManagerComboBox.getSelectedItem().equals("true");
+                                    model.createUser(phoneNumber, name, isManager);
+                                    updateUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            updateUserPopup.add(phoneNumberPanel);
+                            updateUserPopup.add(namePanel);
+                            updateUserPopup.add(isManagerPanel);
+                            updateUserPopup.add(commitButton);
+                            updateUserPopup.setVisible(true);
+                            updateUserPopupDialog.setVisible(true);
                         }
                     });
                     popupMenu.show(me.getComponent(), me.getX(), me.getY());
@@ -1087,28 +1145,178 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-
                             // create a JDialog
                             JDialog updateOrderPopupDialog = new JDialog();
                             updateOrderPopupDialog.setTitle("Update Order");
                             updateOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             updateOrderPopupDialog.setLocationRelativeTo(null);
 
-                            // create a Container from Dialog's content pane for layout purposes
+                            // create a Container from the Dialog's content pane for layout purposes
                             Container updateOrderPopup = updateOrderPopupDialog.getContentPane();
                             updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect date label and field 
+                            JPanel datePanel = new JPanel();
+                            JLabel dateLabel = new JLabel("Order Date: ");
+                            JTextField dateField = new JTextField(10);
+                            dateField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_date"));
+                            datePanel.add(dateLabel);
+                            datePanel.add(dateField);
+
+                            // create and collect time label and field 
+                            JPanel timePanel = new JPanel();
+                            JLabel timeLabel = new JLabel("Order Time: ");
+                            JTextField timeField = new JTextField(12);
+                            timeField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_time"));
+                            timePanel.add(timeLabel);
+                            timePanel.add(timeField);
+
+                            // create and collect total label and field 
+                            JPanel totalPanel = new JPanel();
+                            JLabel totalLabel = new JLabel("Order Total: ");
+                            JTextField totalField = new JTextField(7);
+                            totalField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_total"));
+                            totalPanel.add(totalLabel);
+                            totalPanel.add(totalField);
+
+                            // create and collect payment method label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoenNumberLabel = new JLabel("Order Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText(model.getObject("manager_order", "m_order_id", id, "phonenumber"));
+                            phoneNumberPanel.add(phoenNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String date = dateField.getText();
+                                    String time = timeField.getText();
+                                    Double total = Double.parseDouble(totalField.getText());
+                                    String phoneNumber = phoneNumberField.getText();
+                                    model.updateManagerOrder(id, date, time, total, phoneNumber);
+                                    updateOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            updateOrderPopup.add(datePanel);
+                            updateOrderPopup.add(timePanel);
+                            updateOrderPopup.add(totalPanel);
+                            updateOrderPopup.add(phoneNumberPanel);
+                            updateOrderPopup.add(commitButton);
+                            updateOrderPopup.setVisible(true);
+                            updateOrderPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
+                            
+                            // create a JDialog
+                            JDialog deleteOrderPopupDialog = new JDialog();
+                            deleteOrderPopupDialog.setTitle("Delete Order");
+                            deleteOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteOrderPopup = deleteOrderPopupDialog.getContentPane();
+                            deleteOrderPopup.setLayout(new BoxLayout(deleteOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteOrderLabel = new JLabel("Are you sure you want to delete this order?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteManagerOrder(id);
+                                    deleteOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteOrderPopup.add(deleteOrderLabel);
+                            deleteOrderPopup.add(confirmButton);
+                            deleteOrderPopup.setVisible(true);
+                            deleteOrderPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
+                            // create a JDialog
+                            JDialog createOrderPopupDialog = new JDialog();
+                            createOrderPopupDialog.setTitle("Update Order");
+                            createOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            createOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container from the Dialog's content pane for layout purposes
+                            Container createOrderPopup = createOrderPopupDialog.getContentPane();
+                            createOrderPopup.setLayout(new BoxLayout(createOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect date label and field 
+                            JPanel datePanel = new JPanel();
+                            JLabel dateLabel = new JLabel("Order Date: ");
+                            JTextField dateField = new JTextField(10);
+                            dateField.setText("YYYY-MM-DD");
+                            datePanel.add(dateLabel);
+                            datePanel.add(dateField);
+
+                            // create and collect time label and field 
+                            JPanel timePanel = new JPanel();
+                            JLabel timeLabel = new JLabel("Order Time: ");
+                            JTextField timeField = new JTextField(12);
+                            timeField.setText("HH:MM:SS.sss");
+                            timePanel.add(timeLabel);
+                            timePanel.add(timeField);
+
+                            // create and collect total label and field 
+                            JPanel totalPanel = new JPanel();
+                            JLabel totalLabel = new JLabel("Order Total: ");
+                            JTextField totalField = new JTextField(7);
+                            totalField.setText("0.00");
+                            totalPanel.add(totalLabel);
+                            totalPanel.add(totalField);
+
+                            // create and collect payment method label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoenNumberLabel = new JLabel("Order Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText("1234567890");
+                            phoneNumberPanel.add(phoenNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String date = dateField.getText();
+                                    String time = timeField.getText();
+                                    Double total = Double.parseDouble(totalField.getText());
+                                    String phoneNumber = phoneNumberField.getText();
+                                    model.createManagerOrder(date, time, total, phoneNumber);
+                                    createOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            createOrderPopup.add(datePanel);
+                            createOrderPopup.add(timePanel);
+                            createOrderPopup.add(totalPanel);
+                            createOrderPopup.add(phoneNumberPanel);
+                            createOrderPopup.add(commitButton);
+                            createOrderPopup.setVisible(true);
+                            createOrderPopupDialog.setVisible(true);
                         }
                     });
                     popupMenu.show(me.getComponent(), me.getX(), me.getY());
@@ -1388,17 +1596,99 @@ public class Controller implements ActionListener{
                     popupMenu.add(deleteItem);
                     popupMenu.add(createItem);
 
-                    // TODO : add action listeners to items
+                    // add action listeners to items
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update " + tableType);
+                            // create a JDialog 
+                            JDialog updateItemPopupDialog = new JDialog();
+                            updateItemPopupDialog.setTitle("Create Item");
+                            updateItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateItemPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container updateItemPopup = updateItemPopupDialog.getContentPane();
+                            updateItemPopup.setLayout(new BoxLayout(updateItemPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Item Name: ");
+                            JTextField nameField = new JTextField(model.getObject("menu_item", "item_id", id, "item_name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect price label and field 
+                            JPanel pricePanel = new JPanel();
+                            JLabel priceLabel = new JLabel("Item Price: ");
+                            JTextField priceField = new JTextField(model.getObject("menu_item", "item_id", id, "item_price"));
+                            pricePanel.add(priceLabel);
+                            pricePanel.add(priceField);
+
+                            // create and collect category label and ComboBox
+                            JPanel categoryPanel = new JPanel();
+                            JLabel categoryLabel = new JLabel("Item Category: ");
+                            String[] categoryDropDown = {"Choose An Option", "Appetizers", "Beverages", "Burgers", "Limited Time Offer", "Salads", "Sandwiches", "Shakes & More", "Value Meals"};
+                            JComboBox categoryComboBox = new JComboBox(categoryDropDown);
+                            categoryComboBox.setSelectedItem(model.getObject("menu_item", "item_id", id, "item_category"));
+                            categoryPanel.add(categoryLabel);
+                            categoryPanel.add(categoryComboBox);
+
+                            // create a button to commit the new item to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String name = nameField.getText();
+                                    Double price = Double.parseDouble(priceField.getText());
+                                    String category = categoryComboBox.getSelectedItem().toString();
+                                    model.updateItem(id, name, price, category);
+                                    updateItemPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            updateItemPopup.add(namePanel);
+                            updateItemPopup.add(pricePanel);
+                            updateItemPopup.add(categoryPanel);
+                            updateItemPopup.add(commitButton);
+                            updateItemPopup.setVisible(true);
+                            updateItemPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
+                            // create a JDialog
+                            JDialog deleteItemPopupDialog = new JDialog();
+                            deleteItemPopupDialog.setTitle("Delete Item");
+                            deleteItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteItemPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteItemPopup = deleteItemPopupDialog.getContentPane();
+                            deleteItemPopup.setLayout(new BoxLayout(deleteItemPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteItemLabel = new JLabel("Are you sure you want to delete this item?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteItem(id);  
+                                    deleteItemPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteItemPopup.add(deleteItemLabel);
+                            deleteItemPopup.add(confirmButton);
+                            deleteItemPopup.setVisible(true);
+                            deleteItemPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
@@ -1577,23 +1867,156 @@ public class Controller implements ActionListener{
                     popupMenu.add(deleteItem);
                     popupMenu.add(createItem);
 
-                    // TODO : add action listeners to items
+                    // add action listeners to items
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update order");
+                            // create a JDialog 
+                            JDialog updateIngredientPopupDialog = new JDialog();
+                            updateIngredientPopupDialog.setTitle("Update Ingredient");
+                            updateIngredientPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateIngredientPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container updateIngredientPopup = updateIngredientPopupDialog.getContentPane();
+                            updateIngredientPopup.setLayout(new BoxLayout(updateIngredientPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Ingredient Name: ");
+                            JTextField nameField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect current stock label and field 
+                            JPanel currentStockPanel = new JPanel();
+                            JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
+                            JTextField currentStockField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock"));
+                            currentStockPanel.add(currentStockLabel);
+                            currentStockPanel.add(currentStockField);
+
+                            // create and collect unit price label and ComboBox
+                            JPanel unitPricePanel = new JPanel();
+                            JLabel unitPriceLabel = new JLabel("Ingredient Unit Price: ");
+                            JTextField unitPriceField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_unit_price"));
+                            unitPricePanel.add(unitPriceLabel);
+                            unitPricePanel.add(unitPriceField);
+
+                            // create a button to commit the new ingredient to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the ingredient in the database and also the table 
+                                    String name = nameField.getText();
+                                    Integer currentStock = Integer.parseInt(currentStockField.getText());
+                                    Double unitPrice = Double.parseDouble(unitPriceField.getText());
+                                    model.updateIngredient(id, name, currentStock, unitPrice);
+                                    updateIngredientPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            updateIngredientPopup.add(namePanel);
+                            updateIngredientPopup.add(currentStockPanel);
+                            updateIngredientPopup.add(unitPricePanel);
+                            updateIngredientPopup.add(commitButton);
+                            updateIngredientPopup.setVisible(true);
+                            updateIngredientPopupDialog.setVisible(true);
+                        
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete order");
+                            // create a JDialog
+                            JDialog deleteIngredientsPopupDialog = new JDialog();
+                            deleteIngredientsPopupDialog.setTitle("Delete Ingredient");
+                            deleteIngredientsPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteIngredientsPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteIngredientsPopup = deleteIngredientsPopupDialog.getContentPane();
+                            deleteIngredientsPopup.setLayout(new BoxLayout(deleteIngredientsPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteIngredientsLabel = new JLabel("Are you sure you want to delete this order?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteIngredient(id);
+                                    deleteIngredientsPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteIngredientsPopup.add(deleteIngredientsLabel);
+                            deleteIngredientsPopup.add(confirmButton);
+                            deleteIngredientsPopup.setVisible(true);
+                            deleteIngredientsPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create order");
+                            // create a JDialog 
+                            JDialog createIngredientPopupDialog = new JDialog();
+                            createIngredientPopupDialog.setTitle("Update Ingredient");
+                            createIngredientPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            createIngredientPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container createIngredientPopup = createIngredientPopupDialog.getContentPane();
+                            createIngredientPopup.setLayout(new BoxLayout(createIngredientPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Ingredient Name: ");
+                            JTextField nameField = new JTextField(20);
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect current stock label and field 
+                            JPanel currentStockPanel = new JPanel();
+                            JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
+                            JTextField currentStockField = new JTextField(7);
+                            currentStockPanel.add(currentStockLabel);
+                            currentStockPanel.add(currentStockField);
+
+                            // create and collect unit price label and ComboBox
+                            JPanel unitPricePanel = new JPanel();
+                            JLabel unitPriceLabel = new JLabel("Item Unit Price: ");
+                            JTextField unitPriceField = new JTextField(7);
+                            unitPricePanel.add(unitPriceLabel);
+                            unitPricePanel.add(unitPriceField);
+
+                            // create a button to commit the new item to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String name = nameField.getText();
+                                    Integer currentStock = Integer.parseInt(currentStockField.getText());
+                                    Double unitPrice = Double.parseDouble(unitPriceField.getText());
+                                    model.createIngredient(name, currentStock, unitPrice);
+                                    createIngredientPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            createIngredientPopup.add(namePanel);
+                            createIngredientPopup.add(currentStockPanel);
+                            createIngredientPopup.add(unitPricePanel);
+                            createIngredientPopup.add(commitButton);
+                            createIngredientPopup.setVisible(true);
+                            createIngredientPopupDialog.setVisible(true);
                         }
                     });
                     popupMenu.show(me.getComponent(), me.getX(), me.getY());

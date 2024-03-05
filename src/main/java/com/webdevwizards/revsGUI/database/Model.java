@@ -596,7 +596,6 @@ public class Model {
     }
 
     public String getObject(String table, String id, int row, String type) {
-        System.out.println("table: " + table + " id: " + id + " row: " + row + " type: " + type);
         try {
             PreparedStatement statement = conn.prepareStatement("select " + type + " from " + table + " where " + id + " = ?");
             statement.setInt(1, row);
@@ -615,7 +614,28 @@ public class Model {
         }
     }
 
-    public String updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
+    public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update manager_order" +
+                "set m_order_date = ?" +
+                "set m_order_time = ?" +
+                "set m_order_total = ?" +
+                "set phonenumber = ?" +
+                "where m_order_id = ?");
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.setInt(5, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
             PreparedStatement statement = conn.prepareStatement("update customer_order" +
                 "set c_order_date = ?" +
@@ -633,17 +653,118 @@ public class Model {
             statement.setString(6, paymentType);
             statement.setInt(7, id);
             statement.execute();
-            return "Success";
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return null;
+            return;
+        }
+    }
+
+    public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update users" +
+                "set phonenumber = ?" +
+                "set name = ?" +
+                "set ismanager = ?" +
+                "where user_id = ?");
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    public void updateItem(int id, String name, double price, String category) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update menu_items" +
+                "set item_name = ?" +
+                "set item_price = ?" +
+                "set category = ?" +
+                "where item_id = ?");
+            statement.setString(1, name);
+            statement.setDouble(2, price);
+            statement.setString(3, category);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    public void updateIngredient(int id, String name, int stock, double price) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update ingredients" +
+                "set ingredient_name = ?" +
+                "set ingredient_current_stock = ?" +
+                "set ingredient_unit_price = ?" +
+                "where ingredient_id = ?");
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    public void deleteUser(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from users where user_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
         }
     }
 
     public void deleteCustomerOrder(int id) {
         try {
             PreparedStatement statement = conn.prepareStatement("delete from customer_order where c_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void deleteManagerOrder(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from manager_order where m_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void deleteItem(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from menu_items where item_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void deleteIngredient(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from ingredients where ingredient_id = ?");
             statement.setInt(1, id);
             statement.execute();
         } catch (SQLException e) {
@@ -664,6 +785,55 @@ public class Model {
             statement.setString(4, tax);
             statement.setString(5, total);
             statement.setString(6, paymentType);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void createManagerOrder(String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into manager_order" +
+                "(m_order_date, m_order_time, m_order_total, phonenumber)" +
+                "values (?, ?, ?, ?)"
+                );
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void createUser(String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into users" +
+                "(phonenumber, name, ismanager)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void createIngredient(String name, int stock, double price) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into ingredients" +
+                "(ingredient_name, ingredient_current_stock, ingredient_unit_price)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
