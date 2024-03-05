@@ -311,21 +311,57 @@ public class Model {
         try {
             PreparedStatement statement = conn.prepareStatement(
                     "SELECT menu_items.item_name, menu_items.item_price, menu_items.category, " +
-                            "STRING_AGG(ingredients.ingredient_name || ' : ' || item_to_ingredient_list.ingredient_quantity, '; ') AS ingredients " +
-                            "FROM menu_items " +
-                            "JOIN item_to_ingredient_list ON menu_items.item_id = item_to_ingredient_list.item_id " +
-                            "JOIN ingredients ON item_to_ingredient_list.ingredient_id = ingredients.ingredient_id " +
-                            "GROUP BY menu_items.item_id, menu_items.item_name, menu_items.item_price, menu_items.category " +
-                            "ORDER BY menu_items.item_id"
-            );
-            ResultSet rs = statement.executeQuery();
-            return rs;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return null;
+                    "STRING_AGG(ingredients.ingredient_name || ' : ' || item_to_ingredient_list.ingredient_quantity, '; ') AS ingredients " +
+                    "FROM menu_items " +
+                    "JOIN item_to_ingredient_list ON menu_items.item_id = item_to_ingredient_list.item_id " +
+                    "JOIN ingredients ON item_to_ingredient_list.ingredient_id = ingredients.ingredient_id " +
+                    "GROUP BY menu_items.item_id, menu_items.item_name, menu_items.item_price, menu_items.category " +
+                    "ORDER BY menu_items.item_id"
+                );
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
         }
-    }
+
+        public static ResultSet getAllCustomerOrders() {
+            try {
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM customer_order ORDER BY c_order_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+
+        public static ResultSet getAllManagerOrders() {
+            try {
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM manager_order ORDER BY m_order_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
+
+        public static ResultSet getAllUsers() {
+            try {
+                PreparedStatement statement = conn.prepareStatement("SELECT * FROM users ORDER BY user_id");
+                ResultSet rs = statement.executeQuery();
+                return rs;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+                return null;
+            }
+        }
 
     public static boolean addNewInventory(String ingredientName, int ingredientStock, Double ingredientPrice){
         try{
@@ -556,6 +592,82 @@ public class Model {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
             return null;
+        }
+    }
+
+    public String getObject(String table, String id, int row, String type) {
+        System.out.println("table: " + table + " id: " + id + " row: " + row + " type: " + type);
+        try {
+            PreparedStatement statement = conn.prepareStatement("select " + type + " from " + table + " where " + id + " = ?");
+            statement.setInt(1, row);
+            
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString(1);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update customer_order" +
+                "set c_order_date = ?" +
+                "set c_order_time = ?" +
+                "set c_order_subtotal = ?" +
+                "set c_order_tax = ?" +
+                "set c_order_total = ?" +
+                "set c_order_payment_type = ?" +
+                "where c_order_id = ?");
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setString(3, subtotal);
+            statement.setString(4, tax);
+            statement.setString(5, total);
+            statement.setString(6, paymentType);
+            statement.setInt(7, id);
+            statement.execute();
+            return "Success";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void deleteCustomerOrder(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from customer_order where c_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    public void createCustomerOrder(String date, String time, String subtotal, String tax, String total, String paymentType) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into customer_order" +
+                "(c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type)" +
+                "values (?, ?, ?, ?, ?, ?)"
+                );
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setString(3, subtotal);
+            statement.setString(4, tax);
+            statement.setString(5, total);
+            statement.setString(6, paymentType);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
         }
     }
 
