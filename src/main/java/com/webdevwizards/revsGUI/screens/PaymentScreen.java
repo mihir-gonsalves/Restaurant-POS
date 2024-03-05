@@ -107,6 +107,10 @@ public class PaymentScreen extends JFrame implements ActionListener {
         // frame.setVisible(true);
     }
 
+    
+    /** 
+     * @param e
+     */
     // if button is pressed
     public void actionPerformed(ActionEvent e)
     {

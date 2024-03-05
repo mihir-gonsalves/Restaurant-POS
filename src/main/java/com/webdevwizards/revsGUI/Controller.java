@@ -33,6 +33,10 @@ public class Controller implements ActionListener{
     private int preferredHeight;
 
 
+    
+    /** 
+     * @param args
+     */
     public static void main(String[] args) {
         // setup and display the login screen
         FlatLightLaf.setup();
@@ -92,10 +96,12 @@ public class Controller implements ActionListener{
     /*
      * LOGIN SCREEN METHODS
      */
+    
     // sets the login screen to visible
     public void switchToLoginScreen() {
         loginScreen.getFrame().setVisible(true);
     }
+
     // get preferred size of the frame from fullscreen button then set preferred values and the size of the frame
     public void getPreferredSize() {
         JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
@@ -126,6 +132,7 @@ public class Controller implements ActionListener{
             }
         });
     }
+
     // switch to appropriate screen based on login's phone number
     public void switchFromLoginScreen() {
         loginScreen.getLoginButton().addActionListener(new ActionListener() {
@@ -173,11 +180,16 @@ public class Controller implements ActionListener{
     /*
      * CASHIER SCREEN METHODS
      */
+
     // sets the cashier screen to visible and sets isManager to false
     public void switchToCashierScreen() {
         isManager = false;
         cashierScreen.getFrame().setVisible(true);
     }
+    
+    /** 
+     * @param category
+     */
     public void populateCashierItemPanel(String category) {
         // Get items and sort by category
         ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -319,6 +331,7 @@ public class Controller implements ActionListener{
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
+
     // populates the cashier navbar and sets up action listeners for each category button
     public void populateCashierNavBar() {
         ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -378,6 +391,7 @@ public class Controller implements ActionListener{
             e.printStackTrace();
         }
     }
+
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
@@ -420,6 +434,7 @@ public class Controller implements ActionListener{
         // reinitialize the subtotal label in bottom panel
         populateCashierBottomPanel();
     }
+
     // populate the bottom panel of the cashier screen with the cashier's name and the subtotal of the order
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
@@ -451,6 +466,7 @@ public class Controller implements ActionListener{
         bottomPanel.revalidate();
         bottomPanel.repaint();
     }
+
     // complete the cashier's order via orderComplete button, display subtotal, and switch to payment screen
     public void switchFromCashierPanel() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
@@ -486,6 +502,7 @@ public class Controller implements ActionListener{
     /*
      * MANAGER SCREEN METHODS
      */
+
     // sets the manager screen to visible and sets isManager to true
     public void switchToManagerScreen() {
         isManager = true;
@@ -517,6 +534,10 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
+    
+    /** 
+     * @param content
+     */
     // populates the manager screen with content
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -540,6 +561,7 @@ public class Controller implements ActionListener{
         mainPanel.revalidate();
         mainPanel.repaint();
     }
+    
     // populates the manager screen with a chart // TODO implement chart
     public void populateManagerChartPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -548,6 +570,7 @@ public class Controller implements ActionListener{
         chartTextArea.setPreferredSize(new Dimension(450, 500));
         mainPanel.add(chartTextArea);
     }
+
     // populates the manager screen with the order panel
     public void populateManagerOrderPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -595,6 +618,7 @@ public class Controller implements ActionListener{
             }
         });  
     }
+
     // populates the manager screen with the track panel
     public void populateManagerTrackPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -652,6 +676,7 @@ public class Controller implements ActionListener{
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
     }
+
     // populates the manager screen with a table of CRUD operations for each table
     public void populateManagerTablePanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -709,6 +734,11 @@ public class Controller implements ActionListener{
         paymentScreen.getFrame().setVisible(true);
     }
 
+    
+    /** 
+     * @param dateString
+     * @return String
+     */
     /*
      * HELPER METHODS
      */
@@ -719,6 +749,11 @@ public class Controller implements ActionListener{
         dateString = dateString.replaceAll("/", "-");
         return dateString;
     }
+    
+    /** 
+     * @param table
+     * @param tableType
+     */
     // updates the table with the latest data from SQL
     // tableType 0 for users, 1 for manager orders, 2 for customer orders, 2 for items, 3 for ingredients
     private void viewTable(JTable table, int tableType) {
@@ -934,6 +969,11 @@ public class Controller implements ActionListener{
         }
     }
 
+    
+    
+    /** 
+     * @param table
+     */
     private void usersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
@@ -1122,6 +1162,10 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void managerOrdersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
@@ -1330,6 +1374,10 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void customerOrdersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
@@ -1577,6 +1625,10 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void itemsPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
@@ -1848,6 +1900,10 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void ingredientsPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
@@ -2030,6 +2086,11 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param c
+     * @param f
+     */
     // update font size of all components of a panel recursively
     private void updateFontSizes(Component c, JFrame f) {
         if (c instanceof Container) {
