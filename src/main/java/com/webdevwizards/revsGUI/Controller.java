@@ -953,7 +953,92 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update " + tableType);
+                            // create a JDialog
+                            // JDialog updateUserPopupDialog = new JDialog();
+                            // updateUserPopupDialog.setTitle("Update User");
+                            // updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            // updateUserPopupDialog.setLocationRelativeTo(null);
+
+                            // // create Container of Dialog's content pane for layout purposes  
+                            // Container updateUserPopup = updateUserPopupDialog.getContentPane();
+                            // updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
+                            
+                            // // create and collect date label and field 
+                            // JPanel datePanel = new JPanel();
+                            // JLabel dateLabel = new JLabel("Order Date: ");
+                            // JTextField dateField = new JTextField(10);
+                            // dateField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_date"));
+                            // datePanel.add(dateLabel);
+                            // datePanel.add(dateField);
+
+                            // // create and collect time label and field 
+                            // JPanel timePanel = new JPanel();
+                            // JLabel timeLabel = new JLabel("Order Time: ");
+                            // JTextField timeField = new JTextField(12);
+                            // timeField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_time"));
+                            // timePanel.add(timeLabel);
+                            // timePanel.add(timeField);
+
+                            // // create and collect subtotal label and field 
+                            // JPanel subtotalPanel = new JPanel();
+                            // JLabel subtotalLabel = new JLabel("Order Subtotal: ");
+                            // JTextField subtotalField = new JTextField(7);
+                            // subtotalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_subtotal"));
+                            // subtotalPanel.add(subtotalLabel);
+                            // subtotalPanel.add(subtotalField);
+
+                            // // create and collect tax label and field 
+                            // JPanel taxPanel = new JPanel();
+                            // JLabel taxLabel = new JLabel("Order Tax: ");
+                            // JTextField taxField = new JTextField(6);
+                            // taxField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_tax"));
+                            // taxPanel.add(taxLabel);
+                            // taxPanel.add(taxField);
+
+                            // // create and collect total label and field 
+                            // JPanel totalPanel = new JPanel();
+                            // JLabel totalLabel = new JLabel("Order Total: ");
+                            // JTextField totalField = new JTextField(7);
+                            // totalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_total"));
+                            // totalPanel.add(totalLabel);
+                            // totalPanel.add(totalField);
+
+                            // // create and collect payment method label and field 
+                            // JPanel paymentMethodPanel = new JPanel();
+                            // JLabel paymentMethodLabel = new JLabel("Payment Method: ");
+                            // JTextField paymentMethodField = new JTextField(10);
+                            // paymentMethodField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_payment_type"));
+                            // paymentMethodPanel.add(paymentMethodLabel);
+                            // paymentMethodPanel.add(paymentMethodField);
+
+                            // // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            // JButton commitButton = new JButton("Commit");
+                            // commitButton.addActionListener(new ActionListener() {
+                            //     @Override
+                            //     public void actionPerformed(ActionEvent e) {
+                            //         // update the order in the database and also the table 
+                            //         String date = dateField.getText();
+                            //         String time = timeField.getText();
+                            //         String subtotal = subtotalField.getText();
+                            //         String tax = taxField.getText();
+                            //         String total = totalField.getText();
+                            //         String paymentMethod = paymentMethodField.getText();
+                            //         model.updateUser(id, date, time, subtotal, tax, total, paymentMethod);
+                            //         updateUserPopupDialog.dispose();
+                            //         viewTable(table, tableType);
+                            //     }
+                            // });
+
+                            // // add all panels to the popup and display the popup 
+                            // updateUserPopup.add(datePanel);
+                            // updateUserPopup.add(timePanel);
+                            // updateUserPopup.add(subtotalPanel);
+                            // updateUserPopup.add(taxPanel);
+                            // updateUserPopup.add(totalPanel);
+                            // updateUserPopup.add(paymentMethodPanel);
+                            // updateUserPopup.add(commitButton);
+                            // updateUserPopup.setVisible(true);
+                            // updateUserPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
@@ -1003,16 +1088,15 @@ public class Controller implements ActionListener{
                         @Override
                         public void actionPerformed(ActionEvent e) {
 
-                            // create a popup to update the order
-                            System.out.println("Update " + tableType);
+                            // create a JDialog
                             JDialog updateOrderPopupDialog = new JDialog();
                             updateOrderPopupDialog.setTitle("Update Order");
                             updateOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             updateOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container from Dialog's content pane for layout purposes
                             Container updateOrderPopup = updateOrderPopupDialog.getContentPane();
                             updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
-
-
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
@@ -1061,13 +1145,13 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            // create a popup to update the order
+                            // create a JDialog
                             JDialog updateOrderPopupDialog = new JDialog();
                             updateOrderPopupDialog.setTitle("Update Order");
                             updateOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             updateOrderPopupDialog.setLocationRelativeTo(null);
 
-                            // create and set dialog of dialog content pane  
+                            // create a Container from the Dialog's content pane for layout purposes
                             Container updateOrderPopup = updateOrderPopupDialog.getContentPane();
                             updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
                             
@@ -1153,7 +1237,7 @@ public class Controller implements ActionListener{
                         @Override
                         public void actionPerformed(ActionEvent e) {
 
-                            // create a JDialog (deleteOrderPopupDialog)
+                            // create a JDialog
                             JDialog deleteOrderPopupDialog = new JDialog();
                             deleteOrderPopupDialog.setTitle("Delete Order");
                             deleteOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
@@ -1320,8 +1404,7 @@ public class Controller implements ActionListener{
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
-                            // create a popup to create the item
+                            // create a JDialog 
                             JDialog createItemPopupDialog = new JDialog();
                             createItemPopupDialog.setTitle("Create Item");
                             createItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
