@@ -655,44 +655,49 @@ public class Controller implements ActionListener{
     // populates the manager screen with a table of CRUD operations for each table
     public void populateManagerTablePanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
-        mainPanel.setLayout(new GridLayout(4, 4));
-        StringBuilder tableName = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            int remainder = i % 4;
-            if (remainder == 0) {
-                tableName.append("Create ");
+        mainPanel.setLayout(new BorderLayout());
+
+        // Panel for ingredient ID and count
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        //COMBOBOX
+        JLabel tableLabel = new JLabel("Query Select: ");
+        String[] dropDownList = {"Product Usage","Sales Report", "Excess Report", "Restock Report", "What Sells Together"};
+        JComboBox comboBox = new JComboBox(dropDownList);
+
+        inputPanel.add(tableLabel);
+        inputPanel.add(comboBox);
+        
+
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+
+        // Table to display results. Used in viewTable
+        JTable table = new JTable();
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        
+
+        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
+            if(comboBox.getSelectedItem().equals("Users")){
+                usersPopUp(table);
+                viewTable(table, 0);
+            } else if(comboBox.getSelectedItem().equals("Manager Orders")){
+                managerOrdersPopUp(table);
+                viewTable(table, 1);
+            } else if (comboBox.getSelectedItem().equals("Customer Orders")) {
+                viewTable(table, 2);
+                customerOrdersPopUp(table);
+            } else if (comboBox.getSelectedItem().equals("Items")) {
+                itemsPopUp(table);
+                viewTable(table, 3);
+            } else if(comboBox.getSelectedItem().equals("Ingredients")){
+                ingredientsPopUp(table);
+                viewTable(table, 4);
             }
-            else if (remainder == 1) {
-                tableName.append("Read ");
-            }
-            else if (remainder == 2) {
-                tableName.append("Update ");
-            }
-            else if (remainder == 3) {
-                tableName.append("Delete ");
-            }
-            if (i < 4) {
-                tableName.append("Users");
-            }
-            else if (i < 8) {
-                tableName.append("Orders");
-            }
-            else if (i < 12) {
-                tableName.append("Items");
-            }
-            else if (i < 16) {
-                tableName.append("Ingredients");
-            }
-            JButton tableButton = new JButton(tableName.toString());
-            tableButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Table: " + tableButton.getText());
-                }
-            });
-            mainPanel.add(tableButton);
-            tableName.setLength(0);
-        }
+        });     
     }
 
 
