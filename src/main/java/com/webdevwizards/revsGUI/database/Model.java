@@ -17,12 +17,18 @@ import javax.swing.JFrame;
 
 
 
-
+/**
+ * Model class for the database
+ * @author Caden, Carson, Jesung, Kevin
+ */
 public class Model {
     private static Connection conn = null;
     private static boolean initialized = false;
-    public String phoneNumber;
 
+    /**
+     * The phone number of the user
+     */
+    public String phoneNumber;
     /**
      * Constructor for the Model class : just calls initialize
      */
@@ -75,8 +81,7 @@ public class Model {
     /** 
      * Executes query and returns the result set of the query
      * @param sql the query to be executed
-     * @return the ResultSet of the query unless the query fails, in which case it returns null
-     * @throws SQLException 
+     * @return the ResultSet of the query unless the query fails, in which case it returns null 
      */
     // Execute and return query results
     public static ResultSet executeQuery(String sql) {
@@ -232,7 +237,7 @@ public class Model {
      * @param associatedIngredients the ingredients associated with the item
      * @param quantities the quantities of the ingredients
      * @return boolean true if the ingredients are successfully attached, false if they are not
-     * @throws SQLException
+     * @throws SQLException if the SQL query fails
      */
     public boolean attachAssociatedInventoryToNewItem(int itemID, String[] associatedIngredients, String[] quantities) throws SQLException {
         PreparedStatement statement = conn.prepareStatement("insert into item_to_ingredient_list (item_id, ingredient_id, ingredient_quantity) values (?, ?, ?)");
