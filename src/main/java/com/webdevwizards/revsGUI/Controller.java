@@ -730,23 +730,6 @@ public class Controller implements ActionListener{
         String[] dropDownList = {"Product Usage","Sales Report", "Excess Report", "Restock Report", "What Sells Together"};
         JComboBox comboBox = new JComboBox(dropDownList);
 
-<<<<<<< HEAD
-        JLabel timeStampLabel = new JLabel("TestLabel");
-        JTextField timeStamp = new JTextField(10);
-        JTextField  timeStart = new JTextField(10);
-        JTextField  timeEnd = new JTextField(10);
-        timeStamp.setText("TestText");
-
-        inputPanel.add(tableLabel);
-        
-        inputPanel.add(comboBox);
-
-         inputPanel.add(timeStampLabel);
-        inputPanel.add(timeStamp);
-        inputPanel.add(timeStart);
-        inputPanel.add(timeEnd);
-=======
-
         JLabel timeStart = new JLabel("TimeStart");
         JTextField timeStart2 = new JTextField(10);
 
@@ -768,7 +751,6 @@ public class Controller implements ActionListener{
         inputPanel.add(timeStamp);
         inputPanel.add(timeStamp2);
 
->>>>>>> dc7deb389ce1e96b065606148819089aea38641c
 
         
 
@@ -786,7 +768,12 @@ public class Controller implements ActionListener{
             if(comboBox.getSelectedItem().equals("Product Usage")){
                 TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             } else if(comboBox.getSelectedItem().equals("Sales Report")){
-                TableQuery("SELECT ingredient_id, SUM(ingredient_quantity) AS total_quantity_ordered FROM M_order_to_ingredient_list GROUP BY ingredient_id ORDER BY total_quantity_ordered DESC;", table);
+                TableQuery("SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount \r\n" + //
+                                        "FROM customer_order JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
+                                        "WHERE DATE_PART('month', c_order_date) = DATE_PART('month', CURRENT_DATE - INTERVAL '1 month')\r\n" + //
+                                        "GROUP BY item_id, DATE_PART('month', c_order_date)\r\n" + //
+                                        "ORDER BY itemCount DESC;\r\n" + //
+                                        "", table);
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
                 TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
