@@ -23,10 +23,16 @@ public class Model {
     private static boolean initialized = false;
     public String phoneNumber;
 
+    /**
+     * Constructor for the Model class : just calls initialize
+     */
     public Model() {
         this.initialize();
     }
 
+    /**
+     * Sets up config file and initializes the database connection
+     */
     public void initialize() {
 
         if (initialized) return; // Prevent re-initialization
@@ -67,6 +73,7 @@ public class Model {
 
     
     /** 
+     * Executes query and returns the result set of the query
      * @param sql
      * @return ResultSet
      */
@@ -82,6 +89,9 @@ public class Model {
         }
     }
 
+    /**
+     * Closes connection 
+     */
     public static void close() {
         try {
             conn.close();
@@ -93,6 +103,7 @@ public class Model {
 
     
     /** 
+     * Checks whether the inputted phone number is a manager's or employee's number
      * @param phoneNumber
      * @return boolean
      */
@@ -115,6 +126,7 @@ public class Model {
 
     
     /** 
+     * Checks whether the inputted phone number is a manager's number
      * @param phoneNumber
      * @return boolean
      */
@@ -147,6 +159,7 @@ public class Model {
     private static final String UPDATE_INGREDIENT_COUNT= "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
     
     /** 
+     * Sets the details for the specific order
      * @param preparedStatement
      * @param subtotal
      * @param paymenttype
@@ -162,6 +175,7 @@ public class Model {
     }
     
     /** 
+     * Inserts the customer order items into the database based on order_id
      * @param order_id
      * @param orderItems
      * @param connection
@@ -190,6 +204,7 @@ public class Model {
     }
     
     /** 
+     * Checks the selected ingredients
      * @param ingredient_id
      * @param ingredient_quantity
      * @param connection
@@ -211,6 +226,7 @@ public class Model {
 
     
     /** 
+     * Attaches the associated ingredients to the new item ; used for new seasonal item
      * @param itemID
      * @param associatedIngredients
      * @param quantities
@@ -238,6 +254,7 @@ public class Model {
     }
     
     /** 
+     * merges the lists of ingredients and quantities into a map
      * @param list1
      * @param list2
      * @param resultMap
@@ -252,6 +269,7 @@ public class Model {
     
     
     /** 
+     * Selects the ingredients for the order so it can be subtracted from the inventory
      * @param orderItems
      * @param connection
      * @return boolean
@@ -294,6 +312,7 @@ public class Model {
 
     
     /** 
+     * Updates the current number of ingredients left in stocafter a customer order is completed
      * @param ingredient_id
      * @param ingredient_quantity
      * @param connection
@@ -315,6 +334,7 @@ public class Model {
 
     
     /** 
+     * Inserts order details to customer_order table
      * @param subtotal
      * @param orderItems
      * @param paymenttype
@@ -344,6 +364,7 @@ public class Model {
     }
     
     /** 
+     * Adds new item to the order, updates names, price and category
      * @param itemName
      * @param itemPrice
      * @param category
@@ -367,6 +388,7 @@ public class Model {
     
     
     /** 
+     * Gets ResultSet of all ingredients
      * @return ResultSet
      */
     public static ResultSet getAllIngredients(){
@@ -383,6 +405,7 @@ public class Model {
 
     
     /** 
+     * returns all attribute from menu items that is ordered by item_id 
      * @return ResultSet
      */
     public static ResultSet getAllMenuItems(){
@@ -399,6 +422,7 @@ public class Model {
 
     
     /** 
+     * Retrieves all items and ingredients
      * @return ResultSet
      */
     public static ResultSet getAllItemsAndIngredients() {
@@ -423,6 +447,7 @@ public class Model {
 
     
     /** 
+     * returns ResultSet of all cusommt
      * @return ResultSet
      */
     public static ResultSet getAllCustomerOrders() {
@@ -439,6 +464,7 @@ public class Model {
 
     
     /** 
+     * Retrieves all manager orders
      * @return ResultSet
      */
     public static ResultSet getAllManagerOrders() {
@@ -455,6 +481,7 @@ public class Model {
 
     
     /** 
+     * Retrives all users using the input query
      * @return ResultSet
      */
     public static ResultSet getAllUsers() {
@@ -471,6 +498,7 @@ public class Model {
     
     
     /** 
+     * Add  a new ingredient/inventory item
      * @param ingredientName
      * @param ingredientStock
      * @param ingredientPrice
@@ -494,6 +522,7 @@ public class Model {
 
     
     /** 
+     * Updates inventory and includes flags so some fields can be left empty
      * @param ingredient_name
      * @param stock
      * @param price
@@ -561,6 +590,7 @@ public class Model {
 
     
     /** 
+     * Updates all fields of a menu item for CRUD
      * @param itemName
      * @param price
      * @param category
@@ -599,6 +629,7 @@ public class Model {
 
     
     /** 
+     * Fetches the item id when passing item name
      * @param item_name
      * @return int
      */
@@ -618,6 +649,7 @@ public class Model {
     
     
     /** 
+     * fetches ingredient id when passing ingredient name
      * @param ingredient_name
      * @return int
      */
@@ -636,7 +668,8 @@ public class Model {
     }
 
     
-    /** 
+    /**
+     * fetches item name when passing item id 
      * @param item_id
      * @return String
      */
@@ -656,6 +689,7 @@ public class Model {
 
     
     /** 
+     * fetches item price when passing item id
      * @param item_id
      * @return String
      */
@@ -679,6 +713,7 @@ public class Model {
 
     
     /** 
+     * sums item prices given a list of item orders
      * @param orderItems
      * @return float
      */
@@ -696,6 +731,7 @@ public class Model {
 
     
     /** 
+     * fetches user name when passing phone number
      * @param phoneNumber
      * @return String
      */
@@ -715,6 +751,8 @@ public class Model {
 
     
     /** 
+     * 
+     * inserts a new user to the database table, allows specification of their number, name, and if they are a manager
      * @param phonenumber
      * @param name
      * @param ismanager
@@ -739,6 +777,7 @@ public class Model {
 
     
     /** 
+     * Deletes a specified item from any table
      * @param table
      * @param id
      * @param value
@@ -762,6 +801,7 @@ public class Model {
     }
     
     /** 
+     * retrieves the orders made between date 1 to date 2
      * @param startDate
      * @param endDate
      * @return ResultSet
@@ -782,6 +822,7 @@ public class Model {
 
     
     /** 
+     * retrieves the information of an item based on item name, id, and its table
      * @param table
      * @param id
      * @param row
@@ -809,6 +850,7 @@ public class Model {
 
     
     /** 
+     * updates the manager order given all fields
      * @param id
      * @param date
      * @param time
@@ -838,6 +880,7 @@ public class Model {
 
     
     /** 
+     * updates the customer order given all fields
      * @param id
      * @param date
      * @param time
@@ -873,6 +916,7 @@ public class Model {
 
     
     /** 
+     * updates a user given all fields
      * @param id
      * @param phoneNumber
      * @param name
@@ -899,6 +943,7 @@ public class Model {
 
     
     /** 
+     * updates item given all fields
      * @param id
      * @param name
      * @param price
@@ -925,6 +970,7 @@ public class Model {
 
     
     /** 
+     * updates ingredient given all fields
      * @param id
      * @param name
      * @param stock
@@ -951,6 +997,7 @@ public class Model {
 
     
     /** 
+     * 
      * @param id
      */
     public void deleteUser(int id) {
@@ -967,6 +1014,7 @@ public class Model {
 
     
     /** 
+     * Deletes customer order based on id
      * @param id
      */
     public void deleteCustomerOrder(int id) {
@@ -982,6 +1030,7 @@ public class Model {
 
     
     /** 
+     * Deletes from Manager table
      * @param id
      */
     public void deleteManagerOrder(int id) {
@@ -997,6 +1046,7 @@ public class Model {
 
     
     /** 
+     * delete from item table
      * @param id
      */
     public void deleteItem(int id) {
@@ -1012,6 +1062,7 @@ public class Model {
 
     
     /** 
+     * delete from ingredient table
      * @param id
      */
     public void deleteIngredient(int id) {
@@ -1026,7 +1077,8 @@ public class Model {
     }
 
     
-    /** 
+    /**
+     * creates customer order, takes in attributes 
      * @param date
      * @param time
      * @param subtotal
@@ -1055,6 +1107,7 @@ public class Model {
 
     
     /** 
+     * Creates manager order, takes in attributes
      * @param date
      * @param time
      * @param total
@@ -1079,6 +1132,7 @@ public class Model {
 
     
     /** 
+     * Insets into users table
      * @param phoneNumber
      * @param name
      * @param isManager
@@ -1101,6 +1155,7 @@ public class Model {
 
     
     /** 
+     * Create new ingredients takes in name stock price
      * @param name
      * @param stock
      * @param price
