@@ -510,6 +510,7 @@ public class Controller implements ActionListener{
         isManager = true;
         managerScreen.getFrame().setVisible(true);
     }
+
     // populates the manager screen with a default navbar and adds action listeners for each button
     public void populateManagerNavBar() {
         String[] buttonNames = {"chart", "order", "track", "table"};
@@ -697,14 +698,14 @@ public class Controller implements ActionListener{
                 tableModel.setColumnCount(0);
 
                 // create columns with count
-                for (int i = 1; i <= cols; i++) {
+                for (int i = 2; i <= cols; i++) {
                     tableModel.addColumn(data.getColumnName(i));
                 }
 
                 // add rows
                 while (rs.next()) {
                     Vector<Object> v = new Vector<Object>();
-                    for (int i = 1; i <= cols; i++) {
+                    for (int i = 2; i <= cols; i++) {
                         v.add(rs.getObject(i));
                     }
                     tableModel.addRow(v);
