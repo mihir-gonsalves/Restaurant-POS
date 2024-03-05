@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -676,9 +677,9 @@ public class Controller implements ActionListener{
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
     }
-    public void TableQuery(String query, JTable table) {
+    public void TableQuery(ResultSet rs, JTable table) {
         try {
-            ResultSet rs = model.executeQuery(query);
+            
 
             // make table uneditable
             DefaultTableModel tableModel = new DefaultTableModel() {
@@ -730,13 +731,13 @@ public class Controller implements ActionListener{
         String[] dropDownList = {"Product Usage","Sales Report", "Excess Report", "Restock Report", "What Sells Together"};
         JComboBox comboBox = new JComboBox(dropDownList);
 
-        JLabel timeStart = new JLabel("TimeStart");
+        JLabel timeStart = new JLabel("Start Date yyyy-mm-dd:");
         JTextField timeStart2 = new JTextField(10);
 
-        JLabel timeEnd = new JLabel("TimeEnd");
+        JLabel timeEnd = new JLabel("End Date yyyy-mm-dd:");
         JTextField timeEnd2 = new JTextField(10);
 
-        JLabel timeStamp = new JLabel("TimeStamp");
+        JLabel timeStamp = new JLabel("Time Stamp yyyy-mm-dd:");
         JTextField timeStamp2 = new JTextField(10);
 
         //inputPanel.add(tableLabel);
@@ -750,6 +751,8 @@ public class Controller implements ActionListener{
 
         inputPanel.add(timeStamp);
         inputPanel.add(timeStamp2);
+        timeStart2.setText("2024-01-15");
+        timeEnd2.setText("2024-06-15");
 
 
         
@@ -762,31 +765,46 @@ public class Controller implements ActionListener{
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        
+        //String sql = "SELECT * FROM users WHERE phonenumber = ?";
+            //PreparedStatement pstmt = conn.prepareStatement(sql);
+            //pstmt.setString(1, phoneNumber);
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
             if(comboBox.getSelectedItem().equals("Product Usage")){
-                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
             } else if(comboBox.getSelectedItem().equals("Sales Report")){
-                TableQuery("SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount \r\n" + //
-                                        "FROM customer_order JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
-                                        "WHERE DATE_PART('month', c_order_date) = DATE_PART('month', CURRENT_DATE - INTERVAL '1 month')\r\n" + //
-                                        "GROUP BY item_id, DATE_PART('month', c_order_date)\r\n" + //
-                                        "ORDER BY itemCount DESC;\r\n" + //
-                                        "", table);
+                String sql = "SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount, menu_Items.item_name as itemName\r\n" + //
+                "FROM customer_order\r\n" + //
+                "JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
+                "JOIN menu_Items ON c_order_to_item_list.item_id = menu_Items.item_id \r\n" + //
+                "WHERE c_order_date >= date(?) AND c_order_date <= date(?) \r\n" + //
+                "GROUP BY c_order_to_item_list.item_id, menu_Items.item_name,DATE_PART('month', c_order_date)\r\n" + //
+                "ORDER BY itemCount DESC;\r\n" + //
+                "";
+                try {
+                    PreparedStatement pstmt = model.conn.prepareStatement(sql);
+                    pstmt.setString(1,parseDate(timeStart2.getText()));
+                    pstmt.setString(2, parseDate(timeEnd2.getText()));
+                    ResultSet r = pstmt.executeQuery();
+                    TableQuery(r, table);
+                }
+                catch (Exception er) {
+                    er.printStackTrace();
+                }
+
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
-                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
                 //Adds the items that are currently less than 15 in number to the restock report
-                TableQuery("SELECT *\r\n" + //
+                TableQuery(model.executeQuery("SELECT *\r\n" + //
                                         "\r\n" + //
                                         "FROM ingredients\r\n" + //
                                         "\r\n" + //
                                         "WHERE ingredient_current_stock < 15\r\n" + //
                                         "\r\n" + //
-                                        "ORDER BY ingredient_current_stock ASC;", table);
+                                        "ORDER BY ingredient_current_stock ASC;"), table);
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
-                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
             }
         });     
     }

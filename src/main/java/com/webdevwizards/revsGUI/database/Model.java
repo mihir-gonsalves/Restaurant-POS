@@ -19,7 +19,7 @@ import javax.swing.JFrame;
 
 
 public class Model {
-    private static Connection conn = null;
+    public static Connection conn = null;
     private static boolean initialized = false;
     public String phoneNumber;
 
