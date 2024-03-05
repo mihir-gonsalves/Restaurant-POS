@@ -779,11 +779,10 @@ public class Controller implements ActionListener{
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
                 //Adds the items that are currently less than 15 in number to the restock report
                 TableQuery("SELECT *\r\n" + //
-                                        "\r\n" + //
-                                        "FROM ingredients\r\n" + //
-                                        "\r\n" + //
+                                        "FROM ingredients\r\n" + 
                                         "WHERE ingredient_current_stock < 15\r\n" + //
-                                        "\r\n" + //
+                                        //In ascending order so that item with least amount 
+                                        //is displayed first
                                         "ORDER BY ingredient_current_stock ASC;", table);
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
                 TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
