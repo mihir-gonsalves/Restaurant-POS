@@ -777,7 +777,14 @@ public class Controller implements ActionListener{
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
                 TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
-                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+                //Adds the items that are currently less than 15 in number to the restock report
+                TableQuery("SELECT *\r\n" + //
+                                        "\r\n" + //
+                                        "FROM ingredients\r\n" + //
+                                        "\r\n" + //
+                                        "WHERE ingredient_current_stock < 15\r\n" + //
+                                        "\r\n" + //
+                                        "ORDER BY ingredient_current_stock ASC;", table);
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
                 TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             }
