@@ -1629,7 +1629,7 @@ public class Controller implements ActionListener{
                             JLabel categoryLabel = new JLabel("Item Category: ");
                             String[] categoryDropDown = {"Choose An Option", "Appetizers", "Beverages", "Burgers", "Limited Time Offer", "Salads", "Sandwiches", "Shakes & More", "Value Meals"};
                             JComboBox categoryComboBox = new JComboBox(categoryDropDown);
-                            categoryComboBox.setSelectedItem(model.getObject("menu_items", "item_id", id, "item_category"));
+                            categoryComboBox.setSelectedItem(model.getObject("menu_items", "item_id", id, "category"));
                             categoryPanel.add(categoryLabel);
                             categoryPanel.add(categoryComboBox);
 
