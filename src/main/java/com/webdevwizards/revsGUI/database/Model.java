@@ -65,6 +65,11 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * @param sql
+     * @return ResultSet
+     */
     // Execute and return query results
     public static ResultSet executeQuery(String sql) {
         try {
@@ -86,6 +91,11 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * @param phoneNumber
+     * @return boolean
+     */
     public boolean login(String phoneNumber) {
         try {
             String sql = "SELECT * FROM users WHERE phonenumber = ?";
@@ -103,6 +113,11 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * @param phoneNumber
+     * @return boolean
+     */
     public boolean isManager(String phoneNumber) {
         try {
             String sql = "SELECT * FROM users WHERE phonenumber = ?";
@@ -130,6 +145,13 @@ public class Model {
     private static final String SELECT_INGREDIENT= "SELECT ingredient_id, ingredient_quantity FROM item_to_ingredient_list WHERE item_id = ?;";
     private static final String SELECT_INGREDIENT_NAME = "SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?;";
     private static final String UPDATE_INGREDIENT_COUNT= "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
+    
+    /** 
+     * @param preparedStatement
+     * @param subtotal
+     * @param paymenttype
+     * @throws SQLException
+     */
     private void setOrderDetails(PreparedStatement preparedStatement, String subtotal, String paymenttype) throws SQLException {
         preparedStatement.setDate(1, new Date(System.currentTimeMillis()));
         preparedStatement.setTime(2, new Time(System.currentTimeMillis()));

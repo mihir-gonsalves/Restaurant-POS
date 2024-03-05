@@ -932,12 +932,12 @@ public class Controller implements ActionListener{
     private void usersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
                 int id = table.rowAtPoint(p) + 1;
                 int tableType = 0;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
+                if (me.getClickCount() == 2  && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1120,14 +1120,14 @@ public class Controller implements ActionListener{
     private void managerOrdersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
                 int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 1;
 
                 // if right clicked and not on column header
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1328,14 +1328,14 @@ public class Controller implements ActionListener{
     private void customerOrdersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
                 int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 2;
 
                 // if right clicked and not on column header  
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1582,7 +1582,7 @@ public class Controller implements ActionListener{
                 int tableType = 3;
 
                 // if right clicked and not in column header
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1602,7 +1602,7 @@ public class Controller implements ActionListener{
                         public void actionPerformed(ActionEvent e) {
                             // create a JDialog 
                             JDialog updateItemPopupDialog = new JDialog();
-                            updateItemPopupDialog.setTitle("Create Item");
+                            updateItemPopupDialog.setTitle("Update Item");
                             updateItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             updateItemPopupDialog.setLocationRelativeTo(null);
 
@@ -1846,14 +1846,14 @@ public class Controller implements ActionListener{
     private void ingredientsPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
                 int id = table.rowAtPoint(p) + 1; // row + 1 becaues row 0 in Java == row 1 in SQL
                 int tableType = 4;
 
                 // if right clicked and not column header
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
