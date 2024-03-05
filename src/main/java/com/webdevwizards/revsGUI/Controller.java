@@ -1613,14 +1613,14 @@ public class Controller implements ActionListener{
                             // create and collect name label and field 
                             JPanel namePanel = new JPanel();
                             JLabel nameLabel = new JLabel("Item Name: ");
-                            JTextField nameField = new JTextField(model.getObject("menu_item", "item_id", id, "item_name"));
+                            JTextField nameField = new JTextField(model.getObject("menu_items", "item_id", id, "item_name"));
                             namePanel.add(nameLabel);
                             namePanel.add(nameField);
 
                             // create and collect price label and field 
                             JPanel pricePanel = new JPanel();
                             JLabel priceLabel = new JLabel("Item Price: ");
-                            JTextField priceField = new JTextField(model.getObject("menu_item", "item_id", id, "item_price"));
+                            JTextField priceField = new JTextField(model.getObject("menu_items", "item_id", id, "item_price"));
                             pricePanel.add(priceLabel);
                             pricePanel.add(priceField);
 
@@ -1629,7 +1629,7 @@ public class Controller implements ActionListener{
                             JLabel categoryLabel = new JLabel("Item Category: ");
                             String[] categoryDropDown = {"Choose An Option", "Appetizers", "Beverages", "Burgers", "Limited Time Offer", "Salads", "Sandwiches", "Shakes & More", "Value Meals"};
                             JComboBox categoryComboBox = new JComboBox(categoryDropDown);
-                            categoryComboBox.setSelectedItem(model.getObject("menu_item", "item_id", id, "item_category"));
+                            categoryComboBox.setSelectedItem(model.getObject("menu_items", "item_id", id, "item_category"));
                             categoryPanel.add(categoryLabel);
                             categoryPanel.add(categoryComboBox);
 
