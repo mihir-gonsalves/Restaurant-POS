@@ -54,6 +54,10 @@ public class ManagerScreen extends JFrame implements ActionListener{
         frame.pack();
     }
 
+    
+    /** 
+     * @param e
+     */
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
         if (s.equals("Close")) {

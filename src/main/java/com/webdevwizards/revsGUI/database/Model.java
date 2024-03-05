@@ -17,12 +17,18 @@ import javax.swing.JFrame;
 
 
 
-
+/**
+ * Model class for the database
+ * @author Caden, Carson, Jesung, Kevin
+ */
 public class Model {
     public static Connection conn = null;
     private static boolean initialized = false;
-    public String phoneNumber;
 
+    /**
+     * The phone number of the user
+     */
+    public String phoneNumber;
     /**
      * Constructor for the Model class : just calls initialize
      */
@@ -74,8 +80,8 @@ public class Model {
     
     /** 
      * Executes query and returns the result set of the query
-     * @param sql
-     * @return ResultSet
+     * @param sql the query to be executed
+     * @return the ResultSet of the query unless the query fails, in which case it returns null 
      */
     // Execute and return query results
     public static ResultSet executeQuery(String sql) {
@@ -103,9 +109,9 @@ public class Model {
 
     
     /** 
-     * Checks whether the inputted phone number is a manager's or employee's number
-     * @param phoneNumber
-     * @return boolean
+     * Checks whether the inputted phone number is in the users database
+     * @param phoneNumber the phone number to be checked
+     * @return boolean true if the phone number is in the table, false if it is not
      */
     public boolean login(String phoneNumber) {
         try {
@@ -127,8 +133,8 @@ public class Model {
     
     /** 
      * Checks whether the inputted phone number is a manager's number
-     * @param phoneNumber
-     * @return boolean
+     * @param phoneNumber the phone number to be checked
+     * @return boolean true if the phone number is a manager's number, false if it is not
      */
     public boolean isManager(String phoneNumber) {
         try {
@@ -160,10 +166,10 @@ public class Model {
     
     /** 
      * Sets the details for the specific order
-     * @param preparedStatement
-     * @param subtotal
-     * @param paymenttype
-     * @throws SQLException
+     * @param preparedStatement the prepared statement to be used
+     * @param subtotal the subtotal of the order as a string
+     * @param paymenttype the payment type of the order
+     * @throws SQLException 
      */
     private void setOrderDetails(PreparedStatement preparedStatement, String subtotal, String paymenttype) throws SQLException {
         preparedStatement.setDate(1, new Date(System.currentTimeMillis()));
@@ -176,9 +182,9 @@ public class Model {
     
     /** 
      * Inserts the customer order items into the database based on order_id
-     * @param order_id
-     * @param orderItems
-     * @param connection
+     * @param order_id the id of the order
+     * @param orderItems the items in the order
+     * @param connection the connection to the database
      * @throws SQLException
      */
     private void insert_order_item(int order_id, int[][] orderItems, Connection connection) throws SQLException {
@@ -204,11 +210,11 @@ public class Model {
     }
     
     /** 
-     * Checks the selected ingredients
-     * @param ingredient_id
-     * @param ingredient_quantity
-     * @param connection
-     * @return boolean
+     * Checks if the selected ingredient is in stock 
+     * @param ingredient_id the id of the ingredient
+     * @param ingredient_quantity the quantity of the ingredient
+     * @param connection the connection to the database
+     * @return boolean true if the ingredient is in stock, false if it is not
      * @throws SQLException
      */
     private boolean checkSelectIngredient(int ingredient_id, int ingredient_quantity , Connection connection) throws SQLException {
@@ -227,11 +233,11 @@ public class Model {
     
     /** 
      * Attaches the associated ingredients to the new item ; used for new seasonal item
-     * @param itemID
-     * @param associatedIngredients
-     * @param quantities
-     * @return boolean
-     * @throws SQLException
+     * @param itemID the id of the item
+     * @param associatedIngredients the ingredients associated with the item
+     * @param quantities the quantities of the ingredients
+     * @return boolean true if the ingredients are successfully attached, false if they are not
+     * @throws SQLException if the SQL query fails
      */
     public boolean attachAssociatedInventoryToNewItem(int itemID, String[] associatedIngredients, String[] quantities) throws SQLException {
         PreparedStatement statement = conn.prepareStatement("insert into item_to_ingredient_list (item_id, ingredient_id, ingredient_quantity) values (?, ?, ?)");
@@ -255,9 +261,9 @@ public class Model {
     
     /** 
      * merges the lists of ingredients and quantities into a map
-     * @param list1
-     * @param list2
-     * @param resultMap
+     * @param list1 list of id's 
+     * @param list2 list of quantities
+     * @param resultMap the map to be populated
      */
     public static void mergeLists(List<Integer> list1, List<Integer> list2, Map<Integer, Integer> resultMap) {
         for (int i = 0; i < list1.size(); i++) {
@@ -270,9 +276,9 @@ public class Model {
     
     /** 
      * Selects the ingredients for the order so it can be subtracted from the inventory
-     * @param orderItems
-     * @param connection
-     * @return boolean
+     * @param orderItems the items and their quantities in the order
+     * @param connection the connection to the database
+     * @return boolean true if the ingredients are successfully selected, false if they are not
      * @throws SQLException
      */
     private boolean selectIngredient(int[][] orderItems , Connection connection) throws SQLException {
@@ -313,9 +319,9 @@ public class Model {
     
     /** 
      * Updates the current number of ingredients left in stocafter a customer order is completed
-     * @param ingredient_id
-     * @param ingredient_quantity
-     * @param connection
+     * @param ingredient_id the id of the ingredient
+     * @param ingredient_quantity the quantity of the ingredient
+     * @param connection the connection to the database
      * @throws SQLException
      */
     private void updateIngredientCount(int ingredient_id, int ingredient_quantity, Connection connection) throws SQLException {
@@ -335,9 +341,9 @@ public class Model {
     
     /** 
      * Inserts order details to customer_order table
-     * @param subtotal
-     * @param orderItems
-     * @param paymenttype
+     * @param subtotal the subtotal of the order
+     * @param orderItems the items and their quantities in the order
+     * @param paymenttype the payment type of the order
      * @return boolean
      */
     public boolean insert_order(String subtotal, int[][] orderItems, String paymenttype) {
@@ -365,9 +371,9 @@ public class Model {
     
     /** 
      * Adds new item to the order, updates names, price and category
-     * @param itemName
-     * @param itemPrice
-     * @param category
+     * @param itemName the name of the item
+     * @param itemPrice the price of the item
+     * @param category the category of the item
      * @return boolean
      */
     public static boolean addNewItem(String itemName, Double itemPrice, String category){
@@ -389,7 +395,8 @@ public class Model {
     
     /** 
      * Gets ResultSet of all ingredients
-     * @return ResultSet
+     * @return ResultSet of all ingredients in the database 
+     * ingredient_id | ingredient_name | ingredient_current_stock | ingredient_unit_price
      */
     public static ResultSet getAllIngredients(){
         try{
@@ -406,7 +413,8 @@ public class Model {
     
     /** 
      * returns all attribute from menu items that is ordered by item_id 
-     * @return ResultSet
+     * @return ResultSet of all items in the database
+     * 
      */
     public static ResultSet getAllMenuItems(){
         try{
@@ -422,8 +430,9 @@ public class Model {
 
     
     /** 
-     * Retrieves all items and ingredients
-     * @return ResultSet
+     * Retrieves all items and their corresponding ingredients
+     * @return ResultSet of all items with corresponding ingredients in the database
+     * item_name | item_price | category | ingredients
      */
     public static ResultSet getAllItemsAndIngredients() {
         try {
@@ -447,8 +456,9 @@ public class Model {
 
     
     /** 
-     * returns ResultSet of all cusommt
-     * @return ResultSet
+     * returns ResultSet of all customer orders
+     * @return ResultSet of all customer orders in the database
+     * c_order_id | c_order_date | c_order_time | c_order_subtotal | c_order_tax | c_order_total | c_order_payment_type
      */
     public static ResultSet getAllCustomerOrders() {
         try {
@@ -464,8 +474,9 @@ public class Model {
 
     
     /** 
-     * Retrieves all manager orders
-     * @return ResultSet
+     * Retrieves all manager orders 
+     * @return ResultSet of all manager orders in the database
+     * m_order_id | m_order_date | m_order_time | m_order_total | phonenumber
      */
     public static ResultSet getAllManagerOrders() {
         try {
@@ -481,8 +492,9 @@ public class Model {
 
     
     /** 
-     * Retrives all users using the input query
-     * @return ResultSet
+     * Retrives all users
+     * @return ResultSet of all users in the database
+     * user_id | phonenumber | name | ismanager
      */
     public static ResultSet getAllUsers() {
         try {
@@ -498,11 +510,11 @@ public class Model {
     
     
     /** 
-     * Add  a new ingredient/inventory item
-     * @param ingredientName
-     * @param ingredientStock
-     * @param ingredientPrice
-     * @return boolean
+     * Add a new ingredient/inventory item
+     * @param ingredientName ingredient name
+     * @param ingredientStock ingredient stock
+     * @param ingredientPrice ingredient price
+     * @return boolean true if the ingredient is successfully added, false if it is not
      */
     public static boolean addNewInventory(String ingredientName, int ingredientStock, Double ingredientPrice){
         try{
@@ -523,14 +535,14 @@ public class Model {
     
     /** 
      * Updates inventory and includes flags so some fields can be left empty
-     * @param ingredient_name
-     * @param stock
-     * @param price
-     * @param phoneNumber
-     * @param flagName
-     * @param flagStock
-     * @param flagPrice
-     * @return boolean
+     * @param ingredient_name ingredient name
+     * @param stock current ingredient stock
+     * @param price ingredient price
+     * @param phoneNumber the phone number of the user making the order
+     * @param flagName boolean flag for ingredient name
+     * @param flagStock boolean flag for ingredient stock
+     * @param flagPrice boolean flag for ingredient price
+     * @return boolean true if the inventory is successfully updated, false if it is not
      */
     public static boolean updateInventory( String ingredient_name, int stock, double price, String phoneNumber,
                                            boolean flagName, boolean flagStock, boolean flagPrice){
@@ -591,12 +603,12 @@ public class Model {
     
     /** 
      * Updates all fields of a menu item for CRUD
-     * @param itemName
-     * @param price
-     * @param category
-     * @param flagName
-     * @param flagPrice
-     * @param flagCategory
+     * @param itemName the name of the item
+     * @param price the price of the item
+     * @param category the category of the item
+     * @param flagName boolean flag for item name
+     * @param flagPrice boolean flag for item price
+     * @param flagCategory boolean flag for item category
      * @return boolean
      */
     public static boolean updateMenuItem( String itemName, double price, String category,
@@ -630,8 +642,8 @@ public class Model {
     
     /** 
      * Fetches the item id when passing item name
-     * @param item_name
-     * @return int
+     * @param item_name the name of the item
+     * @return int the id of the item
      */
     public static int getItemID(String item_name){
         try{
@@ -650,8 +662,8 @@ public class Model {
     
     /** 
      * fetches ingredient id when passing ingredient name
-     * @param ingredient_name
-     * @return int
+     * @param ingredient_name the name of the ingredient
+     * @return int the id of the ingredient
      */
     public static int getIngredientID(String ingredient_name){
         try{
@@ -670,8 +682,8 @@ public class Model {
     
     /**
      * fetches item name when passing item id 
-     * @param item_id
-     * @return String
+     * @param item_id the id of the item
+     * @return String the name of the item
      */
     public static String getItemName(int item_id){
         try{
@@ -690,8 +702,8 @@ public class Model {
     
     /** 
      * fetches item price when passing item id
-     * @param item_id
-     * @return String
+     * @param item_id the id of the item
+     * @return String the price of the item
      */
     public static String getItemPrice(int item_id){
         try{
@@ -714,8 +726,8 @@ public class Model {
     
     /** 
      * sums item prices given a list of item orders
-     * @param orderItems
-     * @return float
+     * @param orderItems the items and their quantities in the order
+     * @return float the sum of the item prices (subtotal)
      */
     public static float sumItemPrices(int[][] orderItems) {
         float sum = 0;
@@ -732,8 +744,8 @@ public class Model {
     
     /** 
      * fetches user name when passing phone number
-     * @param phoneNumber
-     * @return String
+     * @param phoneNumber the phone number of the user
+     * @return String the name of the user
      */
     public static String getUserName(String phoneNumber){
         try{
@@ -753,10 +765,10 @@ public class Model {
     /** 
      * 
      * inserts a new user to the database table, allows specification of their number, name, and if they are a manager
-     * @param phonenumber
-     * @param name
-     * @param ismanager
-     * @return boolean
+     * @param phonenumber new user's phone number
+     * @param name new user's name
+     * @param ismanager boolean true if the user is a manager, false if they are not
+     * @return boolean true if the user is successfully added, false if they are not
      */
     public static boolean insertUser(String phonenumber, String name, boolean ismanager){
         try{
@@ -778,9 +790,9 @@ public class Model {
     
     /** 
      * Deletes a specified item from any table
-     * @param table
-     * @param id
-     * @param value
+     * @param table the table to delete from
+     * @param id the id of the item to delete
+     * @param value the value of the item to delete
      * @return boolean
      */
     public static boolean delete(String table, int id, int value){
@@ -802,9 +814,10 @@ public class Model {
     
     /** 
      * retrieves the orders made between date 1 to date 2
-     * @param startDate
-     * @param endDate
-     * @return ResultSet
+     * @param startDate the start date
+     * @param endDate the end date
+     * @return ResultSet of all orders made between the two dates
+     * c_order_id | c_order_date | c_order_time | c_order_subtotal | c_order_tax | c_order_total | c_order_payment_type
      */
     public ResultSet getOrderDaytoDay(String startDate, String endDate){
         try{
@@ -822,17 +835,17 @@ public class Model {
 
     
     /** 
-     * retrieves the information of an item based on item name, id, and its table
-     * @param table
-     * @param id
-     * @param row
-     * @param type
-     * @return String
+     * retrieves the information of an item based on table, idColumnName, id, and type
+     * @param table the table to retrieve from
+     * @param idColumnName the name of the id column of the item
+     * @param id the row of the item
+     * @param column the type of information to retrieve
+     * @return String the information of the specfied item at the specified column in the specified table
      */
-    public String getObject(String table, String id, int row, String type) {
+    public String getObject(String table, String idColumnName, int id, String column) {
         try {
-            PreparedStatement statement = conn.prepareStatement("select " + type + " from " + table + " where " + id + " = ?");
-            statement.setInt(1, row);
+            PreparedStatement statement = conn.prepareStatement("select " + column + " from " + table + " where " + idColumnName + " = ?");
+            statement.setInt(1, id);
             
             ResultSet rs = statement.executeQuery();
 
@@ -851,11 +864,11 @@ public class Model {
     
     /** 
      * updates the manager order given all fields
-     * @param id
-     * @param date
-     * @param time
-     * @param total
-     * @param phoneNumber
+     * @param id the id of the order
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param total the total of the order
+     * @param phoneNumber the phone number of the user making the order
      */
     public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
         try {
@@ -881,13 +894,13 @@ public class Model {
     
     /** 
      * updates the customer order given all fields
-     * @param id
-     * @param date
-     * @param time
-     * @param subtotal
-     * @param tax
-     * @param total
-     * @param paymentType
+     * @param id the id of the order
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param subtotal the subtotal of the order
+     * @param tax the tax of the order
+     * @param total the total of the order
+     * @param paymentType the payment type of the order
      */
     public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
@@ -917,10 +930,10 @@ public class Model {
     
     /** 
      * updates a user given all fields
-     * @param id
-     * @param phoneNumber
-     * @param name
-     * @param isManager
+     * @param id the id of the user
+     * @param phoneNumber the phone number of the user
+     * @param name the name of the user
+     * @param isManager boolean true if the user is a manager, false if they are not
      */
     public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
         try {
@@ -944,10 +957,10 @@ public class Model {
     
     /** 
      * updates item given all fields
-     * @param id
-     * @param name
-     * @param price
-     * @param category
+     * @param id the id of the item
+     * @param name the name of the item
+     * @param price the price of the item
+     * @param category the category of the item
      */
     public void updateItem(int id, String name, double price, String category) {
         try {
@@ -971,10 +984,10 @@ public class Model {
     
     /** 
      * updates ingredient given all fields
-     * @param id
-     * @param name
-     * @param stock
-     * @param price
+     * @param id the id of the ingredient
+     * @param name the name of the ingredient
+     * @param stock the stock of the ingredient
+     * @param price the price of the ingredient
      */
     public void updateIngredient(int id, String name, int stock, double price) {
         try {
@@ -997,8 +1010,8 @@ public class Model {
 
     
     /** 
-     * 
-     * @param id
+     * deletes user based on id
+     * @param id the id of the user
      */
     public void deleteUser(int id) {
         try {
@@ -1015,7 +1028,7 @@ public class Model {
     
     /** 
      * Deletes customer order based on id
-     * @param id
+     * @param id the id of the order
      */
     public void deleteCustomerOrder(int id) {
         try {
@@ -1030,8 +1043,8 @@ public class Model {
 
     
     /** 
-     * Deletes from Manager table
-     * @param id
+     * Deletes manager order based on id
+     * @param id the id of the order
      */
     public void deleteManagerOrder(int id) {
         try {
@@ -1046,8 +1059,8 @@ public class Model {
 
     
     /** 
-     * delete from item table
-     * @param id
+     * Deletes item based on id
+     * @param id the id of the item
      */
     public void deleteItem(int id) {
         try {
@@ -1062,8 +1075,8 @@ public class Model {
 
     
     /** 
-     * delete from ingredient table
-     * @param id
+     * Deletes ingredient based on id
+     * @param id the id of the ingredient
      */
     public void deleteIngredient(int id) {
         try {
@@ -1078,13 +1091,13 @@ public class Model {
 
     
     /**
-     * creates customer order, takes in attributes 
-     * @param date
-     * @param time
-     * @param subtotal
-     * @param tax
-     * @param total
-     * @param paymentType
+     * creates customer order, takes in all attributes 
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param subtotal the subtotal of the order
+     * @param tax the tax of the order
+     * @param total the total of the order
+     * @param paymentType the payment type of the order
      */
     public void createCustomerOrder(String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
@@ -1107,11 +1120,11 @@ public class Model {
 
     
     /** 
-     * Creates manager order, takes in attributes
-     * @param date
-     * @param time
-     * @param total
-     * @param phoneNumber
+     * Creates manager order, takes in all attributes
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param total the total of the order
+     * @param phoneNumber the phone number of the user making the order
      */
     public void createManagerOrder(String date, String time, Double total, String phoneNumber) {
         try {
@@ -1132,10 +1145,10 @@ public class Model {
 
     
     /** 
-     * Insets into users table
-     * @param phoneNumber
-     * @param name
-     * @param isManager
+     * Creates new user, takes in all attributes
+     * @param phoneNumber the phone number of the user
+     * @param name the name of the user
+     * @param isManager boolean true if the user is a manager, false if they are not
      */
     public void createUser(String phoneNumber, String name, boolean isManager) {
         try {
@@ -1155,10 +1168,10 @@ public class Model {
 
     
     /** 
-     * Create new ingredients takes in name stock price
-     * @param name
-     * @param stock
-     * @param price
+     * Create new ingredients, takes in all attributes
+     * @param name the name of the ingredient
+     * @param stock the stock of the ingredient
+     * @param price the price of the ingredient
      */
     public void createIngredient(String name, int stock, double price) {
         try {
