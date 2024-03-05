@@ -666,8 +666,29 @@ public class Controller implements ActionListener{
         String[] dropDownList = {"Product Usage","Sales Report", "Excess Report", "Restock Report", "What Sells Together"};
         JComboBox comboBox = new JComboBox(dropDownList);
 
-        inputPanel.add(tableLabel);
+
+        JLabel timeStart = new JLabel("TimeStart");
+        JTextField timeStart2 = new JTextField(10);
+
+        JLabel timeEnd = new JLabel("TimeEnd");
+        JTextField timeEnd2 = new JTextField(10);
+
+        JLabel timeStamp = new JLabel("TimeStamp");
+        JTextField timeStamp2 = new JTextField(10);
+
+        //inputPanel.add(tableLabel);
         inputPanel.add(comboBox);
+
+        inputPanel.add(timeStart);
+        inputPanel.add(timeStart2);
+
+        inputPanel.add(timeEnd);
+        inputPanel.add(timeEnd2);
+
+        inputPanel.add(timeStamp);
+        inputPanel.add(timeStamp2);
+
+
         
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
