@@ -806,6 +806,8 @@ public class Controller implements ActionListener{
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
                 TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
             }
+            // updateFontSizes(table, managerScreen.getFrame());
+            table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
         });     
     }
 
@@ -1051,6 +1053,8 @@ public class Controller implements ActionListener{
                 ingredientsPopUp(table);
                 break;
         }
+        // updateFontSizes(table, managerScreen.getFrame());
+        table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
     }
 
     
@@ -2182,7 +2186,7 @@ public class Controller implements ActionListener{
                 updateFontSizes(child, f);
             }
         }
-        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton) {
+        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton || c instanceof JTable) {
             Font sourceFont = c.getFont();
             float scale = f.getHeight() / 1000.0f;
             float newSize = sourceFont.getSize() * scale;
