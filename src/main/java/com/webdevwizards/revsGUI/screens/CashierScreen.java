@@ -74,6 +74,10 @@ public class CashierScreen extends JFrame{
         frame.pack();
     }
 
+    
+    /** 
+     * @return JFrame
+     */
     /*
      * GETTERS AND SETTERS
      */
