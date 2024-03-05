@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -534,7 +535,6 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
-    
     /** 
      * @param content
      */
@@ -676,6 +676,45 @@ public class Controller implements ActionListener{
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
     }
+    public void TableQuery(String query, JTable table) {
+        try {
+            ResultSet rs = model.executeQuery(query);
+
+            // make table uneditable
+            DefaultTableModel tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            if (rs != null) {
+                ResultSetMetaData data = rs.getMetaData();
+                int cols = data.getColumnCount();
+                // clear if data exists
+                tableModel.setRowCount(0);
+                tableModel.setColumnCount(0);
+
+                // create columns with count
+                for (int i = 1; i <= cols; i++) {
+                    tableModel.addColumn(data.getColumnName(i));
+                }
+
+                // add rows
+                while (rs.next()) {
+                    Vector<Object> v = new Vector<Object>();
+                    for (int i = 1; i <= cols; i++) {
+                        v.add(rs.getObject(i));
+                    }
+                    tableModel.addRow(v);
+                }
+            }
+            table.setModel(tableModel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to fetch data: " + e.getMessage());
+        }
+    }
 
     // populates the manager screen with a table of CRUD operations for each table
     public void populateManagerTablePanel() {
@@ -744,21 +783,16 @@ public class Controller implements ActionListener{
         
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
-            if(comboBox.getSelectedItem().equals("Users")){
-                usersPopUp(table);
-                viewTable(table, 0);
-            } else if(comboBox.getSelectedItem().equals("Manager Orders")){
-                managerOrdersPopUp(table);
-                viewTable(table, 1);
-            } else if (comboBox.getSelectedItem().equals("Customer Orders")) {
-                viewTable(table, 2);
-                customerOrdersPopUp(table);
-            } else if (comboBox.getSelectedItem().equals("Items")) {
-                itemsPopUp(table);
-                viewTable(table, 3);
-            } else if(comboBox.getSelectedItem().equals("Ingredients")){
-                ingredientsPopUp(table);
-                viewTable(table, 4);
+            if(comboBox.getSelectedItem().equals("Product Usage")){
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+            } else if(comboBox.getSelectedItem().equals("Sales Report")){
+                TableQuery("SELECT ingredient_id, SUM(ingredient_quantity) AS total_quantity_ordered FROM M_order_to_ingredient_list GROUP BY ingredient_id ORDER BY total_quantity_ordered DESC;", table);
+            } else if (comboBox.getSelectedItem().equals("Excess Report")) {
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+            } else if (comboBox.getSelectedItem().equals("Restock Report")) {
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+            } else if(comboBox.getSelectedItem().equals("What Sells Together")){
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             }
         });     
     }
