@@ -22,11 +22,12 @@ public class CashierScreen extends JFrame{
         frame = new JFrame("Rev's GUI: Cashier Screen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Left panel for categories
+        // Left panel for navigational categories
         navPanel = new JPanel();
         navPanel.setLayout(new GridLayout(8, 1)); // Changed to GridLayout for icons
         navPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        // Add icons for each category
+        
+        // Add icons for each category -- completed within Controller
         // navPanel.setPreferredSize(new Dimension(100, 600));
         // for (int i = 0; i <= 6; i++) {
         //     // leftPanel.add(new JButton(new ImageIcon("icon_" + i + ".png")));

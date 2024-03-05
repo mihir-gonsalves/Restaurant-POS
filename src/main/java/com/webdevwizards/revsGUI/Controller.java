@@ -451,9 +451,9 @@ public class Controller implements ActionListener{
         orderCompleteButton.setText("Complete Order");
 
         // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
-        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber)));
+        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber) + " -- " + phoneNumber));
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(new JLabel("Subtotal: " + model.sumItemPrices(orderItems)));
+        bottomPanel.add(new JLabel("Subtotal: " + model.sumItemPrices(orderItems) + " +  " + model.sumItemPrices(orderItems)*0.0825 + " (tax)" + "        Total - " + model.sumItemPrices(orderItems)*1.0825));
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
 
@@ -492,7 +492,8 @@ public class Controller implements ActionListener{
 
                 // switch to payment screen and dispose of the cashier screen
                 switchToPaymentScreen();
-
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                paymentScreen.getFrame().setSize(screenSize.width, screenSize.height);
                 // dispose of the cashier screen
                 cashierScreen.getFrame().dispose();
             }
@@ -796,8 +797,84 @@ public class Controller implements ActionListener{
      */
     // sets the payment screen to visible
     public void switchToPaymentScreen() {
+        isManager = false;
         paymentScreen.getFrame().setVisible(true);
+
+        // populate the payment screen with defaults
+        populatePaymentCustomerInfoPanel();
+        populatePaymentOrderPanel();
+        populatePaymentCostPanel();
+       
     }
+
+    public void populatePaymentCustomerInfoPanel() {
+        JPanel paymentCustomerInfoPanel = paymentScreen.getCustomerInfoPanel();
+        paymentCustomerInfoPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber) + " - " + phoneNumber));
+        paymentCustomerInfoPanel.add(Box.createHorizontalGlue());
+        paymentCustomerInfoPanel.add(new JLabel("Order Total: " + model.sumItemPrices(orderItems)));
+    }
+
+    public void populatePaymentOrderPanel() {
+        JPanel paymentOrderPanel = paymentScreen.getPaymentOrderPanel();
+    }
+
+    public void populatePaymentCostPanel() {
+        JPanel paymentCostPanel = paymentScreen.getPaymentCostPanel();
+    }
+
+    public void populatePaymentCardPanel() {
+        JPanel paymentCardPanel = paymentScreen.getPaymentCardPanel();
+    }
+
+    public void populatePaymentButtonPanel() {
+        JPanel paymentButtonPanel = paymentScreen.getPaymentButtonPanel();
+
+        JButton btnCancelOrder = new JButton("Cancel Order");
+        // btnCancelOrder.setFont(font1);
+        btnCancelOrder.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnCancelOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
+        btnCancelOrder.addActionListener(this);
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+        paymentButtonPanel.add(btnCancelOrder);
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+
+        JButton btnGoBack = new JButton("Go Back");
+        //btnGoBack.setFont(font1);
+        btnGoBack.setAlignmentY(Component.CENTER_ALIGNMENT);
+        btnGoBack.addActionListener(this);
+        paymentButtonPanel.add(btnGoBack);
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+
+        JButton btnPlaceOrder = new JButton("Place Order");
+        //btnPlaceOrder.setFont(font1);
+        btnPlaceOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
+        btnPlaceOrder.addActionListener(this);
+        paymentButtonPanel.add(btnPlaceOrder);
+        paymentButtonPanel.add(Box.createHorizontalGlue());
+    }
+
+        // public void actionPerformed(ActionEvent e) {
+        //     // System.out.println("Item added to order: " + item_name);
+        //     model.getItemID(item_name);
+        //     for (int i = 0; i < orderItems.length; i++) {
+        //         if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
+        //             orderItems[i][0] = model.getItemID(item_name);
+        //             orderItems[i][1] = orderItems[i][1] + 1;
+
+        //             // reupdates the order panel
+        //             populateCashierOrderPanel();
+
+        //             // break because we found the item in the orderItems array
+        //             break;
+        //         }
+        //     }
+        // }
+
+    // need to populate the payment screen with 
 
     
     /** 
