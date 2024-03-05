@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +34,10 @@ public class Controller implements ActionListener{
     private int preferredHeight;
 
 
+    
+    /** 
+     * @param args
+     */
     public static void main(String[] args) {
         // setup and display the login screen
         FlatLightLaf.setup();
@@ -92,10 +97,12 @@ public class Controller implements ActionListener{
     /*
      * LOGIN SCREEN METHODS
      */
+    
     // sets the login screen to visible
     public void switchToLoginScreen() {
         loginScreen.getFrame().setVisible(true);
     }
+
     // get preferred size of the frame from fullscreen button then set preferred values and the size of the frame
     public void getPreferredSize() {
         JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
@@ -126,6 +133,7 @@ public class Controller implements ActionListener{
             }
         });
     }
+
     // switch to appropriate screen based on login's phone number
     public void switchFromLoginScreen() {
         loginScreen.getLoginButton().addActionListener(new ActionListener() {
@@ -173,11 +181,16 @@ public class Controller implements ActionListener{
     /*
      * CASHIER SCREEN METHODS
      */
+
     // sets the cashier screen to visible and sets isManager to false
     public void switchToCashierScreen() {
         isManager = false;
         cashierScreen.getFrame().setVisible(true);
     }
+    
+    /** 
+     * @param category
+     */
     public void populateCashierItemPanel(String category) {
         // Get items and sort by category
         ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -319,6 +332,7 @@ public class Controller implements ActionListener{
         itemsPanel.revalidate();
         itemsPanel.repaint();
     }
+
     // populates the cashier navbar and sets up action listeners for each category button
     public void populateCashierNavBar() {
         ResultSet rs = this.model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
@@ -378,6 +392,7 @@ public class Controller implements ActionListener{
             e.printStackTrace();
         }
     }
+
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
@@ -420,6 +435,7 @@ public class Controller implements ActionListener{
         // reinitialize the subtotal label in bottom panel
         populateCashierBottomPanel();
     }
+
     // populate the bottom panel of the cashier screen with the cashier's name and the subtotal of the order
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
@@ -451,6 +467,7 @@ public class Controller implements ActionListener{
         bottomPanel.revalidate();
         bottomPanel.repaint();
     }
+
     // complete the cashier's order via orderComplete button, display subtotal, and switch to payment screen
     public void switchFromCashierPanel() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
@@ -486,6 +503,7 @@ public class Controller implements ActionListener{
     /*
      * MANAGER SCREEN METHODS
      */
+
     // sets the manager screen to visible and sets isManager to true
     public void switchToManagerScreen() {
         isManager = true;
@@ -517,6 +535,9 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
+    /** 
+     * @param content
+     */
     // populates the manager screen with content
     public void populateManagerMainPanel(String content) {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -540,6 +561,7 @@ public class Controller implements ActionListener{
         mainPanel.revalidate();
         mainPanel.repaint();
     }
+    
     // populates the manager screen with a chart // TODO implement chart
     public void populateManagerChartPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -548,6 +570,7 @@ public class Controller implements ActionListener{
         chartTextArea.setPreferredSize(new Dimension(450, 500));
         mainPanel.add(chartTextArea);
     }
+
     // populates the manager screen with the order panel
     public void populateManagerOrderPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -578,23 +601,24 @@ public class Controller implements ActionListener{
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
             if(comboBox.getSelectedItem().equals("Users")){
-                viewTable(table, 0);
                 usersPopUp(table);
+                viewTable(table, 0);
             } else if(comboBox.getSelectedItem().equals("Manager Orders")){
-                viewTable(table, 1);
                 managerOrdersPopUp(table);
+                viewTable(table, 1);
             } else if (comboBox.getSelectedItem().equals("Customer Orders")) {
                 viewTable(table, 2);
                 customerOrdersPopUp(table);
             } else if (comboBox.getSelectedItem().equals("Items")) {
-                viewTable(table, 3);
                 itemsPopUp(table);
+                viewTable(table, 3);
             } else if(comboBox.getSelectedItem().equals("Ingredients")){
-                viewTable(table, 4);
                 ingredientsPopUp(table);
+                viewTable(table, 4);
             }
         });  
     }
+
     // populates the manager screen with the track panel
     public void populateManagerTrackPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -652,47 +676,118 @@ public class Controller implements ActionListener{
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
     }
+    public void TableQuery(String query, JTable table) {
+        try {
+            ResultSet rs = model.executeQuery(query);
+
+            // make table uneditable
+            DefaultTableModel tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            if (rs != null) {
+                ResultSetMetaData data = rs.getMetaData();
+                int cols = data.getColumnCount();
+                // clear if data exists
+                tableModel.setRowCount(0);
+                tableModel.setColumnCount(0);
+
+                // create columns with count
+                for (int i = 1; i <= cols; i++) {
+                    tableModel.addColumn(data.getColumnName(i));
+                }
+
+                // add rows
+                while (rs.next()) {
+                    Vector<Object> v = new Vector<Object>();
+                    for (int i = 1; i <= cols; i++) {
+                        v.add(rs.getObject(i));
+                    }
+                    tableModel.addRow(v);
+                }
+            }
+            table.setModel(tableModel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to fetch data: " + e.getMessage());
+        }
+    }
+
     // populates the manager screen with a table of CRUD operations for each table
     public void populateManagerTablePanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
-        mainPanel.setLayout(new GridLayout(4, 4));
-        StringBuilder tableName = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            int remainder = i % 4;
-            if (remainder == 0) {
-                tableName.append("Create ");
+        mainPanel.setLayout(new BorderLayout());
+
+        // Panel for ingredient ID and count
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        //COMBOBOX
+        JLabel tableLabel = new JLabel("Query Select: ");
+        String[] dropDownList = {"Product Usage","Sales Report", "Excess Report", "Restock Report", "What Sells Together"};
+        JComboBox comboBox = new JComboBox(dropDownList);
+
+        JLabel timeStart = new JLabel("TimeStart");
+        JTextField timeStart2 = new JTextField(10);
+
+        JLabel timeEnd = new JLabel("TimeEnd");
+        JTextField timeEnd2 = new JTextField(10);
+
+        JLabel timeStamp = new JLabel("TimeStamp");
+        JTextField timeStamp2 = new JTextField(10);
+
+        //inputPanel.add(tableLabel);
+        inputPanel.add(comboBox);
+
+        inputPanel.add(timeStart);
+        inputPanel.add(timeStart2);
+
+        inputPanel.add(timeEnd);
+        inputPanel.add(timeEnd2);
+
+        inputPanel.add(timeStamp);
+        inputPanel.add(timeStamp2);
+
+
+        
+
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+
+        // Table to display results. Used in viewTable
+        JTable table = new JTable();
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        
+
+        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
+            if(comboBox.getSelectedItem().equals("Product Usage")){
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+            } else if(comboBox.getSelectedItem().equals("Sales Report")){
+                TableQuery("SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount \r\n" + //
+                                        "FROM customer_order JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
+                                        "WHERE DATE_PART('month', c_order_date) = DATE_PART('month', CURRENT_DATE - INTERVAL '1 month')\r\n" + //
+                                        "GROUP BY item_id, DATE_PART('month', c_order_date)\r\n" + //
+                                        "ORDER BY itemCount DESC;\r\n" + //
+                                        "", table);
+            } else if (comboBox.getSelectedItem().equals("Excess Report")) {
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
+            } else if (comboBox.getSelectedItem().equals("Restock Report")) {
+                //Adds the items that are currently less than 15 in number to the restock report
+                TableQuery("SELECT *\r\n" + //
+                                        "FROM ingredients\r\n" + 
+                                        "WHERE ingredient_current_stock < 15\r\n" + //
+                                        //In ascending order so that item with least amount 
+                                        //is displayed first
+                                        "ORDER BY ingredient_current_stock ASC;", table);
+            } else if(comboBox.getSelectedItem().equals("What Sells Together")){
+                TableQuery("SELECT * FROM menu_items ORDER BY category;", table);
             }
-            else if (remainder == 1) {
-                tableName.append("Read ");
-            }
-            else if (remainder == 2) {
-                tableName.append("Update ");
-            }
-            else if (remainder == 3) {
-                tableName.append("Delete ");
-            }
-            if (i < 4) {
-                tableName.append("Users");
-            }
-            else if (i < 8) {
-                tableName.append("Orders");
-            }
-            else if (i < 12) {
-                tableName.append("Items");
-            }
-            else if (i < 16) {
-                tableName.append("Ingredients");
-            }
-            JButton tableButton = new JButton(tableName.toString());
-            tableButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Table: " + tableButton.getText());
-                }
-            });
-            mainPanel.add(tableButton);
-            tableName.setLength(0);
-        }
+        });     
     }
 
 
@@ -704,6 +799,11 @@ public class Controller implements ActionListener{
         paymentScreen.getFrame().setVisible(true);
     }
 
+    
+    /** 
+     * @param dateString
+     * @return String
+     */
     /*
      * HELPER METHODS
      */
@@ -714,6 +814,11 @@ public class Controller implements ActionListener{
         dateString = dateString.replaceAll("/", "-");
         return dateString;
     }
+    
+    /** 
+     * @param table
+     * @param tableType
+     */
     // updates the table with the latest data from SQL
     // tableType 0 for users, 1 for manager orders, 2 for customer orders, 2 for items, 3 for ingredients
     private void viewTable(JTable table, int tableType) {
@@ -722,7 +827,6 @@ public class Controller implements ActionListener{
         MouseListener[] mouseListeners = table.getMouseListeners();
         for (MouseListener mouseListener : mouseListeners) {
             table.removeMouseListener(mouseListener);
-            System.out.println("Removed mouse listener" + mouseListener.toString());
         }
         switch (tableType) { //if the function was called to display the menu_item table
             case 0: // USERS
@@ -736,17 +840,18 @@ public class Controller implements ActionListener{
                             return false;
                         }
                     };
-                    tableModel.setColumnIdentifiers(new String[]{"phone number", "name", "is manager"}); // Set column names
 
+                    // set columns to phone number | name | is manager ; and then populate with appropriate data
+                    tableModel.setColumnIdentifiers(new String[]{"phone number", "name", "is manager"});
                     while (resultSet.next()) {
                         Object[] rowData = new Object[3];
                         // don't access first column because it contains ID which is not needed
                         rowData[0] = resultSet.getObject(2);
                         rowData[1] = resultSet.getObject(3);
                         rowData[2] = resultSet.getObject(4);
-                        tableModel.addRow(rowData);//add it to table
+                        tableModel.addRow(rowData); 
                     }
-                    table.setModel(tableModel); // Set the updated table model
+                    table.setModel(tableModel);
 
                     // set to false so user can't select row, its distracting and not needed
                     table.setRowSelectionAllowed(false);
@@ -758,11 +863,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                break; // TODO
+                usersPopUp(table);
+                break;
             case 1: // MANAGER ORDERS
                 try {
                     ResultSet resultSet = model.getAllManagerOrders();
@@ -774,8 +879,8 @@ public class Controller implements ActionListener{
                             return false;
                         }
                     };
-                    tableModel.setColumnIdentifiers(new String[]{"phone number", "date", "time", "total"}); // Set column names
-
+                    // set columns to phone number | date | time | total ; and then populate with appropriate data
+                    tableModel.setColumnIdentifiers(new String[]{"phone number", "date", "time", "total"}); 
                     while (resultSet.next()) {
                         Object[] rowData = new Object[4];
                         // don't access first column because it contains ID which is not needed
@@ -783,9 +888,9 @@ public class Controller implements ActionListener{
                         rowData[1] = resultSet.getObject(2);
                         rowData[2] = resultSet.getObject(3);
                         rowData[3] = resultSet.getObject(4);
-                        tableModel.addRow(rowData);//add it to table
+                        tableModel.addRow(rowData);
                     }
-                    table.setModel(tableModel); // Set the updated table model
+                    table.setModel(tableModel);
 
                     // set to false so user can't select row, its distracting and not needed
                     table.setRowSelectionAllowed(false);
@@ -798,11 +903,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 4);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 4);
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 4);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                break; // TODO
+                managerOrdersPopUp(table);
+                break;
             case 2: // CUSTOMER ORDERS
                 try {
                     ResultSet resultSet = model.getAllCustomerOrders();
@@ -814,8 +919,8 @@ public class Controller implements ActionListener{
                             return false;
                         }
                     };
-                    tableModel.setColumnIdentifiers(new String[]{"date", "time", "subtotal", "tax", "total", "payment type"}); // Set column names
-
+                    // set columns to date | time  | subtotal | tax | total | payment type ; and then populate with appropriate data
+                    tableModel.setColumnIdentifiers(new String[]{"date", "time", "subtotal", "tax", "total", "payment type"});
                     while (resultSet.next()) {
                         Object[] rowData = new Object[6];
                         // don't access first column because it contains ID which is not needed
@@ -825,9 +930,9 @@ public class Controller implements ActionListener{
                         rowData[3] = resultSet.getObject(5);
                         rowData[4] = resultSet.getObject(6);
                         rowData[5] = resultSet.getObject(7);
-                        tableModel.addRow(rowData);//add it to table
+                        tableModel.addRow(rowData);
                     }
-                    table.setModel(tableModel); // Set the updated table model
+                    table.setModel(tableModel);
 
                     // set to false so user can't select row, its distracting and not needed
                     table.setRowSelectionAllowed(false);
@@ -842,11 +947,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(4).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(5).setPreferredWidth(tableWidth / 6);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                break; // TODO
+                customerOrdersPopUp(table);
+                break;
             case 3: // ITEMS
                 try {
                     ResultSet resultSet = model.getAllItemsAndIngredients();
@@ -858,18 +963,19 @@ public class Controller implements ActionListener{
                             return false;
                         }
                     };
-                    tableModel.setColumnIdentifiers(new String[]{"name", "price", "category", "ingredients"}); // Set column names
 
+                    // set columns to name | price | category | ingredients ; and then populate with appropriate data
+                    tableModel.setColumnIdentifiers(new String[]{"name", "price", "category", "ingredients"}); // Set column names
                     while (resultSet.next()) {
                         Object[] rowData = new Object[4];
                         rowData[0] = resultSet.getObject(1);
                         rowData[1] = resultSet.getObject(2);
                         rowData[2] = resultSet.getObject(3);
                         rowData[3] = resultSet.getObject(4);
-                        tableModel.addRow(rowData);//add it to table
+                        tableModel.addRow(rowData);
 
                     }
-                    table.setModel(tableModel); // Set the updated table model
+                    table.setModel(tableModel);
 
                     // set to false so user can't select row, its distracting and not needed
                     table.setRowSelectionAllowed(false);
@@ -882,10 +988,11 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 6);
                     table.getColumnModel().getColumn(3).setPreferredWidth(tableWidth / 2);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                itemsPopUp(table);
+                break;
             case 4: // INGREDIENTS
                 try {
                     ResultSet resultSet = model.getAllIngredients();
@@ -897,17 +1004,18 @@ public class Controller implements ActionListener{
                             return false;
                         }
                     };
-                    tableModel.setColumnIdentifiers(new String[]{"name", "current stock", "unit price"}); // Set column names
 
+                    // set columns to name | current stock | unit price ; and then populate with appropriate data
+                    tableModel.setColumnIdentifiers(new String[]{"name", "current stock", "unit price"}); // Set column names
                     while (resultSet.next()) {
                         Object[] rowData = new Object[3];
                         // don't access first column because it contains ID which is not needed
                         rowData[0] = resultSet.getObject(2);
                         rowData[1] = resultSet.getObject(3);
                         rowData[2] = resultSet.getObject(4);
-                        tableModel.addRow(rowData);//add it to table
+                        tableModel.addRow(rowData);
                     }
-                    table.setModel(tableModel); // Set the updated table model
+                    table.setModel(tableModel); 
                 
                     // set to false so user can't select a row, its distracting and not needed
                     table.setRowSelectionAllowed(false);
@@ -918,24 +1026,28 @@ public class Controller implements ActionListener{
                     table.getColumnModel().getColumn(0).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(1).setPreferredWidth(tableWidth / 3);
                     table.getColumnModel().getColumn(2).setPreferredWidth(tableWidth / 3);
-                    break;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                ingredientsPopUp(table);
+                break;
         }
     }
 
+    
+    
+    /** 
+     * @param table
+     */
     private void usersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int row = table.rowAtPoint(p);
+                int id = table.rowAtPoint(p) + 1;
                 int tableType = 0;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
-                    System.out.println("tableType: " + tableType + " Right click on row " + row);
-
+                if (me.getClickCount() == 2  && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -953,19 +1065,160 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update " + tableType);
+                            // create a JDialog
+                            JDialog updateUserPopupDialog = new JDialog();
+                            updateUserPopupDialog.setTitle("Update User");
+                            updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateUserPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes  
+                            Container updateUserPopup = updateUserPopupDialog.getContentPane();
+                            updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect phoneNumber label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoneNumberLabel = new JLabel("User Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText(model.getObject("users", "user_id", id, "phonenumber"));
+                            phoneNumberPanel.add(phoneNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("User's Name: ");
+                            JTextField nameField = new JTextField(20);
+                            nameField.setText(model.getObject("users", "user_id", id, "name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect isManager label and field 
+                            JPanel isManagerPanel = new JPanel();
+                            JLabel isManagerLabel = new JLabel("User Manager Status: ");
+                            String[] managerStatus = {"true", "false"};
+                            JComboBox isManagerComboBox = new JComboBox(managerStatus);
+                            boolean isManager = Boolean.parseBoolean(model.getObject("users", "user_id", id, "ismanager"));
+                            isManagerComboBox.setSelectedItem(String.valueOf(isManager));
+                            isManagerPanel.add(isManagerLabel);
+                            isManagerPanel.add(isManagerComboBox);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String phoneNumber = phoneNumberField.getText();
+                                    String name = nameField.getText();
+                                    boolean isManager = isManagerComboBox.getSelectedItem().equals("true");
+                                    model.updateUser(id, phoneNumber, name, isManager);
+                                    updateUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            updateUserPopup.add(phoneNumberPanel);
+                            updateUserPopup.add(namePanel);
+                            updateUserPopup.add(isManagerPanel);
+                            updateUserPopup.add(commitButton);
+                            updateUserPopup.setVisible(true);
+                            updateUserPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
+                            
+                            // create a JDialog
+                            JDialog deleteUserPopupDialog = new JDialog();
+                            deleteUserPopupDialog.setTitle("Delete User");
+                            deleteUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteUserPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteUserPopup = deleteUserPopupDialog.getContentPane();
+                            deleteUserPopup.setLayout(new BoxLayout(deleteUserPopup, BoxLayout.Y_AXIS));
+                            JLabel deleteUserLabel = new JLabel("Are you sure you want to delete this user: " + model.getObject("users", "user_id", id, "name") + "?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteUser(id);
+                                    deleteUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteUserPopup.add(deleteUserLabel);
+                            deleteUserPopup.add(confirmButton);
+                            deleteUserPopup.setVisible(true);
+                            deleteUserPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
+                            // create a JDialog
+                            JDialog updateUserPopupDialog = new JDialog();
+                            updateUserPopupDialog.setTitle("Update User");
+                            updateUserPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateUserPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes  
+                            Container updateUserPopup = updateUserPopupDialog.getContentPane();
+                            updateUserPopup.setLayout(new BoxLayout(updateUserPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect phoneNumber label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoneNumberLabel = new JLabel("User Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText("1234567890");
+                            phoneNumberPanel.add(phoneNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("User's Name: ");
+                            JTextField nameField = new JTextField(20);
+                            nameField.setText("<first name> <last name>");
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect isManager label and field 
+                            JPanel isManagerPanel = new JPanel();
+                            JLabel isManagerLabel = new JLabel("User Manager Status: ");
+                            String[] managerStatus = {"true", "false"};
+                            JComboBox isManagerComboBox = new JComboBox(managerStatus);
+                            isManagerComboBox.setSelectedItem("false");
+                            isManagerPanel.add(isManagerLabel);
+                            isManagerPanel.add(isManagerComboBox);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String phoneNumber = phoneNumberField.getText();
+                                    String name = nameField.getText();
+                                    boolean isManager = isManagerComboBox.getSelectedItem().equals("true");
+                                    model.createUser(phoneNumber, name, isManager);
+                                    updateUserPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            updateUserPopup.add(phoneNumberPanel);
+                            updateUserPopup.add(namePanel);
+                            updateUserPopup.add(isManagerPanel);
+                            updateUserPopup.add(commitButton);
+                            updateUserPopup.setVisible(true);
+                            updateUserPopupDialog.setVisible(true);
                         }
                     });
                     popupMenu.show(me.getComponent(), me.getX(), me.getY());
@@ -974,17 +1227,21 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void managerOrdersPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int row = table.rowAtPoint(p);
+                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 1;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
-                    System.out.println("tableType: " + tableType + " Right click on row " + row);
 
+                // if right clicked and not on column header
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1002,152 +1259,295 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-
-                            // create a popup to update the order
-                            System.out.println("Update " + tableType);
-                            JDialog updateOrderPopup = new JDialog();
-                            updateOrderPopup.setTitle("Update Order");
-                            updateOrderPopup.setSize(preferredWidth / 3, preferredHeight / 3);
-                            updateOrderPopup.setLocationRelativeTo(null);
-                            updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
-                            
-                            // add type : manager || customer
-                            JPanel typePanel = new JPanel(); 
-                            JLabel typeLabel = new JLabel("Order Type: ");
-                            String[] typeDropDown = {"", "Manager", "Customer"};
-                            JComboBox typeBox = new JComboBox(typeDropDown);
-                            typePanel.add(typeLabel);
-                            typePanel.add(typeBox);
-                            updateOrderPopup.add(typePanel);
-
-                            // add 
-
-                            
-                        }
-                    });
-                    deleteItem.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
-                        }
-                    });
-                    createItem.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
-                        }
-                    });
-                    popupMenu.show(me.getComponent(), me.getX(), me.getY());
-                }
-            }
-        });
-    }
-
-    private void customerOrdersPopUp(JTable table) {
-        // add event listener so rows can be selected
-        table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
-                JTable table = (JTable) me.getSource();
-                Point p = me.getPoint();
-                int row = table.rowAtPoint(p);
-                int tableType = 1;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
-                    System.out.println("tableType: " + tableType + " Right click on row " + row);
-
-                    // create a popup menu for CRUD operations
-                    JPopupMenu popupMenu = new JPopupMenu();
-
-                    // create items for menu
-                    JMenuItem updateItem = new JMenuItem("Update");
-                    JMenuItem deleteItem = new JMenuItem("Delete");
-                    JMenuItem createItem = new JMenuItem("Create");
-
-                    // add items to menu
-                    popupMenu.add(updateItem);
-                    popupMenu.add(deleteItem);
-                    popupMenu.add(createItem);
-
-                    // add action listeners to items
-                    updateItem.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-
-                            // create a popup to update the order
-                            System.out.println("Update " + tableType);
+                            // create a JDialog
                             JDialog updateOrderPopupDialog = new JDialog();
                             updateOrderPopupDialog.setTitle("Update Order");
                             updateOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             updateOrderPopupDialog.setLocationRelativeTo(null);
 
+                            // create a Container from the Dialog's content pane for layout purposes
                             Container updateOrderPopup = updateOrderPopupDialog.getContentPane();
                             updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
                             
-                            // add order date 
+                            // create and collect date label and field 
                             JPanel datePanel = new JPanel();
                             JLabel dateLabel = new JLabel("Order Date: ");
                             JTextField dateField = new JTextField(10);
-                            System.out.println("row: " + (row + 1));
-                            dateField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_date"));
+                            dateField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_date"));
                             datePanel.add(dateLabel);
                             datePanel.add(dateField);
 
-                            // add order time
+                            // create and collect time label and field 
                             JPanel timePanel = new JPanel();
                             JLabel timeLabel = new JLabel("Order Time: ");
                             JTextField timeField = new JTextField(12);
-                            timeField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_time"));
+                            timeField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_time"));
                             timePanel.add(timeLabel);
                             timePanel.add(timeField);
 
-                            // add order subtotal
-                            JPanel subtotalPanel = new JPanel();
-                            JLabel subtotalLabel = new JLabel("Order Subtotal: ");
-                            JTextField subtotalField = new JTextField(7);
-                            subtotalField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_subtotal"));
-                            subtotalPanel.add(subtotalLabel);
-                            subtotalPanel.add(subtotalField);
-
-                            // add order tax
-                            JPanel taxPanel = new JPanel();
-                            JLabel taxLabel = new JLabel("Order Tax: ");
-                            JTextField taxField = new JTextField(6);
-                            taxField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_tax"));
-                            taxPanel.add(taxLabel);
-                            taxPanel.add(taxField);
-
-                            // add order total
+                            // create and collect total label and field 
                             JPanel totalPanel = new JPanel();
                             JLabel totalLabel = new JLabel("Order Total: ");
                             JTextField totalField = new JTextField(7);
-                            totalField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_total"));
+                            totalField.setText(model.getObject("manager_order", "m_order_id", id, "m_order_total"));
                             totalPanel.add(totalLabel);
                             totalPanel.add(totalField);
 
-                            // add order payment method
-                            JPanel paymentMethodPanel = new JPanel();
-                            JLabel paymentMethodLabel = new JLabel("Payment Method: ");
-                            JTextField paymentMethodField = new JTextField(10);
-                            paymentMethodField.setText(model.getObject("customer_order", "c_order_id", row + 1, "c_order_payment_type"));
-                            paymentMethodPanel.add(paymentMethodLabel);
-                            paymentMethodPanel.add(paymentMethodField);
+                            // create and collect payment method label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoenNumberLabel = new JLabel("Order Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText(model.getObject("manager_order", "m_order_id", id, "phonenumber"));
+                            phoneNumberPanel.add(phoenNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
 
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
                             JButton commitButton = new JButton("Commit");
                             commitButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                    // update the order in the database
+                                    // update the order in the database and also the table 
+                                    String date = dateField.getText();
+                                    String time = timeField.getText();
+                                    Double total = Double.parseDouble(totalField.getText());
+                                    String phoneNumber = phoneNumberField.getText();
+                                    model.updateManagerOrder(id, date, time, total, phoneNumber);
+                                    updateOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            updateOrderPopup.add(datePanel);
+                            updateOrderPopup.add(timePanel);
+                            updateOrderPopup.add(totalPanel);
+                            updateOrderPopup.add(phoneNumberPanel);
+                            updateOrderPopup.add(commitButton);
+                            updateOrderPopup.setVisible(true);
+                            updateOrderPopupDialog.setVisible(true);
+                        }
+                    });
+                    deleteItem.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            
+                            // create a JDialog
+                            JDialog deleteOrderPopupDialog = new JDialog();
+                            deleteOrderPopupDialog.setTitle("Delete Order");
+                            deleteOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteOrderPopup = deleteOrderPopupDialog.getContentPane();
+                            deleteOrderPopup.setLayout(new BoxLayout(deleteOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteOrderLabel = new JLabel("Are you sure you want to delete this order?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteManagerOrder(id);
+                                    deleteOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteOrderPopup.add(deleteOrderLabel);
+                            deleteOrderPopup.add(confirmButton);
+                            deleteOrderPopup.setVisible(true);
+                            deleteOrderPopupDialog.setVisible(true);
+                        }
+                    });
+                    createItem.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // create a JDialog
+                            JDialog createOrderPopupDialog = new JDialog();
+                            createOrderPopupDialog.setTitle("Update Order");
+                            createOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            createOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container from the Dialog's content pane for layout purposes
+                            Container createOrderPopup = createOrderPopupDialog.getContentPane();
+                            createOrderPopup.setLayout(new BoxLayout(createOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect date label and field 
+                            JPanel datePanel = new JPanel();
+                            JLabel dateLabel = new JLabel("Order Date: ");
+                            JTextField dateField = new JTextField(10);
+                            dateField.setText("YYYY-MM-DD");
+                            datePanel.add(dateLabel);
+                            datePanel.add(dateField);
+
+                            // create and collect time label and field 
+                            JPanel timePanel = new JPanel();
+                            JLabel timeLabel = new JLabel("Order Time: ");
+                            JTextField timeField = new JTextField(12);
+                            timeField.setText("HH:MM:SS.sss");
+                            timePanel.add(timeLabel);
+                            timePanel.add(timeField);
+
+                            // create and collect total label and field 
+                            JPanel totalPanel = new JPanel();
+                            JLabel totalLabel = new JLabel("Order Total: ");
+                            JTextField totalField = new JTextField(7);
+                            totalField.setText("0.00");
+                            totalPanel.add(totalLabel);
+                            totalPanel.add(totalField);
+
+                            // create and collect payment method label and field 
+                            JPanel phoneNumberPanel = new JPanel();
+                            JLabel phoenNumberLabel = new JLabel("Order Phone Number: ");
+                            JTextField phoneNumberField = new JTextField(10);
+                            phoneNumberField.setText("1234567890");
+                            phoneNumberPanel.add(phoenNumberLabel);
+                            phoneNumberPanel.add(phoneNumberField);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String date = dateField.getText();
+                                    String time = timeField.getText();
+                                    Double total = Double.parseDouble(totalField.getText());
+                                    String phoneNumber = phoneNumberField.getText();
+                                    model.createManagerOrder(date, time, total, phoneNumber);
+                                    createOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and display the popup 
+                            createOrderPopup.add(datePanel);
+                            createOrderPopup.add(timePanel);
+                            createOrderPopup.add(totalPanel);
+                            createOrderPopup.add(phoneNumberPanel);
+                            createOrderPopup.add(commitButton);
+                            createOrderPopup.setVisible(true);
+                            createOrderPopupDialog.setVisible(true);
+                        }
+                    });
+                    popupMenu.show(me.getComponent(), me.getX(), me.getY());
+                }
+            }
+        });
+    }
+
+    
+    /** 
+     * @param table
+     */
+    private void customerOrdersPopUp(JTable table) {
+        // add event listener so rows can be selected
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                JTable table = (JTable) me.getSource();
+                Point p = me.getPoint();
+                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
+                int tableType = 2;
+
+                // if right clicked and not on column header  
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    // create a popup menu for CRUD operations
+                    JPopupMenu popupMenu = new JPopupMenu();
+
+                    // create items for menu
+                    JMenuItem updateItem = new JMenuItem("Update");
+                    JMenuItem deleteItem = new JMenuItem("Delete");
+                    JMenuItem createItem = new JMenuItem("Create");
+
+                    // add items to menu
+                    popupMenu.add(updateItem);
+                    popupMenu.add(deleteItem);
+                    popupMenu.add(createItem);
+
+                    // add action listeners to items
+                    updateItem.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // create a JDialog
+                            JDialog updateOrderPopupDialog = new JDialog();
+                            updateOrderPopupDialog.setTitle("Update Order");
+                            updateOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateOrderPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container from the Dialog's content pane for layout purposes
+                            Container updateOrderPopup = updateOrderPopupDialog.getContentPane();
+                            updateOrderPopup.setLayout(new BoxLayout(updateOrderPopup, BoxLayout.Y_AXIS));
+                            
+                            // create and collect date label and field 
+                            JPanel datePanel = new JPanel();
+                            JLabel dateLabel = new JLabel("Order Date: ");
+                            JTextField dateField = new JTextField(10);
+                            dateField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_date"));
+                            datePanel.add(dateLabel);
+                            datePanel.add(dateField);
+
+                            // create and collect time label and field 
+                            JPanel timePanel = new JPanel();
+                            JLabel timeLabel = new JLabel("Order Time: ");
+                            JTextField timeField = new JTextField(12);
+                            timeField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_time"));
+                            timePanel.add(timeLabel);
+                            timePanel.add(timeField);
+
+                            // create and collect subtotal label and field 
+                            JPanel subtotalPanel = new JPanel();
+                            JLabel subtotalLabel = new JLabel("Order Subtotal: ");
+                            JTextField subtotalField = new JTextField(7);
+                            subtotalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_subtotal"));
+                            subtotalPanel.add(subtotalLabel);
+                            subtotalPanel.add(subtotalField);
+
+                            // create and collect tax label and field 
+                            JPanel taxPanel = new JPanel();
+                            JLabel taxLabel = new JLabel("Order Tax: ");
+                            JTextField taxField = new JTextField(6);
+                            taxField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_tax"));
+                            taxPanel.add(taxLabel);
+                            taxPanel.add(taxField);
+
+                            // create and collect total label and field 
+                            JPanel totalPanel = new JPanel();
+                            JLabel totalLabel = new JLabel("Order Total: ");
+                            JTextField totalField = new JTextField(7);
+                            totalField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_total"));
+                            totalPanel.add(totalLabel);
+                            totalPanel.add(totalField);
+
+                            // create and collect payment method label and field 
+                            JPanel paymentMethodPanel = new JPanel();
+                            JLabel paymentMethodLabel = new JLabel("Payment Method: ");
+                            JTextField paymentMethodField = new JTextField(10);
+                            paymentMethodField.setText(model.getObject("customer_order", "c_order_id", id, "c_order_payment_type"));
+                            paymentMethodPanel.add(paymentMethodLabel);
+                            paymentMethodPanel.add(paymentMethodField);
+
+                            // create commit button that triggers model.updateCustomerOrder() on click and disposes of dialog
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
                                     String date = dateField.getText();
                                     String time = timeField.getText();
                                     String subtotal = subtotalField.getText();
                                     String tax = taxField.getText();
                                     String total = totalField.getText();
                                     String paymentMethod = paymentMethodField.getText();
-                                    model.updateCustomerOrder(row + 1, date, time, subtotal, tax, total, paymentMethod);
+                                    model.updateCustomerOrder(id, date, time, subtotal, tax, total, paymentMethod);
                                     updateOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
                                 }
                             });
 
-                            // add all Panels to the popup
+                            // add all panels to the popup and display the popup 
                             updateOrderPopup.add(datePanel);
                             updateOrderPopup.add(timePanel);
                             updateOrderPopup.add(subtotalPanel);
@@ -1162,25 +1562,32 @@ public class Controller implements ActionListener{
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
 
+                            // create a JDialog
                             JDialog deleteOrderPopupDialog = new JDialog();
                             deleteOrderPopupDialog.setTitle("Delete Order");
                             deleteOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             deleteOrderPopupDialog.setLocationRelativeTo(null);
 
+                            // create Container of Dialog's content pane for layout purposes
                             Container deleteOrderPopup = deleteOrderPopupDialog.getContentPane();
                             deleteOrderPopup.setLayout(new BoxLayout(deleteOrderPopup, BoxLayout.Y_AXIS));
                             
                             JLabel deleteOrderLabel = new JLabel("Are you sure you want to delete this order?");
                             JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
                             confirmButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                    model.deleteCustomerOrder(row + 1);
+                                    model.deleteCustomerOrder(id);
                                     deleteOrderPopupDialog.dispose();
+                                    viewTable(table, tableType);
                                 }
                             });
+
+                            // add everything and display dialog 
                             deleteOrderPopup.add(deleteOrderLabel);
                             deleteOrderPopup.add(confirmButton);
                             deleteOrderPopup.setVisible(true);
@@ -1191,16 +1598,16 @@ public class Controller implements ActionListener{
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             // create a popup to create the order
-                            System.out.println("Create " + tableType);
                             JDialog createOrderPopupDialog = new JDialog();
                             createOrderPopupDialog.setTitle("Create Order");
                             createOrderPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             createOrderPopupDialog.setLocationRelativeTo(null);
 
+                            // create a Container of Dialog's content pane for layout purposes
                             Container createOrderPopup = createOrderPopupDialog.getContentPane();
                             createOrderPopup.setLayout(new BoxLayout(createOrderPopup, BoxLayout.Y_AXIS));
                             
-                            // add order date 
+                            // create and collect date label and field 
                             JPanel datePanel = new JPanel();
                             JLabel dateLabel = new JLabel("Order Date: ");
                             JTextField dateField = new JTextField(10);
@@ -1208,7 +1615,7 @@ public class Controller implements ActionListener{
                             datePanel.add(dateLabel);
                             datePanel.add(dateField);
 
-                            // add order time
+                            // create and collect time label and field 
                             JPanel timePanel = new JPanel();
                             JLabel timeLabel = new JLabel("Order Time: ");
                             JTextField timeField = new JTextField(12);
@@ -1216,7 +1623,7 @@ public class Controller implements ActionListener{
                             timePanel.add(timeLabel);
                             timePanel.add(timeField);
 
-                            // add order subtotal
+                            // create and collect sybtotal label and field 
                             JPanel subtotalPanel = new JPanel();
                             JLabel subtotalLabel = new JLabel("Order Subtotal: ");
                             JTextField subtotalField = new JTextField(7);
@@ -1224,7 +1631,7 @@ public class Controller implements ActionListener{
                             subtotalPanel.add(subtotalLabel);
                             subtotalPanel.add(subtotalField);
 
-                            // add order tax
+                            // create and collect tax label and field 
                             JPanel taxPanel = new JPanel();
                             JLabel taxLabel = new JLabel("Order Tax: ");
                             JTextField taxField = new JTextField(6);
@@ -1232,7 +1639,7 @@ public class Controller implements ActionListener{
                             taxPanel.add(taxLabel);
                             taxPanel.add(taxField);
 
-                            // add order total
+                            // create and collect total label and field 
                             JPanel totalPanel = new JPanel();
                             JLabel totalLabel = new JLabel("Order Total: ");
                             JTextField totalField = new JTextField(7);
@@ -1240,7 +1647,7 @@ public class Controller implements ActionListener{
                             totalPanel.add(totalLabel);
                             totalPanel.add(totalField);
 
-                            // add order payment method
+                            // create and collect payemnt method label and field 
                             JPanel paymentMethodPanel = new JPanel();
                             JLabel paymentMethodLabel = new JLabel("Payment Method: ");
                             JTextField paymentMethodField = new JTextField(10);
@@ -1248,6 +1655,7 @@ public class Controller implements ActionListener{
                             paymentMethodPanel.add(paymentMethodLabel);
                             paymentMethodPanel.add(paymentMethodField);
 
+                            // create commit button, update database, and update table 
                             JButton commitButton = new JButton("Commit");
                             commitButton.addActionListener(new ActionListener() {
                                 @Override
@@ -1264,7 +1672,7 @@ public class Controller implements ActionListener{
                                 }
                             });
 
-                            // add all Panels to the popup
+                            // add all panels to the popup and show it 
                             createOrderPopup.add(datePanel);
                             createOrderPopup.add(timePanel);
                             createOrderPopup.add(subtotalPanel);
@@ -1282,17 +1690,21 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void itemsPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int row = table.rowAtPoint(p);
+                int id = table.rowAtPoint(p) + 1;
                 int tableType = 3;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
-                    System.out.println("tableType: " + tableType + " Right click on row " + row);
 
+                // if right clicked and not in column header
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1310,43 +1722,125 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update " + tableType);
+                            // create a JDialog 
+                            JDialog updateItemPopupDialog = new JDialog();
+                            updateItemPopupDialog.setTitle("Update Item");
+                            updateItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateItemPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container updateItemPopup = updateItemPopupDialog.getContentPane();
+                            updateItemPopup.setLayout(new BoxLayout(updateItemPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Item Name: ");
+                            JTextField nameField = new JTextField(model.getObject("menu_items", "item_id", id, "item_name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect price label and field 
+                            JPanel pricePanel = new JPanel();
+                            JLabel priceLabel = new JLabel("Item Price: ");
+                            JTextField priceField = new JTextField(model.getObject("menu_items", "item_id", id, "item_price"));
+                            pricePanel.add(priceLabel);
+                            pricePanel.add(priceField);
+
+                            // create and collect category label and ComboBox
+                            JPanel categoryPanel = new JPanel();
+                            JLabel categoryLabel = new JLabel("Item Category: ");
+                            String[] categoryDropDown = {"Choose An Option", "Appetizers", "Beverages", "Burgers", "Limited Time Offer", "Salads", "Sandwiches", "Shakes & More", "Value Meals"};
+                            JComboBox categoryComboBox = new JComboBox(categoryDropDown);
+                            categoryComboBox.setSelectedItem(model.getObject("menu_items", "item_id", id, "category"));
+                            categoryPanel.add(categoryLabel);
+                            categoryPanel.add(categoryComboBox);
+
+                            // create a button to commit the new item to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String name = nameField.getText();
+                                    Double price = Double.parseDouble(priceField.getText());
+                                    String category = categoryComboBox.getSelectedItem().toString();
+                                    model.updateItem(id, name, price, category);
+                                    updateItemPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            updateItemPopup.add(namePanel);
+                            updateItemPopup.add(pricePanel);
+                            updateItemPopup.add(categoryPanel);
+                            updateItemPopup.add(commitButton);
+                            updateItemPopup.setVisible(true);
+                            updateItemPopupDialog.setVisible(true);
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete " + tableType);
+                            // create a JDialog
+                            JDialog deleteItemPopupDialog = new JDialog();
+                            deleteItemPopupDialog.setTitle("Delete Item");
+                            deleteItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteItemPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteItemPopup = deleteItemPopupDialog.getContentPane();
+                            deleteItemPopup.setLayout(new BoxLayout(deleteItemPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteItemLabel = new JLabel("Are you sure you want to delete this item?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteItem(id);  
+                                    deleteItemPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteItemPopup.add(deleteItemLabel);
+                            deleteItemPopup.add(confirmButton);
+                            deleteItemPopup.setVisible(true);
+                            deleteItemPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create " + tableType);
-                            // create a popup to create the item
+                            // create a JDialog 
                             JDialog createItemPopupDialog = new JDialog();
                             createItemPopupDialog.setTitle("Create Item");
                             createItemPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
                             createItemPopupDialog.setLocationRelativeTo(null);
 
+                            // create a Container of Dialog's content pane for layout purposes
                             Container createItemPopup = createItemPopupDialog.getContentPane();
                             createItemPopup.setLayout(new BoxLayout(createItemPopup, BoxLayout.Y_AXIS));
 
-                            // create a panel for item name
+                            // create and collect name label and field 
                             JPanel namePanel = new JPanel();
                             JLabel nameLabel = new JLabel("Item Name: ");
                             JTextField nameField = new JTextField(20);
                             namePanel.add(nameLabel);
                             namePanel.add(nameField);
 
-                            // create a panel for item price
+                            // create and collect price label and field 
                             JPanel pricePanel = new JPanel();
                             JLabel priceLabel = new JLabel("Item Price: ");
                             JTextField priceField = new JTextField(7);
                             pricePanel.add(priceLabel);
                             pricePanel.add(priceField);
 
-                            // create a panel for item category
+                            // create and collect category label and ComboBox
                             JPanel categoryPanel = new JPanel();
                             JLabel categoryLabel = new JLabel("Item Category: ");
                             String[] categoryDropDown = {"Choose An Option", "Appetizers", "Beverages", "Burgers", "Limited Time Offer", "Salads", "Sandwiches", "Shakes & More", "Value Meals"};
@@ -1357,7 +1851,7 @@ public class Controller implements ActionListener{
                             // create a button to commit the new item to the database
                             JButton commitButton = new JButton("Commit");
 
-                            // add all panels to the popup
+                            // add all panels to the popup and make it visible 
                             createItemPopup.add(namePanel);
                             createItemPopup.add(pricePanel);
                             createItemPopup.add(categoryPanel);
@@ -1365,12 +1859,13 @@ public class Controller implements ActionListener{
                             createItemPopup.setVisible(true);
                             createItemPopupDialog.setVisible(true);
 
+                            // set up frame for ingredient syncing for junction table
 
-
-                            //Window for associated ingredients with a new menu item
+                            // window for associated ingredients with a new menu item
                             JFrame attachIngredientsFrame = new JFrame();
                             attachIngredientsFrame.setLayout(new BoxLayout(attachIngredientsFrame.getContentPane(), BoxLayout.PAGE_AXIS));
-                            attachIngredientsFrame.setSize(600, 200);
+                            attachIngredientsFrame.setSize(preferredWidth / 3,preferredHeight / 3);
+                            attachIngredientsFrame.setLocationRelativeTo(null);
                             attachIngredientsFrame.setTitle("Inventory Association");
 
                             ResultSet rs = model.getAllIngredients();
@@ -1383,6 +1878,7 @@ public class Controller implements ActionListener{
                                 JOptionPane.showMessageDialog(null, "Error executing SQL query: " + ex.getMessage());
                             }
 
+                            // create and collect ingredient label and ComboBox
                             JComboBox ingredientComboBox = new JComboBox(ingredientNames);
                             JPanel panelIngredientList = new JPanel();
                             JTextField ingredientList = new JTextField(25);
@@ -1390,31 +1886,36 @@ public class Controller implements ActionListener{
                             panelIngredientList.add(ingredientList);
                             panelIngredientList.add(ingredientComboBox);
 
+                            // create and collect quantity label and field 
                             JPanel panelQuantityList = new JPanel();
                             JTextField quantityList = new JTextField(25);
                             panelQuantityList.add(new JLabel("Quantity List:"));
                             panelQuantityList.add(quantityList);
 
+                            // create confirmation button
                             JPanel panelButton = new JPanel();
                             JButton btnConfirmInventoryAttachment = new JButton("Confirm");
                             panelButton.add(btnConfirmInventoryAttachment);
 
+                            // create description
                             JPanel panelDescription = new JPanel();
                             JTextArea description = new JTextArea("1) Make sure the ingredients/inventory are already added\n2) Enter an ingredient only once and in the following format: Grilled Chicken, Hot Dog Bun, Red Onion, \n3) Enter quantities in the same format: 3, 2, 4, ");
                             description.setEditable(false);
                             panelDescription.add(description);
             
+                            // TODO : explain
                             AtomicInteger itemID = new AtomicInteger();
-                            
+                            // make commit button cause ingredient checking phase 
                             commitButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent event) {
                                     String name = nameField.getText();
                                     Double price = Double.parseDouble(priceField.getText());
                                     String category = categoryBox.getSelectedItem().toString();
+
+                                    // if we can add the item then display the popup and update the table
                                     if(model.addNewItem(name, price, category)){
                                         itemID.set(model.getItemID(name));
-
                                         attachIngredientsFrame.getContentPane().add(panelIngredientList);
                                         attachIngredientsFrame.getContentPane().add(panelQuantityList);
                                         attachIngredientsFrame.getContentPane().add(panelButton);
@@ -1427,11 +1928,13 @@ public class Controller implements ActionListener{
                                 }
                             });
 
+                            // makes text show up in comma-separated list
                             ingredientComboBox.addActionListener(event -> {
                                 String currentText = ingredientList.getText();
                                 ingredientList.setText(currentText + ingredientComboBox.getSelectedItem() + ", ");
                             });
 
+                            // make sure both ingredients and their quantities have the same length and then hide the popup and update the table
                             btnConfirmInventoryAttachment.addActionListener(event -> {
                                 String[] associatedIngredients = ingredientList.getText().split(", ");
                                 String[] quantities = quantityList.getText().split(", ");
@@ -1462,17 +1965,21 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void ingredientsPopUp(JTable table) {
         // add event listener so rows can be selected
         table.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent me) {
+            public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int row = table.rowAtPoint(p);
+                int id = table.rowAtPoint(p) + 1; // row + 1 becaues row 0 in Java == row 1 in SQL
                 int tableType = 4;
-                if (me.getButton() == MouseEvent.BUTTON3 && table.getSelectedRow() != -1) {
-                    System.out.println("tableType: " + tableType + " Right click on row " + row);
 
+                // if right clicked and not column header
+                if (me.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
                     JPopupMenu popupMenu = new JPopupMenu();
 
@@ -1490,19 +1997,152 @@ public class Controller implements ActionListener{
                     updateItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Update order");
+                            // create a JDialog 
+                            JDialog updateIngredientPopupDialog = new JDialog();
+                            updateIngredientPopupDialog.setTitle("Update Ingredient");
+                            updateIngredientPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            updateIngredientPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container updateIngredientPopup = updateIngredientPopupDialog.getContentPane();
+                            updateIngredientPopup.setLayout(new BoxLayout(updateIngredientPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Ingredient Name: ");
+                            JTextField nameField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_name"));
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect current stock label and field 
+                            JPanel currentStockPanel = new JPanel();
+                            JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
+                            JTextField currentStockField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock"));
+                            currentStockPanel.add(currentStockLabel);
+                            currentStockPanel.add(currentStockField);
+
+                            // create and collect unit price label and ComboBox
+                            JPanel unitPricePanel = new JPanel();
+                            JLabel unitPriceLabel = new JLabel("Ingredient Unit Price: ");
+                            JTextField unitPriceField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_unit_price"));
+                            unitPricePanel.add(unitPriceLabel);
+                            unitPricePanel.add(unitPriceField);
+
+                            // create a button to commit the new ingredient to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the ingredient in the database and also the table 
+                                    String name = nameField.getText();
+                                    Integer currentStock = Integer.parseInt(currentStockField.getText());
+                                    Double unitPrice = Double.parseDouble(unitPriceField.getText());
+                                    model.updateIngredient(id, name, currentStock, unitPrice);
+                                    updateIngredientPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            updateIngredientPopup.add(namePanel);
+                            updateIngredientPopup.add(currentStockPanel);
+                            updateIngredientPopup.add(unitPricePanel);
+                            updateIngredientPopup.add(commitButton);
+                            updateIngredientPopup.setVisible(true);
+                            updateIngredientPopupDialog.setVisible(true);
+                        
                         }
                     });
                     deleteItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Delete order");
+                            // create a JDialog
+                            JDialog deleteIngredientsPopupDialog = new JDialog();
+                            deleteIngredientsPopupDialog.setTitle("Delete Ingredient");
+                            deleteIngredientsPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            deleteIngredientsPopupDialog.setLocationRelativeTo(null);
+
+                            // create Container of Dialog's content pane for layout purposes
+                            Container deleteIngredientsPopup = deleteIngredientsPopupDialog.getContentPane();
+                            deleteIngredientsPopup.setLayout(new BoxLayout(deleteIngredientsPopup, BoxLayout.Y_AXIS));
+                            
+                            JLabel deleteIngredientsLabel = new JLabel("Are you sure you want to delete this order?");
+                            JButton confirmButton = new JButton("Confirm");
+
+                            // TODO : verify query is correct 
+                            // deletes order, gets rid of dialog, and refreshes table 
+                            confirmButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    model.deleteIngredient(id);
+                                    deleteIngredientsPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add everything and display dialog 
+                            deleteIngredientsPopup.add(deleteIngredientsLabel);
+                            deleteIngredientsPopup.add(confirmButton);
+                            deleteIngredientsPopup.setVisible(true);
+                            deleteIngredientsPopupDialog.setVisible(true);
                         }
                     });
                     createItem.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("Create order");
+                            // create a JDialog 
+                            JDialog createIngredientPopupDialog = new JDialog();
+                            createIngredientPopupDialog.setTitle("Update Ingredient");
+                            createIngredientPopupDialog.setSize(preferredWidth / 3, preferredHeight / 3);
+                            createIngredientPopupDialog.setLocationRelativeTo(null);
+
+                            // create a Container of Dialog's content pane for layout purposes
+                            Container createIngredientPopup = createIngredientPopupDialog.getContentPane();
+                            createIngredientPopup.setLayout(new BoxLayout(createIngredientPopup, BoxLayout.Y_AXIS));
+
+                            // create and collect name label and field 
+                            JPanel namePanel = new JPanel();
+                            JLabel nameLabel = new JLabel("Ingredient Name: ");
+                            JTextField nameField = new JTextField(20);
+                            namePanel.add(nameLabel);
+                            namePanel.add(nameField);
+
+                            // create and collect current stock label and field 
+                            JPanel currentStockPanel = new JPanel();
+                            JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
+                            JTextField currentStockField = new JTextField(7);
+                            currentStockPanel.add(currentStockLabel);
+                            currentStockPanel.add(currentStockField);
+
+                            // create and collect unit price label and ComboBox
+                            JPanel unitPricePanel = new JPanel();
+                            JLabel unitPriceLabel = new JLabel("Item Unit Price: ");
+                            JTextField unitPriceField = new JTextField(7);
+                            unitPricePanel.add(unitPriceLabel);
+                            unitPricePanel.add(unitPriceField);
+
+                            // create a button to commit the new item to the database, dispose of dialog, and update table
+                            JButton commitButton = new JButton("Commit");
+                            commitButton.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    // update the order in the database and also the table 
+                                    String name = nameField.getText();
+                                    Integer currentStock = Integer.parseInt(currentStockField.getText());
+                                    Double unitPrice = Double.parseDouble(unitPriceField.getText());
+                                    model.createIngredient(name, currentStock, unitPrice);
+                                    createIngredientPopupDialog.dispose();
+                                    viewTable(table, tableType);
+                                }
+                            });
+
+                            // add all panels to the popup and make it visible 
+                            createIngredientPopup.add(namePanel);
+                            createIngredientPopup.add(currentStockPanel);
+                            createIngredientPopup.add(unitPricePanel);
+                            createIngredientPopup.add(commitButton);
+                            createIngredientPopup.setVisible(true);
+                            createIngredientPopupDialog.setVisible(true);
                         }
                     });
                     popupMenu.show(me.getComponent(), me.getX(), me.getY());
@@ -1511,6 +2151,11 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param c
+     * @param f
+     */
     // update font size of all components of a panel recursively
     private void updateFontSizes(Component c, JFrame f) {
         if (c instanceof Container) {

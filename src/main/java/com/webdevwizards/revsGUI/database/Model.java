@@ -23,10 +23,16 @@ public class Model {
     private static boolean initialized = false;
     public String phoneNumber;
 
+    /**
+     * Constructor for the Model class : just calls initialize
+     */
     public Model() {
         this.initialize();
     }
 
+    /**
+     * Sets up config file and initializes the database connection
+     */
     public void initialize() {
 
         if (initialized) return; // Prevent re-initialization
@@ -65,6 +71,12 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Executes query and returns the result set of the query
+     * @param sql
+     * @return ResultSet
+     */
     // Execute and return query results
     public static ResultSet executeQuery(String sql) {
         try {
@@ -77,6 +89,9 @@ public class Model {
         }
     }
 
+    /**
+     * Closes connection 
+     */
     public static void close() {
         try {
             conn.close();
@@ -86,6 +101,12 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Checks whether the inputted phone number is a manager's or employee's number
+     * @param phoneNumber
+     * @return boolean
+     */
     public boolean login(String phoneNumber) {
         try {
             String sql = "SELECT * FROM users WHERE phonenumber = ?";
@@ -103,6 +124,12 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Checks whether the inputted phone number is a manager's number
+     * @param phoneNumber
+     * @return boolean
+     */
     public boolean isManager(String phoneNumber) {
         try {
             String sql = "SELECT * FROM users WHERE phonenumber = ?";
@@ -130,6 +157,14 @@ public class Model {
     private static final String SELECT_INGREDIENT= "SELECT ingredient_id, ingredient_quantity FROM item_to_ingredient_list WHERE item_id = ?;";
     private static final String SELECT_INGREDIENT_NAME = "SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?;";
     private static final String UPDATE_INGREDIENT_COUNT= "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
+    
+    /** 
+     * Sets the details for the specific order
+     * @param preparedStatement
+     * @param subtotal
+     * @param paymenttype
+     * @throws SQLException
+     */
     private void setOrderDetails(PreparedStatement preparedStatement, String subtotal, String paymenttype) throws SQLException {
         preparedStatement.setDate(1, new Date(System.currentTimeMillis()));
         preparedStatement.setTime(2, new Time(System.currentTimeMillis()));
@@ -138,6 +173,14 @@ public class Model {
         preparedStatement.setDouble(5, 1.0825* Double.parseDouble(subtotal));
         preparedStatement.setString(6, paymenttype);
     }
+    
+    /** 
+     * Inserts the customer order items into the database based on order_id
+     * @param order_id
+     * @param orderItems
+     * @param connection
+     * @throws SQLException
+     */
     private void insert_order_item(int order_id, int[][] orderItems, Connection connection) throws SQLException {
         try{
 
@@ -159,6 +202,15 @@ public class Model {
             e.printStackTrace();
         }// Done
     }
+    
+    /** 
+     * Checks the selected ingredients
+     * @param ingredient_id
+     * @param ingredient_quantity
+     * @param connection
+     * @return boolean
+     * @throws SQLException
+     */
     private boolean checkSelectIngredient(int ingredient_id, int ingredient_quantity , Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT_NAME)) {
             preparedStatement.setInt(1, ingredient_id);
@@ -172,6 +224,15 @@ public class Model {
         }//Done
     }
 
+    
+    /** 
+     * Attaches the associated ingredients to the new item ; used for new seasonal item
+     * @param itemID
+     * @param associatedIngredients
+     * @param quantities
+     * @return boolean
+     * @throws SQLException
+     */
     public boolean attachAssociatedInventoryToNewItem(int itemID, String[] associatedIngredients, String[] quantities) throws SQLException {
         PreparedStatement statement = conn.prepareStatement("insert into item_to_ingredient_list (item_id, ingredient_id, ingredient_quantity) values (?, ?, ?)");
         int ingredient_id;
@@ -191,6 +252,13 @@ public class Model {
             throw new RuntimeException(e);
         }
     }
+    
+    /** 
+     * merges the lists of ingredients and quantities into a map
+     * @param list1
+     * @param list2
+     * @param resultMap
+     */
     public static void mergeLists(List<Integer> list1, List<Integer> list2, Map<Integer, Integer> resultMap) {
         for (int i = 0; i < list1.size(); i++) {
             int id = list1.get(i);
@@ -198,6 +266,15 @@ public class Model {
             resultMap.put(id, resultMap.getOrDefault(id, 0) + quantity);
         }
     }
+    
+    
+    /** 
+     * Selects the ingredients for the order so it can be subtracted from the inventory
+     * @param orderItems
+     * @param connection
+     * @return boolean
+     * @throws SQLException
+     */
     private boolean selectIngredient(int[][] orderItems , Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT)) {
             for (int i = 0; i < orderItems.length; i++) {
@@ -233,6 +310,14 @@ public class Model {
 
     }//Done?
 
+    
+    /** 
+     * Updates the current number of ingredients left in stocafter a customer order is completed
+     * @param ingredient_id
+     * @param ingredient_quantity
+     * @param connection
+     * @throws SQLException
+     */
     private void updateIngredientCount(int ingredient_id, int ingredient_quantity, Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT_NAME)) {
             preparedStatement.setInt(1, ingredient_id);
@@ -247,6 +332,14 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Inserts order details to customer_order table
+     * @param subtotal
+     * @param orderItems
+     * @param paymenttype
+     * @return boolean
+     */
     public boolean insert_order(String subtotal, int[][] orderItems, String paymenttype) {
         try{
             PreparedStatement preparedStatementInsert = conn.prepareStatement(INSERT_ORDER_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -269,6 +362,14 @@ public class Model {
             return false;
         }
     }
+    
+    /** 
+     * Adds new item to the order, updates names, price and category
+     * @param itemName
+     * @param itemPrice
+     * @param category
+     * @return boolean
+     */
     public static boolean addNewItem(String itemName, Double itemPrice, String category){
         try{
             PreparedStatement statement = conn.prepareStatement("insert into menu_items (item_name, item_price, category) values (?, ?, ?)");
@@ -284,6 +385,12 @@ public class Model {
             return false;
         }
     }
+    
+    
+    /** 
+     * Gets ResultSet of all ingredients
+     * @return ResultSet
+     */
     public static ResultSet getAllIngredients(){
         try{
             PreparedStatement statement = conn.prepareStatement("select * from ingredients order by ingredient_id");
@@ -295,6 +402,12 @@ public class Model {
             return null;
         }
     }
+
+    
+    /** 
+     * returns all attribute from menu items that is ordered by item_id 
+     * @return ResultSet
+     */
     public static ResultSet getAllMenuItems(){
         try{
             PreparedStatement statement = conn.prepareStatement("select * from menu_items order by item_id");
@@ -307,6 +420,11 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Retrieves all items and ingredients
+     * @return ResultSet
+     */
     public static ResultSet getAllItemsAndIngredients() {
         try {
             PreparedStatement statement = conn.prepareStatement(
@@ -327,42 +445,65 @@ public class Model {
             }
         }
 
-        public static ResultSet getAllCustomerOrders() {
-            try {
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM customer_order ORDER BY c_order_id");
-                ResultSet rs = statement.executeQuery();
-                return rs;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return null;
-            }
+    
+    /** 
+     * returns ResultSet of all cusommt
+     * @return ResultSet
+     */
+    public static ResultSet getAllCustomerOrders() {
+        try {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM customer_order ORDER BY c_order_id");
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
         }
+    }
 
-        public static ResultSet getAllManagerOrders() {
-            try {
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM manager_order ORDER BY m_order_id");
-                ResultSet rs = statement.executeQuery();
-                return rs;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return null;
-            }
+    
+    /** 
+     * Retrieves all manager orders
+     * @return ResultSet
+     */
+    public static ResultSet getAllManagerOrders() {
+        try {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM manager_order ORDER BY m_order_id");
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
         }
+    }
 
-        public static ResultSet getAllUsers() {
-            try {
-                PreparedStatement statement = conn.prepareStatement("SELECT * FROM users ORDER BY user_id");
-                ResultSet rs = statement.executeQuery();
-                return rs;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-                return null;
-            }
+    
+    /** 
+     * Retrives all users using the input query
+     * @return ResultSet
+     */
+    public static ResultSet getAllUsers() {
+        try {
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM users ORDER BY user_id");
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
         }
-
+    }
+    
+    
+    /** 
+     * Add  a new ingredient/inventory item
+     * @param ingredientName
+     * @param ingredientStock
+     * @param ingredientPrice
+     * @return boolean
+     */
     public static boolean addNewInventory(String ingredientName, int ingredientStock, Double ingredientPrice){
         try{
             PreparedStatement statement = conn.prepareStatement("insert into ingredients (ingredient_name, ingredient_current_stock, ingredient_unit_price) values (?, ?, ?)");
@@ -379,6 +520,18 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Updates inventory and includes flags so some fields can be left empty
+     * @param ingredient_name
+     * @param stock
+     * @param price
+     * @param phoneNumber
+     * @param flagName
+     * @param flagStock
+     * @param flagPrice
+     * @return boolean
+     */
     public static boolean updateInventory( String ingredient_name, int stock, double price, String phoneNumber,
                                            boolean flagName, boolean flagStock, boolean flagPrice){
         try{
@@ -435,6 +588,17 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Updates all fields of a menu item for CRUD
+     * @param itemName
+     * @param price
+     * @param category
+     * @param flagName
+     * @param flagPrice
+     * @param flagCategory
+     * @return boolean
+     */
     public static boolean updateMenuItem( String itemName, double price, String category,
                                           boolean flagName, boolean flagPrice, boolean flagCategory){
         try{
@@ -462,6 +626,13 @@ public class Model {
             return false;
         }
     }
+
+    
+    /** 
+     * Fetches the item id when passing item name
+     * @param item_name
+     * @return int
+     */
     public static int getItemID(String item_name){
         try{
             PreparedStatement statement = conn.prepareStatement("select item_id from menu_items where item_name = ?");
@@ -475,7 +646,13 @@ public class Model {
             return -1;
         }
     }
-
+    
+    
+    /** 
+     * fetches ingredient id when passing ingredient name
+     * @param ingredient_name
+     * @return int
+     */
     public static int getIngredientID(String ingredient_name){
         try{
             PreparedStatement statement = conn.prepareStatement("select ingredient_id from ingredients where ingredient_name = ?");
@@ -490,6 +667,12 @@ public class Model {
         }
     }
 
+    
+    /**
+     * fetches item name when passing item id 
+     * @param item_id
+     * @return String
+     */
     public static String getItemName(int item_id){
         try{
             PreparedStatement statement = conn.prepareStatement("select item_name from menu_items where item_id = ?");
@@ -504,6 +687,12 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * fetches item price when passing item id
+     * @param item_id
+     * @return String
+     */
     public static String getItemPrice(int item_id){
         try{
             PreparedStatement statement = conn.prepareStatement("select item_price from menu_items where item_id = ?");
@@ -522,6 +711,12 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * sums item prices given a list of item orders
+     * @param orderItems
+     * @return float
+     */
     public static float sumItemPrices(int[][] orderItems) {
         float sum = 0;
         for (int i = 0; i < orderItems.length; i++) {
@@ -534,6 +729,12 @@ public class Model {
         return sum;
     }
 
+    
+    /** 
+     * fetches user name when passing phone number
+     * @param phoneNumber
+     * @return String
+     */
     public static String getUserName(String phoneNumber){
         try{
             PreparedStatement statement = conn.prepareStatement("select name from users where phonenumber = ?");
@@ -548,6 +749,15 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * 
+     * inserts a new user to the database table, allows specification of their number, name, and if they are a manager
+     * @param phonenumber
+     * @param name
+     * @param ismanager
+     * @return boolean
+     */
     public static boolean insertUser(String phonenumber, String name, boolean ismanager){
         try{
             PreparedStatement statement = conn.prepareStatement("insert into users (phonenumber, name, ismanager) values (?, ?, ?)");
@@ -565,6 +775,14 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Deletes a specified item from any table
+     * @param table
+     * @param id
+     * @param value
+     * @return boolean
+     */
     public static boolean delete(String table, int id, int value){
         try{
             PreparedStatement statement = conn.prepareStatement("delete from ? where ? = ?");
@@ -581,6 +799,13 @@ public class Model {
             return false;
         }
     }
+    
+    /** 
+     * retrieves the orders made between date 1 to date 2
+     * @param startDate
+     * @param endDate
+     * @return ResultSet
+     */
     public ResultSet getOrderDaytoDay(String startDate, String endDate){
         try{
             PreparedStatement statement = conn.prepareStatement("select * from customer_order where c_order_date between date(?) and date(?) ORDER BY c_order_id");
@@ -595,8 +820,16 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * retrieves the information of an item based on item name, id, and its table
+     * @param table
+     * @param id
+     * @param row
+     * @param type
+     * @return String
+     */
     public String getObject(String table, String id, int row, String type) {
-        System.out.println("table: " + table + " id: " + id + " row: " + row + " type: " + type);
         try {
             PreparedStatement statement = conn.prepareStatement("select " + type + " from " + table + " where " + id + " = ?");
             statement.setInt(1, row);
@@ -615,7 +848,48 @@ public class Model {
         }
     }
 
-    public String updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
+    
+    /** 
+     * updates the manager order given all fields
+     * @param id
+     * @param date
+     * @param time
+     * @param total
+     * @param phoneNumber
+     */
+    public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update manager_order" +
+                "set m_order_date = ?" +
+                "set m_order_time = ?" +
+                "set m_order_total = ?" +
+                "set phonenumber = ?" +
+                "where m_order_id = ?");
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.setInt(5, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * updates the customer order given all fields
+     * @param id
+     * @param date
+     * @param time
+     * @param subtotal
+     * @param tax
+     * @param total
+     * @param paymentType
+     */
+    public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
             PreparedStatement statement = conn.prepareStatement("update customer_order" +
                 "set c_order_date = ?" +
@@ -633,14 +907,116 @@ public class Model {
             statement.setString(6, paymentType);
             statement.setInt(7, id);
             statement.execute();
-            return "Success";
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
-            return null;
+            return;
         }
     }
 
+    
+    /** 
+     * updates a user given all fields
+     * @param id
+     * @param phoneNumber
+     * @param name
+     * @param isManager
+     */
+    public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update users" +
+                "set phonenumber = ?" +
+                "set name = ?" +
+                "set ismanager = ?" +
+                "where user_id = ?");
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * updates item given all fields
+     * @param id
+     * @param name
+     * @param price
+     * @param category
+     */
+    public void updateItem(int id, String name, double price, String category) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update menu_items" +
+                "set item_name = ?" +
+                "set item_price = ?" +
+                "set category = ?" +
+                "where item_id = ?");
+            statement.setString(1, name);
+            statement.setDouble(2, price);
+            statement.setString(3, category);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * updates ingredient given all fields
+     * @param id
+     * @param name
+     * @param stock
+     * @param price
+     */
+    public void updateIngredient(int id, String name, int stock, double price) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update ingredients" +
+                "set ingredient_name = ?" +
+                "set ingredient_current_stock = ?" +
+                "set ingredient_unit_price = ?" +
+                "where ingredient_id = ?");
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * 
+     * @param id
+     */
+    public void deleteUser(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from users where user_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * Deletes customer order based on id
+     * @param id
+     */
     public void deleteCustomerOrder(int id) {
         try {
             PreparedStatement statement = conn.prepareStatement("delete from customer_order where c_order_id = ?");
@@ -652,6 +1028,64 @@ public class Model {
         }
     }
 
+    
+    /** 
+     * Deletes from Manager table
+     * @param id
+     */
+    public void deleteManagerOrder(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from manager_order where m_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * delete from item table
+     * @param id
+     */
+    public void deleteItem(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from menu_items where item_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * delete from ingredient table
+     * @param id
+     */
+    public void deleteIngredient(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from ingredients where ingredient_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /**
+     * creates customer order, takes in attributes 
+     * @param date
+     * @param time
+     * @param subtotal
+     * @param tax
+     * @param total
+     * @param paymentType
+     */
     public void createCustomerOrder(String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
             PreparedStatement statement = conn.prepareStatement("insert into customer_order" +
@@ -664,6 +1098,77 @@ public class Model {
             statement.setString(4, tax);
             statement.setString(5, total);
             statement.setString(6, paymentType);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Creates manager order, takes in attributes
+     * @param date
+     * @param time
+     * @param total
+     * @param phoneNumber
+     */
+    public void createManagerOrder(String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into manager_order" +
+                "(m_order_date, m_order_time, m_order_total, phonenumber)" +
+                "values (?, ?, ?, ?)"
+                );
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Insets into users table
+     * @param phoneNumber
+     * @param name
+     * @param isManager
+     */
+    public void createUser(String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into users" +
+                "(phonenumber, name, ismanager)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Create new ingredients takes in name stock price
+     * @param name
+     * @param stock
+     * @param price
+     */
+    public void createIngredient(String name, int stock, double price) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into ingredients" +
+                "(ingredient_name, ingredient_current_stock, ingredient_unit_price)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
