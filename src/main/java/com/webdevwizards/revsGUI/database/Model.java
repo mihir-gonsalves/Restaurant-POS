@@ -5,6 +5,8 @@ package com.webdevwizards.revsGUI.database;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1223,5 +1225,29 @@ public class Model {
         }
     }
 
+
+    public ResultSet findPair(String startDate,String endDate){
+        try{
+            String text = "";
+            try{
+                text = new String(Files.readAllBytes(Paths.get("test-query/find_Pairs.txt")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        
+            PreparedStatement statement = conn.prepareStatement(text);
+            statement.setString(1, startDate);statement.setString(2, endDate);
+            statement.setString(3, startDate);statement.setString(4, endDate);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        }
+
+
+        catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
 }
 

@@ -724,7 +724,7 @@ public class Controller implements ActionListener{
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
     }
-    public void TableQuery(ResultSet rs, JTable table) {
+    public void TableQuery(ResultSet rs, JTable table, int start_num) {
         try {
             
 
@@ -744,14 +744,14 @@ public class Controller implements ActionListener{
                 tableModel.setColumnCount(0);
 
                 // create columns with count
-                for (int i = 2; i <= cols; i++) {
+                for (int i = start_num; i <= cols; i++) {
                     tableModel.addColumn(data.getColumnName(i));
                 }
 
                 // add rows
                 while (rs.next()) {
                     Vector<Object> v = new Vector<Object>();
-                    for (int i = 2; i <= cols; i++) {
+                    for (int i = start_num; i <= cols; i++) {
                         v.add(rs.getObject(i));
                     }
                     tableModel.addRow(v);
@@ -818,7 +818,7 @@ public class Controller implements ActionListener{
 
         comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
             if(comboBox.getSelectedItem().equals("Product Usage")){
-                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
+                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table,2 );
             } else if(comboBox.getSelectedItem().equals("Sales Report")){
                 String sql = "SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount, menu_Items.item_name as itemName\r\n" + //
                 "FROM customer_order\r\n" + //
@@ -833,14 +833,14 @@ public class Controller implements ActionListener{
                     pstmt.setString(1,parseDate(timeStart2.getText()));
                     pstmt.setString(2, parseDate(timeEnd2.getText()));
                     ResultSet r = pstmt.executeQuery();
-                    TableQuery(r, table);
+                    TableQuery(r, table,2);
                 }
                 catch (Exception er) {
                     er.printStackTrace();
                 }
 
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
-                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
+                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table, 2);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
                 //Adds the items that are currently less than 15 in number to the restock report
                 TableQuery(model.executeQuery("SELECT *\r\n" + //
@@ -848,9 +848,10 @@ public class Controller implements ActionListener{
                                         "WHERE ingredient_current_stock < 15\r\n" + //
                                         //In ascending order so that item with least amount 
                                         //is displayed first
-                                        "ORDER BY ingredient_current_stock ASC;"), table);
+                                        "ORDER BY ingredient_current_stock ASC;"), table, 2);
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
-                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
+                ResultSet Rs = model.findPair(timeStart2.getText(), timeEnd2.getText());
+                TableQuery(Rs, table, 1);
             }
             // updateFontSizes(table, managerScreen.getFrame());
             table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
