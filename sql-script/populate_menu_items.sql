@@ -2,7 +2,8 @@ CREATE TABLE menu_items (
     item_id SERIAL PRIMARY KEY,
     item_name VARCHAR(50),
     item_price DECIMAL(15,2),
-    category VARCHAR(50)
+    category VARCHAR(50),
+    date_range DATERANGE
 );
 
 INSERT INTO  menu_items( item_name,  item_price, category) VALUES ('3 Tender Entree', 4.99, 'Value Meals');
