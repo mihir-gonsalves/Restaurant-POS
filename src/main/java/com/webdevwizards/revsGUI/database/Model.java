@@ -310,7 +310,7 @@ public class Model {
                     }
                 }
                 for (int j = 0; j < mergedListid.size(); j++) {
-                    updateIngredientCount(mergedListid.get(j), mergedListquant.get(j));
+                    subtractIngredientCount(mergedListid.get(j), mergedListquant.get(j));
                 }
             }
             return true;
@@ -320,12 +320,12 @@ public class Model {
 
     
     /** 
-     * Updates the current number of ingredients left in stocafter a customer order is completed
+     * Decreases the current number of ingredients left in stocafter a customer order is completed
      * @param ingredient_id the id of the ingredient
-     * @param ingredient_quantity the quantity of the ingredient
+     * @param ingredient_quantity the quantity to decrease by
      * @throws SQLException
      */
-    public void updateIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
+    public void subtractIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
         try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT_INGREDIENT_NAME)) {
             preparedStatement.setInt(1, ingredient_id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -333,6 +333,26 @@ public class Model {
             int current_stock = rs.getInt(1);
             try (PreparedStatement preparedStatementUpdate = conn.prepareStatement(UPDATE_INGREDIENT_COUNT)) {
                 preparedStatementUpdate.setInt(1, current_stock - ingredient_quantity);
+                preparedStatementUpdate.setInt(2, ingredient_id);
+                preparedStatementUpdate.executeUpdate();
+            }
+        }
+    }
+
+    /** 
+     * Increase the current number of ingredients left in stocafter a customer order is completed
+     * @param ingredient_id the id of the ingredient
+     * @param ingredient_quantity the quantity to increase by
+     * @throws SQLException
+     */
+    public void addIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT_INGREDIENT_NAME)) {
+            preparedStatement.setInt(1, ingredient_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            rs.next();
+            int current_stock = rs.getInt(1);
+            try (PreparedStatement preparedStatementUpdate = conn.prepareStatement(UPDATE_INGREDIENT_COUNT)) {
+                preparedStatementUpdate.setInt(1, current_stock + ingredient_quantity);
                 preparedStatementUpdate.setInt(2, ingredient_id);
                 preparedStatementUpdate.executeUpdate();
             }

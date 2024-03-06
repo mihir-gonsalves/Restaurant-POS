@@ -659,7 +659,7 @@ public class Controller implements ActionListener{
             String count = countField.getText();
             
             try {
-                model.updateIngredientCount(ingredientId, Integer.parseInt(count));
+                model.addIngredientCount(ingredientId, Integer.parseInt(count));
                 JOptionPane.showMessageDialog(null, "Stock updated");
             }
             catch (SQLException ex){
