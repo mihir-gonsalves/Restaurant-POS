@@ -1300,16 +1300,30 @@ public class Model {
         }
     }
 
+    /**
+     * Retrieves the total sales per ingredient for a given date range
+     * @param startDate the start date (YYYY-MM-DD format)
+     * @param endDate the end date (YYYY-MM-DD format)
+     * @return ResultSet of the total sales per ingredient for the given date range
+     */
     public ResultSet getProductUsage(String startDate, String endDate){
         try {
-            String sql = "SELECT i.ingredient_name AS ingredient, " +
+            String sql = 
+                //add columns for ingredient name and used quantity
+                "SELECT i.ingredient_name AS ingredient, " +
+                // use coalesce to set used_quantity to sum(ingredientCount * itemCount) or
+                // 0 if it is null  
                 "COALESCE(SUM(oi.item_quantity * iti.ingredient_quantity), 0) AS used_quantity " +
+
+                // join the ingredients table with the customer orders table
                 "FROM ingredients i " +
                 "LEFT JOIN item_to_ingredient_list iti ON i.ingredient_id = iti.ingredient_id " +
                 "LEFT JOIN c_order_to_item_list oi ON iti.item_id = oi.item_id " +
                 "LEFT JOIN customer_order co ON oi.c_order_id = co.c_order_id " +
+
+                // so we can filter product usage by date
                 "WHERE co.c_order_date BETWEEN ? AND ? " +
-                "GROUP BY i.ingredient_name " +
+                "GROUP BY ingredient " +
                 "ORDER BY used_quantity desc;";
     
             PreparedStatement pstmt = conn.prepareStatement(sql);
