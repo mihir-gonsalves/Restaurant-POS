@@ -1,40 +1,17 @@
-SELECT
-    i1.ingredient_name AS item1,
-    COALESCE(SUM(ingredient_quantity), 0) AS curr
-FROM
-    m_order_to_ingredient_list  t1
-JOIN
-    manager_order o1 ON t1.m_order_id = o1.m_order_id
-JOIN
-    ingredients i1 ON t1.ingredient_id = i1.ingredient_id
-
-WHERE
-    o1.m_order_date BETWEEN '2024-3-4' AND '2024-3-5'
+SELECT 
+    i.ingredient_name AS ingredient,
+    COALESCE(SUM(CASE WHEN co.c_order_date BETWEEN date(?) AND date(?) THEN oi.item_quantity * iti.ingredient_quantity ELSE 0 END), 0) AS consumed_quantity,
+    (COALESCE(SUM(CASE WHEN co.c_order_date BETWEEN date(?) AND date(?) THEN oi.item_quantity * iti.ingredient_quantity ELSE 0 END), 0) + i.ingredient_current_stock) * 0.1 AS threshold_quantity
+FROM 
+    ingredients i
+LEFT JOIN 
+    item_to_ingredient_list iti ON i.ingredient_id = iti.ingredient_id
+LEFT JOIN 
+    c_order_to_item_list oi ON iti.item_id = oi.item_id
+LEFT JOIN 
+    customer_order co ON oi.c_order_id = co.c_order_id
 GROUP BY
-    i1.ingredient_name,
-    i1.ingredient_current_stock
+    i.ingredient_name,
+    i.ingredient_current_stock
 HAVING
-    COALESCE(SUM(ingredient_quantity), 0) < i1.ingredient_current_stock * 0.1
-ORDER BY
-    curr DESC;
-
-
-
-SELECT
-    i1.ingredient_name AS item1,
-    COALESCE(SUM(t1.ingredient_quantity), 0) AS curr
-FROM
-    ingredients i1
-LEFT JOIN
-    m_order_to_ingredient_list t1 ON t1.ingredient_id = i1.ingredient_id
-LEFT JOIN
-    manager_order o1 ON t1.m_order_id = o1.m_order_id
-WHERE
-    o1.m_order_date BETWEEN '2024-03-05' AND '2024-03-05' OR o1.m_order_date IS NULL
-GROUP BY
-    i1.ingredient_name,
-    i1.ingredient_current_stock
-HAVING
-    COALESCE(SUM(ingredient_quantity), 0) < i1.ingredient_current_stock * 0.1
-ORDER BY
-    curr DESC;
+    COALESCE(SUM(CASE WHEN co.c_order_date BETWEEN date(?) AND date(?) THEN oi.item_quantity * iti.ingredient_quantity ELSE 0 END), 0) < (COALESCE(SUM(CASE WHEN co.c_order_date BETWEEN date(?)  AND date(?) THEN oi.item_quantity * iti.ingredient_quantity ELSE 0 END), 0) + i.ingredient_current_stock) * 0.1;

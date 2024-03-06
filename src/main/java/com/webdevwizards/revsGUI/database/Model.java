@@ -427,7 +427,10 @@ public class Model {
      */
     public static ResultSet getAllIngredients(){
         try{
-            PreparedStatement statement = conn.prepareStatement("select * from ingredients order by ingredient_id");
+            String sql = "select * from ingredients order by ingredient_id";
+            PreparedStatement statement = conn.prepareStatement(sql,
+                ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = statement.executeQuery();
             return rs;
         } catch (SQLException e) {
@@ -848,7 +851,10 @@ public class Model {
      */
     public ResultSet getOrderDaytoDay(String startDate, String endDate){
         try{
-            PreparedStatement statement = conn.prepareStatement("select * from customer_order where c_order_date between date(?) and date(?) ORDER BY c_order_id");
+            String sql = "select * from customer_order where c_order_date between date(?) and date(?) ORDER BY c_order_id";
+            PreparedStatement statement = conn.prepareStatement(sql, 
+                ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                ResultSet.CONCUR_READ_ONLY);
             statement.setString(1, startDate);
             statement.setString(2, endDate);
             ResultSet rs = statement.executeQuery();
@@ -1290,6 +1296,31 @@ public class Model {
         catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public ResultSet getProductUsage(String startDate, String endDate){
+        try {
+            String sql = "SELECT i.ingredient_name AS ingredient, " +
+                "COALESCE(SUM(oi.item_quantity * iti.ingredient_quantity), 0) AS used_quantity " +
+                "FROM ingredients i " +
+                "LEFT JOIN item_to_ingredient_list iti ON i.ingredient_id = iti.ingredient_id " +
+                "LEFT JOIN c_order_to_item_list oi ON iti.item_id = oi.item_id " +
+                "LEFT JOIN customer_order co ON oi.c_order_id = co.c_order_id " +
+                "WHERE co.c_order_date BETWEEN ? AND ? " +
+                "GROUP BY i.ingredient_name " +
+                "ORDER BY used_quantity desc;";
+    
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setDate(1, java.sql.Date.valueOf(startDate));
+            pstmt.setDate(2, java.sql.Date.valueOf(endDate));
+    
+            ResultSet rs = pstmt.executeQuery();
+            return rs;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
             return null;
         }
     }
