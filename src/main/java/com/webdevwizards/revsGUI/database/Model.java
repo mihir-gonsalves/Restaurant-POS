@@ -1338,5 +1338,28 @@ public class Model {
             return null;
         }
     }
+
+    public ResultSet getSalesReport(String startTime, String endTime) {
+
+        String sql = "SELECT menu_Items.item_name as item, DATE_PART('month', c_order_date) as month, COUNT(*) as quantity \r\n" + //
+                "FROM customer_order\r\n" + //
+                "JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
+                "JOIN menu_Items ON c_order_to_item_list.item_id = menu_Items.item_id \r\n" + //
+                "WHERE c_order_date >= date(?) AND c_order_date <= date(?) \r\n" + //
+                "GROUP BY item, c_order_to_item_list.item_id, month\r\n" + //
+                "ORDER BY quantity DESC;\r\n" + //
+                "";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setDate(1, java.sql.Date.valueOf(startTime));
+            pstmt.setDate(2, java.sql.Date.valueOf(endTime));
+            ResultSet r = pstmt.executeQuery();
+            return r;
+        }
+        catch (Exception er) {
+            er.printStackTrace();
+            return null;
+        }   
+    }
 }
 
