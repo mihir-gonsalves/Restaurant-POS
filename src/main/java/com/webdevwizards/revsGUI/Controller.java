@@ -33,7 +33,8 @@ public class Controller implements ActionListener{
     private String phoneNumber;
     private int preferredWidth;
     private int preferredHeight;
-
+    private boolean managerfirst = true;
+    private boolean cashierfirst = true;
 
     
     /** 
@@ -104,6 +105,10 @@ public class Controller implements ActionListener{
         loginScreen.getFrame().setVisible(true);
     }
 
+    public void disposeManager() {
+        managerScreen.getFrame().dispose();
+    }
+
     // get preferred size of the frame from fullscreen button then set preferred values and the size of the frame
     public void getPreferredSize() {
         JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
@@ -150,21 +155,28 @@ public class Controller implements ActionListener{
                         switchToManagerScreen();
                         managerScreen.getFrame().setSize(preferredWidth, preferredHeight);
                         loginScreen.getFrame().dispose();
-                        populateManagerNavBar();
-                        populateManagerMainPanel("order");
-
-                        // auto update fonts
+                        if(managerfirst){
+                            populateManagerNavBar();
+                            populateManagerMainPanel("chart");
+                            managerfirst = false;
+                            
+                        }
                         for (Component c : managerScreen.getFrame().getComponents()) {
                             updateFontSizes(c, managerScreen.getFrame());
                         }
+                        // auto update fonts
                     } else { // if the user is a cashier, switch to the cashier screen and populate with defaults, get rid of the login screen, and completeOrder
                         switchToCashierScreen();
                         cashierScreen.getFrame().setSize(preferredWidth, preferredHeight);
                         loginScreen.getFrame().dispose();
-                        populateCashierNavBar();
-                        populateCashierItemPanel("Burgers");
-                        populateCashierBottomPanel();
-                        populateCashierOrderPanel();
+                        if(cashierfirst){
+                            populateCashierNavBar();
+                            populateCashierItemPanel("Burgers");
+                            populateCashierBottomPanel();
+                            populateCashierOrderPanel();
+                            cashierfirst = false;
+                            
+                        }
                         // auto update fonts
                         for (Component c : cashierScreen.getFrame().getComponents()) {
                             updateFontSizes(c, cashierScreen.getFrame());
@@ -354,7 +366,14 @@ public class Controller implements ActionListener{
             e.printStackTrace();
         }
     }
-
+    private void cleanCashierOrderPanel(){
+        JPanel orderPanel = cashierScreen.getOrderPanel();
+        JPanel orderFieldsPanel = cashierScreen.getOrderFieldsPanel();
+        if (orderPanel.getComponentCount() > 0) {
+            orderPanel.removeAll();
+            orderFieldsPanel.removeAll();
+        }
+    }
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
@@ -392,10 +411,16 @@ public class Controller implements ActionListener{
                 removeItemButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (orderItems[index][1] > 0) {
+                        if (orderItems[index][1] > 1) {
                             orderItems[index][1] = orderItems[index][1] - 1;
                             populateCashierOrderPanel();
                         }
+                        else {
+                            orderItems[index][0] = 0;
+                            orderItems[index][1] = 0;
+                            populateCashierOrderPanel();
+                        }
+
                     }
                 });
 
@@ -438,6 +463,15 @@ public class Controller implements ActionListener{
 
         // create a new button to complete the order
         cashierScreen.setOrderCompleteButton(null);
+        JButton returnButton = new JButton("Return to Login");
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cashierScreen.getFrame().dispose();
+                switchToLoginScreen();
+            }
+        });
+
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
         orderCompleteButton.setFont(font24);
@@ -460,6 +494,7 @@ public class Controller implements ActionListener{
         orderPrice.setForeground(Color.WHITE); // Set foreground color to white
 
         // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
+        bottomPanel.add(returnButton);
         bottomPanel.add(orderCashier);
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderPrice);
@@ -563,10 +598,9 @@ public class Controller implements ActionListener{
                                 JOptionPane.showMessageDialog(null, "Order submitted");
                                 orderItems = new int[15][2];
                                 // dispose of the cashier screen
-                                cashierScreen.getFrame().dispose();
                                 po.hide();
-                                // switch back to login screen
-                                switchToLoginScreen();
+                                switchToLoginScreen();  
+                                
                             }
                             else{
                                 JOptionPane.showMessageDialog(null, "Order not submitted");
@@ -658,10 +692,22 @@ public class Controller implements ActionListener{
 
         // add manager name
         managerScreen.getManagerLabel().setText("Manager Name: " + model.getUserName(phoneNumber));
+        
+        JButton returnButton = new JButton("Return to Login");
+       
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                managerScreen.getFrame().dispose();
+                switchToLoginScreen();  
+            }
+        });
+        managerScreen.getOrderButton().add(returnButton);
 
         // revalidate and repaint the mainPanel for redraw
         mainPanel.revalidate();
         mainPanel.repaint();
+        
     }
     
     // populates the manager screen with a chart
@@ -679,7 +725,7 @@ public class Controller implements ActionListener{
         JLabel countLabel = new JLabel("Count:");
         JTextField countField = new JTextField(10);
 
-        JButton commitButton = new JButton("Commit");
+        JButton commitButton = new JButton("Purchase");
 
         inputPanel.add(ingredientIdLabel);
         inputPanel.add(ingredientNameField);
@@ -800,6 +846,8 @@ public class Controller implements ActionListener{
         String[] columnNames = {"ID", "Date", "Time", "Subtotal", "Tax", "Total", "Payment Method"};
         DefaultTableModel tablemodel = new DefaultTableModel(columnNames, 0);
 
+        
+
         // Add an action listener to a button to fetch data from SQL based on dates
         JButton fetchDataButton = new JButton("Fetch Data");
         fetchDataButton.addActionListener(e -> {
@@ -891,6 +939,8 @@ public class Controller implements ActionListener{
         JLabel timeEnd = new JLabel("End Date yyyy-mm-dd:");
         JTextField timeEnd2 = new JTextField(10);
 
+        JButton fetchButton = new JButton("Fetch Data");
+
 
         //inputPanel.add(tableLabel);
         inputPanel.add(comboBox);
@@ -904,7 +954,9 @@ public class Controller implements ActionListener{
         timeStart2.setText("2022-02-01");//our table's start date it begins from 2022 feb first
         timeEnd2.setText((new Date(System.currentTimeMillis())).toString());//current time
 
+        inputPanel.add(fetchButton);
 
+ 
         
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
@@ -918,11 +970,10 @@ public class Controller implements ActionListener{
         //String sql = "SELECT * FROM users WHERE phonenumber = ?";
             //PreparedStatement pstmt = conn.prepareStatement(sql);
             //pstmt.setString(1, phoneNumber);
-
-        comboBox.addActionListener(e -> { 
+        fetchButton.addActionListener(e -> {
             // retrieve start and end dates from text fields
             String startDate = timeStart2.getText();
-            String endDate = LocalDate.now().toString();
+            String endDate = timeEnd2.getText();
 
             // set up the table based on the selected option's resultset
             if(comboBox.getSelectedItem().equals("Product Usage")){
@@ -945,7 +996,7 @@ public class Controller implements ActionListener{
             }
             // updateFontSizes(table, managerScreen.getFrame());
             table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
-        });     
+        });
     }
 
 

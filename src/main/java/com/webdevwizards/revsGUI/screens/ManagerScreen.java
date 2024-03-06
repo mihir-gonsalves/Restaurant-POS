@@ -11,6 +11,10 @@ import java.sql.ResultSet;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import com.webdevwizards.revsGUI.screens.LoginScreen;
+import com.webdevwizards.revsGUI.Controller;
+
+
 
 public class ManagerScreen extends JFrame implements ActionListener{
     JFrame frame;
@@ -18,6 +22,10 @@ public class ManagerScreen extends JFrame implements ActionListener{
     JPanel southPanel;
     JPanel mainPanel;
     JLabel managerLabel;
+    JButton btnClose;
+    private LoginScreen loginScreen;
+    private Controller controller;
+
 
     public ManagerScreen() {
         frame = new JFrame("Rev's GUI: Manager Screen");
@@ -44,9 +52,8 @@ public class ManagerScreen extends JFrame implements ActionListener{
         managerLabel = new JLabel("Manager Name: ");
         southPanel.add(managerLabel);
         southPanel.add(Box.createHorizontalGlue());
-        
-        
-
+        btnClose = new JButton("Close");
+        southPanel.add(btnClose);
 
         frame.add(navPanel, BorderLayout.WEST);
         frame.add(southPanel, BorderLayout.SOUTH);
@@ -66,6 +73,7 @@ public class ManagerScreen extends JFrame implements ActionListener{
         }
     }
 
+
     
     /*
      * GETTERS AND SETTERS
@@ -82,6 +90,10 @@ public class ManagerScreen extends JFrame implements ActionListener{
     }
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public JButton getOrderButton (){
+        return btnClose;
     }
 
     public JLabel getManagerLabel() {
