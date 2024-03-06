@@ -593,10 +593,10 @@ public class Controller implements ActionListener{
             mainPanel.removeAll();
         }
         if (content.equals("chart")) {
-            populateManagerOrderPanel();
+            populateManagerChartPanel();
         }
         else if (content.equals("order")) {
-            populateManagerTablePanel();
+            populateManagerOrderPanel();
         }
         else if (content.equals("track")) {
             populateManagerTrackPanel();
