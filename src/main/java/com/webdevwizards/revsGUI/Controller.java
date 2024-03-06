@@ -2040,7 +2040,8 @@ public class Controller implements ActionListener{
                             // create and collect current stock label and field 
                             JPanel currentStockPanel = new JPanel();
                             JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
-                            JTextField currentStockField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock"));
+                            String previousStock = model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock");
+                            JTextField currentStockField = new JTextField(previousStock);
                             currentStockPanel.add(currentStockLabel);
                             currentStockPanel.add(currentStockField);
 
@@ -2060,7 +2061,7 @@ public class Controller implements ActionListener{
                                     String name = nameField.getText();
                                     Integer currentStock = Integer.parseInt(currentStockField.getText());
                                     Double unitPrice = Double.parseDouble(unitPriceField.getText());
-                                    model.updateIngredient(id, name, currentStock, unitPrice);
+                                    model.updateIngredient(id, name, currentStock, unitPrice, (previousStock != currentStock), phoneNumber);
                                     updateIngredientPopupDialog.dispose();
                                     viewTable(table, tableType);
                                 }

@@ -983,8 +983,10 @@ public class Model {
      * @param name the name of the ingredient
      * @param stock the stock of the ingredient
      * @param price the price of the ingredient
+     * @param stockChanged boolean true if the stock of the ingredient has changed, false if it has not
+     * @param phoneNumber the phone number of the user making the order
      */
-    public void updateIngredient(int id, String name, int stock, double price) {
+    public void updateIngredient(int id, String name, int stock, double price, boolean stockChanged, String phoneNumber) {
         try {
             PreparedStatement statement = conn.prepareStatement("update ingredients " +
                     "set ingredient_name = ?, " +
@@ -996,6 +998,25 @@ public class Model {
             statement.setDouble(3, price);
             statement.setInt(4, id);
             statement.execute();
+            if(stockChanged) { //Only if we updated the stock do we need to insert into manager_order and junction table
+                Double order_total = stock * price;
+                PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                statement3.setDate(1, new Date(System.currentTimeMillis()));
+                statement3.setTime(2, new Time(System.currentTimeMillis()));
+                statement3.setDouble(3, order_total);
+                statement3.setString(4, phoneNumber);
+
+                statement3.execute();
+                ResultSet rs3 = statement3.getGeneratedKeys();
+                if (rs3.next()) {
+                    PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
+                    statement4.setInt(1, rs3.getInt(1));
+                    statement4.setInt(2, id);
+                    statement4.setInt(3, stock);
+                    statement4.execute();
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
