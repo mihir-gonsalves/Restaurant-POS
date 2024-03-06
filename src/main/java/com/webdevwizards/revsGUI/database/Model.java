@@ -1133,37 +1133,42 @@ public class Model {
     }
 
     
-    /** 
+   /**
      * Deletes item based on id
      * @param id the id of the item
      */
     public void deleteItem(int id) {
         try {
-            PreparedStatement statement = conn.prepareStatement("delete from menu_items where item_id = ?");
+            PreparedStatement statement = conn.prepareStatement("delete from item_to_ingredient_list where item_id = ?");
             statement.setInt(1, id);
             statement.execute();
+            PreparedStatement statement1 = conn.prepareStatement("delete from menu_items where item_id = ?");
+            statement1.setInt(1, id);
+            statement1.execute();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
         }
     }
 
-    
-    /** 
+
+    /**
      * Deletes ingredient based on id
      * @param id the id of the ingredient
      */
     public void deleteIngredient(int id) {
         try {
-            PreparedStatement statement = conn.prepareStatement("delete from ingredients where ingredient_id = ?");
+            PreparedStatement statement = conn.prepareStatement("delete from item_to_ingredient_list where ingredient_id = ?");
             statement.setInt(1, id);
             statement.execute();
+            PreparedStatement statement1 = conn.prepareStatement("delete from ingredients where ingredient_id = ?");
+            statement1.setInt(1, id);
+            statement1.execute();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
         }
     }
-
     
     /**
      * creates customer order, takes in all attributes 
