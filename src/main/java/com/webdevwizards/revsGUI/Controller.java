@@ -467,6 +467,8 @@ public class Controller implements ActionListener{
         double roundedTax = ((long)(dTax * 1e2)) / 1e2;
         double roundedTotal = ((long)(dTotal * 1e2)) / 1e2;
 
+        final String[] paymentType = { "filler" };
+
         // add action listener to orderComplete button to display subtotal and switch to payment screen when clicked
         orderCompleteButton.addActionListener(new ActionListener() {
             @Override
@@ -492,39 +494,6 @@ public class Controller implements ActionListener{
                 popUpLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                 popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                // JPanel creditPanel = new JPanel(new BorderLayout());
-                // JPanel cashPanel = new JPanel(new BorderLayout());
-
-                // ImageIcon creditImageIcon = new ImageIcon("./images/credit-card.png");
-                // Image creditImage = creditImageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-                // JLabel creditImageLabel = new JLabel(new ImageIcon(creditImage));
-                // creditImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-                // ImageIcon cashImageIcon = new ImageIcon("./images/student-card.png");
-                // Image cashImage = cashImageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-                // JLabel cashImageLabel = new JLabel(new ImageIcon(cashImage));
-                // cashImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-                // creditPanel.add(creditImageLabel, BorderLayout.CENTER);
-                // cashPanel.add(cashImageLabel, BorderLayout.CENTER);
-
-                // JLabel creditName = new JLabel("Credit", SwingConstants.CENTER);
-                // creditName.setFont(new Font("Arial", Font.PLAIN, 12));
-                // creditName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                // creditPanel.add(creditName, BorderLayout.SOUTH);
-
-                // JLabel cashName = new JLabel("Cash", SwingConstants.CENTER);
-                // cashName.setFont(new Font("Arial", Font.PLAIN, 12));
-                // cashName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                // cashPanel.add(cashName, BorderLayout.SOUTH);
-
-                // creditPanel.setPreferredSize(new Dimension(50, 100));
-                // cashPanel.setPreferredSize(new Dimension(50, 100));
-
-                // JButton finishOrder = new JButton("Finish Order");
-                // finishOrder.setFont(new Font("Arial", Font.PLAIN, 12));
-                // finishOrder.setAlignmentX(Component.CENTER_ALIGNMENT);
-
                 ImageIcon creditImage = new ImageIcon("./images/credit-card.png");
                 creditImage = new ImageIcon(creditImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH));
                 JButton creditButton = new JButton(creditImage);
@@ -542,31 +511,31 @@ public class Controller implements ActionListener{
                 finishOrder.setFont(new Font("Arial", Font.PLAIN, 12));
                 finishOrder.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                String paymentType = "credit"; // TODO
+                // String paymentType = "credit"; // TODO
 
-                // creditButton.addActionListener(new ActionListener() {
-                //     @Override
-                //     public void actionPerformed(ActionEvent e) {
-                //         paymentType = "credit";
-                //     }
-                // });
+                creditButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        paymentType[0] = "credit";
+                    }
+                });
 
-                // cashButton.addActionListener(new ActionListener() {
-                //     @Override
-                //     public void actionPerformed(ActionEvent e) {
-                //         paymentType = "cash";
-                //     }
-                // });
+                cashButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        paymentType[0] = "cash";
+                    }
+                });
 
                 finishOrder.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (paymentType.equals("")) {
+                        if (paymentType[0].equals("filler")) {
                             JOptionPane.showMessageDialog(null, "Please select a payment method");
                         } 
                         else {
                             // insert order into database and display message based on success
-                            model.insert_order(subtotal, orderItems, paymentType);
+                            model.insert_order(subtotal, orderItems, paymentType[0]);
                             JOptionPane.showMessageDialog(null, "Order submitted");
                             // dispose of the cashier screen
                             cashierScreen.getFrame().dispose();
@@ -576,53 +545,6 @@ public class Controller implements ActionListener{
                         }
                     }
                 });
-
-                // // add action listener to the "Credit" button to add the item to the order and close the popup
-                // creditPanel.addMouseListener(new MouseAdapter() {
-                //     @Override
-                //     public void mouseClicked(MouseEvent e) {
-                //         paymentType = "credit";
-                //     }
-                // });
-
-                // // add action listener to the "Cash" button to add the item to the order and close the popup
-                // cashPanel.addMouseListener(new MouseAdapter() {
-                //     @Override
-                //     public void mouseClicked(MouseEvent e) {
-                //         paymentType = "cash";
-                //     }
-                // });
-
-                // // add action listener to the "Finish Order" button to add the item to the order and close the popup
-                // finishOrder.addActionListener(new ActionListener() {
-                //     @Override
-                //     public void actionPerformed(ActionEvent e) {
-                //         if (paymentType.equals("")) {
-                //             JOptionPane.showMessageDialog(null, "Please select a payment method");
-                //         } 
-                //         else {
-                //             // insert order into database and display message based on success
-                //             model.insert_order(subtotal, orderItems, paymentType);
-                //             JOptionPane.showMessageDialog(null, "Order submitted");
-                //             // dispose of the cashier screen
-                //             cashierScreen.getFrame().dispose();
-                //             po.hide();
-                //             // switch back to login screen
-                //             switchToLoginScreen();
-                //         }
-                //     }
-                // });
-                
-                // popUpPanel.add(Box.createVerticalGlue());
-                // popUpPanel.add(popUpLabel);
-                // popUpPanel.add(Box.createVerticalGlue());
-                // //popUpPanel.add(creditPanel);
-                // popUpPanel.add(creditButton);
-                // popUpPanel.add(Box.createVerticalStrut(30));
-                // //popUpPanel.add(cashPanel);
-                // popUpPanel.add(cashButton);
-                // popUpPanel.add(Box.createVerticalGlue());
-                // popUpPanel.add(finishOrder);
 
                 popUpPanel.add(Box.createVerticalGlue());
                 popUpPanel.add(popUpLabel);
