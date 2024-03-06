@@ -310,7 +310,7 @@ public class Model {
                     }
                 }
                 for (int j = 0; j < mergedListid.size(); j++) {
-                    updateIngredientCount(mergedListid.get(j), mergedListquant.get(j), connection);
+                    updateIngredientCount(mergedListid.get(j), mergedListquant.get(j));
                 }
             }
             return true;
@@ -326,13 +326,13 @@ public class Model {
      * @param connection the connection to the database
      * @throws SQLException
      */
-    private void updateIngredientCount(int ingredient_id, int ingredient_quantity, Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SELECT_INGREDIENT_NAME)) {
+    public void updateIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
+        try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT_INGREDIENT_NAME)) {
             preparedStatement.setInt(1, ingredient_id);
             ResultSet rs = preparedStatement.executeQuery();
             rs.next();
             int current_stock = rs.getInt(1);
-            try (PreparedStatement preparedStatementUpdate = connection.prepareStatement(UPDATE_INGREDIENT_COUNT)) {
+            try (PreparedStatement preparedStatementUpdate = conn.prepareStatement(UPDATE_INGREDIENT_COUNT)) {
                 preparedStatementUpdate.setInt(1, current_stock - ingredient_quantity);
                 preparedStatementUpdate.setInt(2, ingredient_id);
                 preparedStatementUpdate.executeUpdate();

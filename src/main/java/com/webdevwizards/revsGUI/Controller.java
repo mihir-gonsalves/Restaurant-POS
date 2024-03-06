@@ -593,10 +593,10 @@ public class Controller implements ActionListener{
             mainPanel.removeAll();
         }
         if (content.equals("chart")) {
-            populateManagerChartPanel();
+            populateManagerOrderPanel();
         }
         else if (content.equals("order")) {
-            populateManagerOrderPanel();
+            populateManagerTablePanel();
         }
         else if (content.equals("track")) {
             populateManagerTrackPanel();
@@ -611,18 +611,63 @@ public class Controller implements ActionListener{
     }
     
     // populates the manager screen with a chart // TODO implement chart
-    public void populateManagerChartPanel() {
-        JPanel mainPanel = managerScreen.getMainPanel();
-        JTextArea chartTextArea = new JTextArea("Chart");
-        chartTextArea.setEditable(false);
-        chartTextArea.setPreferredSize(new Dimension(450, 500));
-        mainPanel.add(chartTextArea);
-    }
-
-    // populates the manager screen with the order panel
     public void populateManagerOrderPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
         mainPanel.setLayout(new BorderLayout());
+    
+        // Panel for ingredient ID and count
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new FlowLayout());
+
+        JLabel ingredientIdLabel = new JLabel("Ingredient Name:");
+        JTextField ingredientNameField = new JTextField(10);
+
+        JLabel countLabel = new JLabel("Count:");
+        JTextField countField = new JTextField(10);
+
+        JButton commitButton = new JButton("Commit");
+
+        inputPanel.add(ingredientIdLabel);
+        inputPanel.add(ingredientNameField);
+        inputPanel.add(countLabel);
+        inputPanel.add(countField);
+        inputPanel.add(commitButton);
+
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+        
+        // Table to display results
+        JTable table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        updateOrderTable(table);
+        // Add action listener to commit button
+        commitButton.addActionListener(e -> {
+            // Retrieve ingredient ID and count from text fields
+            Integer ingredientId = model.getIngredientID(ingredientNameField.getText());
+            String count = countField.getText();
+            
+            try {
+                model.updateIngredientCount(ingredientId, Integer.parseInt(count));
+                JOptionPane.showMessageDialog(null, "Stock updated");
+            }
+            catch (SQLException ex){
+                JOptionPane.showMessageDialog(null, "Stock not updated");
+                ex.printStackTrace();
+            }
+            // Perform commit action here
+            // You may want to update the table based on the committed data
+            updateOrderTable(table);
+        });
+    }
+
+    // populates the manager screen with the order panel
+    public void populateManagerTablePanel() {
+        JPanel mainPanel = managerScreen.getMainPanel();
+        mainPanel.setLayout(new BorderLayout());
+
+        // header panel
+        JPanel headerPanel = new JPanel();
+        headerPanel.add(new JLabel("Table"));
 
         // Panel for ingredient ID and count
         JPanel inputPanel = new JPanel();
@@ -670,6 +715,10 @@ public class Controller implements ActionListener{
     // populates the manager screen with the track panel
     public void populateManagerTrackPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
+
+        // add a header panel
+        JPanel headerPanel = new JPanel();
+        headerPanel.add(new JLabel("Track Orders"));
 
         // Add start date text area
         JPanel startDatePanel = new JPanel();
@@ -765,9 +814,13 @@ public class Controller implements ActionListener{
     }
 
     // populates the manager screen with a table of CRUD operations for each table
-    public void populateManagerTablePanel() {
+    public void populateManagerChartPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
         mainPanel.setLayout(new BorderLayout());
+
+        // header panel
+        JPanel headerPanel = new JPanel();
+        headerPanel.add(new JLabel("Chart"));
 
         // Panel for ingredient ID and count
         JPanel inputPanel = new JPanel();
@@ -1371,6 +1424,27 @@ public class Controller implements ActionListener{
                 }
             }
         });
+    }
+
+    private void updateOrderTable(JTable table) {
+        // Fetch data from SQL and update the table
+        try {
+            ResultSet resultSet = model.getAllIngredients();
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.setColumnIdentifiers(new String[]{"name", "current stock", "unit price"}); // Set column names
+    
+            while (resultSet.next()) {
+                Object[] rowData = new Object[3];
+                rowData[0] = resultSet.getObject(2); 
+                rowData[1] = resultSet.getObject(3);
+                rowData[2] = resultSet.getObject(4);
+                tableModel.addRow(rowData);//add it to table
+            }
+    
+            table.setModel(tableModel); // Set the updated table model
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     
