@@ -1070,7 +1070,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1;
+                int id = model.getIDFromRow("users", "user_id", table.rowAtPoint(p) + 1, table.getRowCount());
                 int tableType = 0;
                 if (me.getClickCount() == 2  && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
@@ -1262,7 +1262,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("manager_order", "m_order_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 1;
 
                 // if right clicked and not on column header
@@ -1474,7 +1474,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("customer_order", "c_order_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 2;
 
                 // if right clicked and not on column header  
@@ -1725,7 +1725,8 @@ public class Controller implements ActionListener{
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1;
+                int id = model.getIDFromRow("menu_items", "item_id", table.rowAtPoint(p) + 1, table.getRowCount());
+
                 int tableType = 3;
 
                 // if right clicked and not in column header
@@ -2000,7 +2001,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 becaues row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("ingredients", "ingredient_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 becaues row 0 in Java == row 1 in SQL
                 int tableType = 4;
 
                 // if right clicked and not column header

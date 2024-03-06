@@ -833,6 +833,25 @@ public class Model {
         }
     }
 
+    public int getIDFromRow(String tableName, String idColumnName, int clickedRow, int maxRow) {
+        try {
+            String query = "SELECT " + idColumnName + " FROM " + tableName + " ORDER BY " + idColumnName + " DESC LIMIT 1 OFFSET ?";
+            int offset = maxRow - clickedRow;
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, offset);
+            ResultSet rs = statement.executeQuery();
+    
+            if (rs.next()) {
+                return rs.getInt(idColumnName);
+            } else {
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     
     /** 
      * retrieves the information of an item based on table, idColumnName, id, and type
