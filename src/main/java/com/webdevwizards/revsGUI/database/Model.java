@@ -1381,7 +1381,7 @@ public class Model {
                 "ORDER BY quantity DESC;\r\n" + //
                 "";
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt = conn.prepareStatement(new String(Files.readAllBytes(Paths.get("test-query/sales.txt"))));
             pstmt.setDate(1, java.sql.Date.valueOf(startTime));
             pstmt.setDate(2, java.sql.Date.valueOf(endTime));
             ResultSet r = pstmt.executeQuery();
