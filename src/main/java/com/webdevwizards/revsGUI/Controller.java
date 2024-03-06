@@ -36,12 +36,18 @@ public class Controller implements ActionListener{
     private boolean managerfirst = true;
     private boolean cashierfirst = true;
 
+
+    // constructor
+    public Controller() {
+        // not necessary
+    }
     
     /** 
+     * Setup and display the login screen
+     *
      * @param args
      */
     public static void main(String[] args) {
-        // setup and display the login screen
         FlatLightLaf.setup();
         Controller controller = new Controller();
         controller.initialize();
@@ -49,11 +55,6 @@ public class Controller implements ActionListener{
         controller.getPreferredSize();
         controller.switchFromLoginScreen();
 
-    }
-
-    // constructor
-    public Controller() {
-        // not necessary
     }
 
     // initializes the model and all screens
@@ -95,20 +96,6 @@ public class Controller implements ActionListener{
         preferredHeight = screenSize.height;
     }
 
-
-    /*
-     * LOGIN SCREEN METHODS
-     */
-    
-    // sets the login screen to visible
-    public void switchToLoginScreen() {
-        loginScreen.getFrame().setVisible(true);
-    }
-
-    public void disposeManager() {
-        managerScreen.getFrame().dispose();
-    }
-
     // get preferred size of the frame from fullscreen button then set preferred values and the size of the frame
     public void getPreferredSize() {
         JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
@@ -138,6 +125,50 @@ public class Controller implements ActionListener{
                 loginScreen.getFrame().repaint();
             }
         });
+    }
+
+    /** 
+     * @param c
+     * @param f
+     */
+    // update font size of all components of a panel recursively
+    private void updateFontSizes(Component c, JFrame f) {
+        if (c instanceof Container) {
+            for (Component child : ((Container) c).getComponents()) {
+                updateFontSizes(child, f);
+            }
+        }
+        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton || c instanceof JTable) {
+            Font sourceFont = c.getFont();
+            float scale = f.getHeight() / 1000.0f;
+            float newSize = sourceFont.getSize() * scale;
+            int minSize = 14;
+            if (newSize < minSize) {
+                newSize = minSize;
+            }
+            c.setFont(sourceFont.deriveFont(newSize));
+            f.revalidate();
+            f.repaint();
+        }
+    }
+
+    public void disposeManager() {
+        managerScreen.getFrame().dispose();
+    }
+
+    public void clearOrder(){
+        for (int i = 0; i < orderItems.length; i++) {
+            orderItems[i][0] = 0;
+            orderItems[i][1] = 0;
+        }
+        populateCashierOrderPanel();
+    }
+
+        /* ------------------------------------------------- LOGIN SCREEN METHODS --------------------------------------- */
+    
+    // sets the login screen to visible
+    public void switchToLoginScreen() {
+        loginScreen.getFrame().setVisible(true);
     }
 
     // switch to appropriate screen based on login's phone number
@@ -190,10 +221,7 @@ public class Controller implements ActionListener{
         });
     }
 
-
-    /*
-     * CASHIER SCREEN METHODS
-     */
+        /* ------------------------------------------------- CASHIER SCREEN METHODS --------------------------------------- */
 
     // sets the cashier screen to visible and sets isManager to false
     public void switchToCashierScreen() {
@@ -366,6 +394,7 @@ public class Controller implements ActionListener{
             e.printStackTrace();
         }
     }
+    
     private void cleanCashierOrderPanel(){
         JPanel orderPanel = cashierScreen.getOrderPanel();
         JPanel orderFieldsPanel = cashierScreen.getOrderFieldsPanel();
@@ -374,6 +403,7 @@ public class Controller implements ActionListener{
             orderFieldsPanel.removeAll();
         }
     }
+    
     // populate cashier order panel with items in order
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
@@ -648,9 +678,7 @@ public class Controller implements ActionListener{
     }
 
 
-    /*
-     * MANAGER SCREEN METHODS
-     */
+    /* ------------------------------------------------- MANAGER SCREEN METHODS --------------------------------------- */
 
     // sets the manager screen to visible and sets isManager to true
     public void switchToManagerScreen() {
@@ -684,6 +712,7 @@ public class Controller implements ActionListener{
         managerScreen.getNavPanel().revalidate();
         managerScreen.getNavPanel().repaint();
     }
+    
     /** 
      * @param content
      */
@@ -829,14 +858,6 @@ public class Controller implements ActionListener{
         });  
     }
 
-    public void clearOrder(){
-        for (int i = 0; i < orderItems.length; i++) {
-            orderItems[i][0] = 0;
-            orderItems[i][1] = 0;
-        }
-        populateCashierOrderPanel();
-    }
-
     // populates the manager screen with the track panel
     public void populateManagerTrackPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
@@ -899,45 +920,6 @@ public class Controller implements ActionListener{
         mainPanel.add(scrollPane);
         mainPanel.add(Box.createVerticalStrut(10)); // Add some spacing
         mainPanel.add(fetchDataButton);
-    }
-    public void TableQuery(ResultSet rs, JTable table, int start_num) {
-        try {
-            
-
-            // make table uneditable
-            DefaultTableModel tableModel = new DefaultTableModel() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-
-            if (rs != null) {
-                ResultSetMetaData data = rs.getMetaData();
-                int cols = data.getColumnCount();
-                // clear if data exists
-                tableModel.setRowCount(0);
-                tableModel.setColumnCount(0);
-
-                // create columns with count
-                for (int i = start_num; i <= cols; i++) {
-                    tableModel.addColumn(data.getColumnName(i));
-                }
-
-                // add rows
-                while (rs.next()) {
-                    Vector<Object> v = new Vector<Object>();
-                    for (int i = start_num; i <= cols; i++) {
-                        v.add(rs.getObject(i));
-                    }
-                    tableModel.addRow(v);
-                }
-            }
-            table.setModel(tableModel);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Failed to fetch data: " + e.getMessage());
-        }
     }
 
     // populates the manager screen with a table of CRUD operations for each table
@@ -1025,16 +1007,47 @@ public class Controller implements ActionListener{
     }
 
 
-    /*
-     * PAYMENT SCREEN METHODS
-     */
-    // sets the payment screen to visible
-    public void switchToPaymentScreen() {
-        isManager = false;
-        paymentScreen.getFrame().setVisible(false);
-       
-    }
+    /* ------------------------------------------------- MANAGER FUNCTION METHODS --------------------------------------- */    
 
+    public void TableQuery(ResultSet rs, JTable table, int start_num) {
+        try {
+            
+
+            // make table uneditable
+            DefaultTableModel tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            if (rs != null) {
+                ResultSetMetaData data = rs.getMetaData();
+                int cols = data.getColumnCount();
+                // clear if data exists
+                tableModel.setRowCount(0);
+                tableModel.setColumnCount(0);
+
+                // create columns with count
+                for (int i = start_num; i <= cols; i++) {
+                    tableModel.addColumn(data.getColumnName(i));
+                }
+
+                // add rows
+                while (rs.next()) {
+                    Vector<Object> v = new Vector<Object>();
+                    for (int i = start_num; i <= cols; i++) {
+                        v.add(rs.getObject(i));
+                    }
+                    tableModel.addRow(v);
+                }
+            }
+            table.setModel(tableModel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to fetch data: " + e.getMessage());
+        }
+    }
     
     /** 
      * @param dateString
@@ -1271,9 +1284,7 @@ public class Controller implements ActionListener{
         // updateFontSizes(table, managerScreen.getFrame());
         table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
     }
-
-    
-    
+  
     /** 
      * @param table
      */
@@ -1485,8 +1496,7 @@ public class Controller implements ActionListener{
             ex.printStackTrace();
         }
     }
-
-    
+ 
     /** 
      * @param table
      */
@@ -1697,7 +1707,6 @@ public class Controller implements ActionListener{
             }
         });
     }
-
     
     /** 
      * @param table
@@ -1949,7 +1958,6 @@ public class Controller implements ActionListener{
         });
     }
 
-    
     /** 
      * @param table
      */
@@ -2276,7 +2284,6 @@ public class Controller implements ActionListener{
         });
     }
 
-    
     /** 
      * @param table
      */
@@ -2463,33 +2470,6 @@ public class Controller implements ActionListener{
         });
     }
 
-    
-    /** 
-     * @param c
-     * @param f
-     */
-    // update font size of all components of a panel recursively
-    private void updateFontSizes(Component c, JFrame f) {
-        if (c instanceof Container) {
-            for (Component child : ((Container) c).getComponents()) {
-                updateFontSizes(child, f);
-            }
-        }
-        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton || c instanceof JTable) {
-            Font sourceFont = c.getFont();
-            float scale = f.getHeight() / 1000.0f;
-            float newSize = sourceFont.getSize() * scale;
-            int minSize = 14;
-            if (newSize < minSize) {
-                newSize = minSize;
-            }
-            c.setFont(sourceFont.deriveFont(newSize));
-            f.revalidate();
-            f.repaint();
-        }
-    }
-
-
     private Vector<String> populateVector(ResultSet rs) throws SQLException {
         Vector<String> ingredientList = new Vector<>();
         while(rs.next()){
@@ -2516,6 +2496,7 @@ public class Controller implements ActionListener{
         return !today.isBefore(startDate) && today.isBefore(endDate);
     }
 
+    /* ------------------------------------------ MISCELLANEOUS -------------------------------------- */
     @Override
     public void actionPerformed(ActionEvent e) {
         // to override the abstract method
