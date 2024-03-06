@@ -323,7 +323,6 @@ public class Model {
      * Updates the current number of ingredients left in stocafter a customer order is completed
      * @param ingredient_id the id of the ingredient
      * @param ingredient_quantity the quantity of the ingredient
-     * @param connection the connection to the database
      * @throws SQLException
      */
     public void updateIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
