@@ -833,6 +833,25 @@ public class Model {
         }
     }
 
+    public int getIDFromRow(String tableName, String idColumnName, int clickedRow, int maxRow) {
+        try {
+            String query = "SELECT " + idColumnName + " FROM " + tableName + " ORDER BY " + idColumnName + " DESC LIMIT 1 OFFSET ?";
+            int offset = maxRow - clickedRow;
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, offset);
+            ResultSet rs = statement.executeQuery();
+    
+            if (rs.next()) {
+                return rs.getInt(idColumnName);
+            } else {
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     
     /** 
      * retrieves the information of an item based on table, idColumnName, id, and type
@@ -861,8 +880,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+   /**
      * updates the manager order given all fields
      * @param id the id of the order
      * @param date the date of the order
@@ -872,12 +890,12 @@ public class Model {
      */
     public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update manager_order" +
-                "set m_order_date = ?" +
-                "set m_order_time = ?" +
-                "set m_order_total = ?" +
-                "set phonenumber = ?" +
-                "where m_order_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update manager_order " +
+                    "set m_order_date = ?, " +
+                    "m_order_time = ?, " +
+                    "m_order_total = ?, " +
+                    "phonenumber = ? " +
+                    "where m_order_id = ?");
             statement.setString(1, date);
             statement.setString(2, time);
             statement.setDouble(3, total);
@@ -891,8 +909,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates the customer order given all fields
      * @param id the id of the order
      * @param date the date of the order
@@ -904,14 +921,14 @@ public class Model {
      */
     public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update customer_order" +
-                "set c_order_date = ?" +
-                "set c_order_time = ?" +
-                "set c_order_subtotal = ?" +
-                "set c_order_tax = ?" +
-                "set c_order_total = ?" +
-                "set c_order_payment_type = ?" +
-                "where c_order_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update customer_order " +
+                    "set c_order_date = ?, " +
+                    "c_order_time = ?, " +
+                    "c_order_subtotal = ?, " +
+                    "c_order_tax = ?, " +
+                    "c_order_total = ?, " +
+                    "c_order_payment_type = ? " +
+                    "where c_order_id = ?");
             statement.setString(1, date);
             statement.setString(2, time);
             statement.setString(3, subtotal);
@@ -927,8 +944,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates a user given all fields
      * @param id the id of the user
      * @param phoneNumber the phone number of the user
@@ -937,11 +953,11 @@ public class Model {
      */
     public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update users" +
-                "set phonenumber = ?" +
-                "set name = ?" +
-                "set ismanager = ?" +
-                "where user_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update users " +
+                    "set phonenumber = ?, " +
+                    "name = ?, " +
+                    "ismanager = ? " +
+                    "where user_id = ?");
             statement.setString(1, phoneNumber);
             statement.setString(2, name);
             statement.setBoolean(3, isManager);
@@ -954,8 +970,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates item given all fields
      * @param id the id of the item
      * @param name the name of the item
@@ -964,11 +979,11 @@ public class Model {
      */
     public void updateItem(int id, String name, double price, String category) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update menu_items" +
-                "set item_name = ?" +
-                "set item_price = ?" +
-                "set category = ?" +
-                "where item_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update menu_items " +
+                    "set item_name = ?, " +
+                    "item_price = ?, " +
+                    "category = ? " +
+                    "where item_id = ?");
             statement.setString(1, name);
             statement.setDouble(2, price);
             statement.setString(3, category);
@@ -981,33 +996,52 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates ingredient given all fields
      * @param id the id of the ingredient
      * @param name the name of the ingredient
      * @param stock the stock of the ingredient
      * @param price the price of the ingredient
+     * @param stockChanged boolean true if the stock of the ingredient has changed, false if it has not
+     * @param phoneNumber the phone number of the user making the order
      */
-    public void updateIngredient(int id, String name, int stock, double price) {
+    public void updateIngredient(int id, String name, int stock, double price, boolean stockChanged, String phoneNumber) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update ingredients" +
-                "set ingredient_name = ?" +
-                "set ingredient_current_stock = ?" +
-                "set ingredient_unit_price = ?" +
-                "where ingredient_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update ingredients " +
+                    "set ingredient_name = ?, " +
+                    "ingredient_current_stock = ?, " +
+                    "ingredient_unit_price = ? " +
+                    "where ingredient_id = ?");
             statement.setString(1, name);
             statement.setInt(2, stock);
             statement.setDouble(3, price);
             statement.setInt(4, id);
             statement.execute();
+            if(stockChanged) { //Only if we updated the stock do we need to insert into manager_order and junction table
+                Double order_total = stock * price;
+                PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                statement3.setDate(1, new Date(System.currentTimeMillis()));
+                statement3.setTime(2, new Time(System.currentTimeMillis()));
+                statement3.setDouble(3, order_total);
+                statement3.setString(4, phoneNumber);
+
+                statement3.execute();
+                ResultSet rs3 = statement3.getGeneratedKeys();
+                if (rs3.next()) {
+                    PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
+                    statement4.setInt(1, rs3.getInt(1));
+                    statement4.setInt(2, id);
+                    statement4.setInt(3, stock);
+                    statement4.execute();
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
             return;
         }
     }
-
     
     /** 
      * deletes user based on id

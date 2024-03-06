@@ -240,14 +240,22 @@ public class Controller implements ActionListener{
                     // System.out.println("Adding item: " + item_name); // testing
 
                     // create a new button with an image
-                    JButton itemButton = new JButton(new ImageIcon(item_image_path));
-                    itemPanel.add(itemButton, BorderLayout.CENTER);
+                    JLabel itemImage = new JLabel(new ImageIcon(item_image_path));
+                    itemPanel.add(itemImage, BorderLayout.CENTER);
+
+                    // create a new label with the item name to go below the center of the image button
+                    JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
+                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                    itemPanel.add(itemName, BorderLayout.SOUTH);
+
+                    // add the panel to the itemsPanel
+                    itemsPanel.add(itemPanel);
 
                     // add action listener to the image button to display a popup with the item name and an "Add to Order" button
 
-                    itemButton.addActionListener(new ActionListener() {
+                    itemPanel.addMouseListener(new MouseAdapter() {
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void mouseClicked(MouseEvent e) {
                             JPanel popUpPanel = new JPanel();
 
                             // Get the screen size
@@ -318,14 +326,7 @@ public class Controller implements ActionListener{
                         }
                     });
 
-                    // create a new label with the item name to go below the center of the image button
-                    JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
-                    itemName.setFont(font12);
-                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-                    itemPanel.add(itemName, BorderLayout.SOUTH);
-
-                    // add the panel to the itemsPanel
-                    itemsPanel.add(itemPanel);
+                    
                 }
             }
         } catch (Exception e) {
@@ -555,6 +556,7 @@ public class Controller implements ActionListener{
         isManager = true;
         managerScreen.getFrame().setVisible(true);
     }
+
     // populates the manager screen with a default navbar and adds action listeners for each button
     public void populateManagerNavBar() {
         String[] buttonNames = {"chart", "order", "track", "table"};
@@ -742,14 +744,14 @@ public class Controller implements ActionListener{
                 tableModel.setColumnCount(0);
 
                 // create columns with count
-                for (int i = 1; i <= cols; i++) {
+                for (int i = 2; i <= cols; i++) {
                     tableModel.addColumn(data.getColumnName(i));
                 }
 
                 // add rows
                 while (rs.next()) {
                     Vector<Object> v = new Vector<Object>();
-                    for (int i = 1; i <= cols; i++) {
+                    for (int i = 2; i <= cols; i++) {
                         v.add(rs.getObject(i));
                     }
                     tableModel.addRow(v);
@@ -850,6 +852,8 @@ public class Controller implements ActionListener{
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
                 TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table);
             }
+            // updateFontSizes(table, managerScreen.getFrame());
+            table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
         });     
     }
 
@@ -1171,6 +1175,8 @@ public class Controller implements ActionListener{
                 ingredientsPopUp(table);
                 break;
         }
+        // updateFontSizes(table, managerScreen.getFrame());
+        table.setFont(new Font("Arial", Font.PLAIN, preferredHeight / 65));
     }
 
     
@@ -1184,7 +1190,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1;
+                int id = model.getIDFromRow("users", "user_id", table.rowAtPoint(p) + 1, table.getRowCount());
                 int tableType = 0;
                 if (me.getClickCount() == 2  && table.getSelectedRow() != -1) {
                     // create a popup menu for CRUD operations
@@ -1376,7 +1382,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("manager_order", "m_order_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 1;
 
                 // if right clicked and not on column header
@@ -1588,7 +1594,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 because row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("customer_order", "c_order_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 because row 0 in Java == row 1 in SQL
                 int tableType = 2;
 
                 // if right clicked and not on column header  
@@ -1839,7 +1845,8 @@ public class Controller implements ActionListener{
             public void mousePressed(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1;
+                int id = model.getIDFromRow("menu_items", "item_id", table.rowAtPoint(p) + 1, table.getRowCount());
+
                 int tableType = 3;
 
                 // if right clicked and not in column header
@@ -2114,7 +2121,7 @@ public class Controller implements ActionListener{
             public void mouseClicked(MouseEvent me) {
                 JTable table = (JTable) me.getSource();
                 Point p = me.getPoint();
-                int id = table.rowAtPoint(p) + 1; // row + 1 becaues row 0 in Java == row 1 in SQL
+                int id = model.getIDFromRow("ingredients", "ingredient_id", table.rowAtPoint(p) + 1, table.getRowCount()); // row + 1 becaues row 0 in Java == row 1 in SQL
                 int tableType = 4;
 
                 // if right clicked and not column header
@@ -2156,7 +2163,8 @@ public class Controller implements ActionListener{
                             // create and collect current stock label and field 
                             JPanel currentStockPanel = new JPanel();
                             JLabel currentStockLabel = new JLabel("Ingredient Current Stock: ");
-                            JTextField currentStockField = new JTextField(model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock"));
+                            String previousStock = model.getObject("ingredients", "ingredient_id", id, "ingredient_current_stock");
+                            JTextField currentStockField = new JTextField(previousStock);
                             currentStockPanel.add(currentStockLabel);
                             currentStockPanel.add(currentStockField);
 
@@ -2176,7 +2184,7 @@ public class Controller implements ActionListener{
                                     String name = nameField.getText();
                                     Integer currentStock = Integer.parseInt(currentStockField.getText());
                                     Double unitPrice = Double.parseDouble(unitPriceField.getText());
-                                    model.updateIngredient(id, name, currentStock, unitPrice);
+                                    model.updateIngredient(id, name, currentStock, unitPrice, (previousStock != currentStockField.getText()), phoneNumber);
                                     updateIngredientPopupDialog.dispose();
                                     viewTable(table, tableType);
                                 }
@@ -2302,7 +2310,7 @@ public class Controller implements ActionListener{
                 updateFontSizes(child, f);
             }
         }
-        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton) {
+        if (c instanceof JButton || c instanceof JLabel || c instanceof JTextField || c instanceof JTextArea || c instanceof JToggleButton || c instanceof JTable) {
             Font sourceFont = c.getFont();
             float scale = f.getHeight() / 1000.0f;
             float newSize = sourceFont.getSize() * scale;
