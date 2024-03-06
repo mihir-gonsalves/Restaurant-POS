@@ -362,6 +362,7 @@ public class Controller implements ActionListener{
     public void populateCashierOrderPanel() {
         // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
         JPanel orderPanel = cashierScreen.getOrderPanel();
+        JPanel plusMinusPanel;
         JPanel orderFieldsPanel = cashierScreen.getOrderFieldsPanel();
         if (orderPanel.getComponentCount() > 0) {
             orderPanel.removeAll();
@@ -378,19 +379,45 @@ public class Controller implements ActionListener{
         // add items (JTextField) to the orderFieldsPanel by looping through the orderItems array
         for (int i = 0; i < orderItems.length; i++) {
             if (orderItems[i][0] != 0) {
+                final int index = i;
+                
                 JTextArea orderItemTextArea = new JTextArea(model.getItemName(orderItems[i][0]) + " x" + String.valueOf(orderItems[i][1]));
                 orderItemTextArea.setEditable(false);
                 orderItemTextArea.setLineWrap(true);
                 orderItemTextArea.setWrapStyleWord(true);
                 orderItemTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 orderItemTextArea.setPreferredSize(new Dimension(200, 60));
+
+                plusMinusPanel = new JPanel();
+                plusMinusPanel.setLayout(new BoxLayout(plusMinusPanel, BoxLayout.X_AXIS));
+
+                JButton removeItemButton = new JButton("-");
+                removeItemButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (orderItems[index][1] > 0) {
+                            orderItems[index][1] = orderItems[index][1] - 1;
+                            populateCashierOrderPanel();
+                        }
+                    }
+                });
+
+                JButton addItemButton = new JButton("+");
+                addItemButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        orderItems[index][1] = orderItems[index][1] + 1;
+                        populateCashierOrderPanel();
+                    }
+                });
+
+                plusMinusPanel.add(removeItemButton);
+                plusMinusPanel.add(addItemButton);
+
                 orderFieldsPanel.add(orderItemTextArea);
+                orderFieldsPanel.add(plusMinusPanel);
             }
         }
-        // // create scroll pane so that the text fields can be scrolled if there are too many
-        // JScrollPane orderFieldsScrollPane = new JScrollPane(orderFieldsPanel);
-        // orderFieldsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        // orderFieldsScrollPane.setPreferredSize(new Dimension(200, 550));
 
         // add the orderFieldsPanel to the orderPanel and revalidate and repaint the orderPanel for redraw
         orderPanel.add(orderFieldsPanel, BorderLayout.CENTER);
@@ -939,83 +966,9 @@ public class Controller implements ActionListener{
     // sets the payment screen to visible
     public void switchToPaymentScreen() {
         isManager = false;
-        paymentScreen.getFrame().setVisible(true);
-
-        // populate the payment screen with defaults
-        populatePaymentCustomerInfoPanel();
-        populatePaymentOrderPanel();
-        populatePaymentCostPanel();
+        paymentScreen.getFrame().setVisible(false);
        
     }
-
-    public void populatePaymentCustomerInfoPanel() {
-        JPanel paymentCustomerInfoPanel = paymentScreen.getCustomerInfoPanel();
-        paymentCustomerInfoPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber) + " - " + phoneNumber));
-        paymentCustomerInfoPanel.add(Box.createHorizontalGlue());
-        paymentCustomerInfoPanel.add(new JLabel("Order Total: " + model.sumItemPrices(orderItems)));
-    }
-
-    public void populatePaymentOrderPanel() {
-        JPanel paymentOrderPanel = paymentScreen.getPaymentOrderPanel();
-    }
-
-    public void populatePaymentCostPanel() {
-        JPanel paymentCostPanel = paymentScreen.getPaymentCostPanel();
-    }
-
-    public void populatePaymentCardPanel() {
-        JPanel paymentCardPanel = paymentScreen.getPaymentCardPanel();
-    }
-
-    public void populatePaymentButtonPanel() {
-        JPanel paymentButtonPanel = paymentScreen.getPaymentButtonPanel();
-
-        JButton btnCancelOrder = new JButton("Cancel Order");
-        // btnCancelOrder.setFont(font24);
-        btnCancelOrder.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btnCancelOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
-        btnCancelOrder.addActionListener(this);
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-        paymentButtonPanel.add(btnCancelOrder);
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-
-        JButton btnGoBack = new JButton("Go Back");
-        //btnGoBack.setFont(font24);
-        btnGoBack.setAlignmentY(Component.CENTER_ALIGNMENT);
-        btnGoBack.addActionListener(this);
-        paymentButtonPanel.add(btnGoBack);
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-
-        JButton btnPlaceOrder = new JButton("Place Order");
-        //btnPlaceOrder.setFont(font24);
-        btnPlaceOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
-        btnPlaceOrder.addActionListener(this);
-        paymentButtonPanel.add(btnPlaceOrder);
-        paymentButtonPanel.add(Box.createHorizontalGlue());
-    }
-
-        // public void actionPerformed(ActionEvent e) {
-        //     // System.out.println("Item added to order: " + item_name);
-        //     model.getItemID(item_name);
-        //     for (int i = 0; i < orderItems.length; i++) {
-        //         if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
-        //             orderItems[i][0] = model.getItemID(item_name);
-        //             orderItems[i][1] = orderItems[i][1] + 1;
-
-        //             // reupdates the order panel
-        //             populateCashierOrderPanel();
-
-        //             // break because we found the item in the orderItems array
-        //             break;
-        //         }
-        //     }
-        // }
-
-    // need to populate the payment screen with 
 
     
     /** 
