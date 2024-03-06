@@ -318,6 +318,9 @@ public class Model {
 
     }//Done?
 
+
+
+
     
     /** 
      * Decreases the current number of ingredients left in stocafter a customer order is completed
@@ -358,6 +361,8 @@ public class Model {
             }
         }
     }
+
+    
 
     
     /** 
@@ -1316,5 +1321,29 @@ public class Model {
             return null;
         }
     }
-}
 
+
+/** 
+     * Checks all the restock needed ingredients
+     * @return ResultSet containing restock need items
+     * @throws SQLException
+     */
+    public ResultSet findRestock(){
+        try{
+            String text = "";
+            try{
+                text = new String(Files.readAllBytes(Paths.get("test-query/restock.txt")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            PreparedStatement statement = conn.prepareStatement(text);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+}   

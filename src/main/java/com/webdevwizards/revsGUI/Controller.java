@@ -944,12 +944,8 @@ public class Controller implements ActionListener{
                 TableQuery(Rs, table, 1);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
                 //Adds the items that are currently less than 15 in number to the restock report
-                TableQuery(model.executeQuery("SELECT *\r\n" + //
-                                        "FROM ingredients\r\n" + 
-                                        "WHERE ingredient_current_stock < 15\r\n" + //
-                                        //In ascending order so that item with least amount 
-                                        //is displayed first
-                                        "ORDER BY ingredient_current_stock ASC;"), table, 2);
+                ResultSet Rs = model.findRestock();
+                TableQuery(Rs, table, 1);
             } else if(comboBox.getSelectedItem().equals("What Sells Together")){
                 ResultSet Rs = model.findPair(timeStart2.getText(), timeEnd2.getText());
                 TableQuery(Rs, table, 1);

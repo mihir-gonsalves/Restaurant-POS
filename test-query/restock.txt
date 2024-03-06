@@ -1,0 +1,15 @@
+SELECT 
+    i.ingredient_name AS ingredient,
+    CASE WHEN i.ingredient_current_stock < MAX(iti.ingredient_quantity) THEN MAX(iti.ingredient_quantity) END AS max_quantity_needed 
+FROM
+    item_to_ingredient_list iti
+LEFT JOIN
+    ingredients i ON iti.ingredient_id = i.ingredient_id
+
+GROUP BY 
+    i.ingredient_name,
+    i.ingredient_current_stock
+HAVING 
+   i.ingredient_current_stock < MAX(iti.ingredient_quantity)
+ORDER BY 
+    max_quantity_needed ASC;
