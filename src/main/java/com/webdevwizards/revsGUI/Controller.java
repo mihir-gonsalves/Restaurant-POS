@@ -196,6 +196,7 @@ public class Controller implements ActionListener{
         // Get items and sort by category
         ResultSet rs = model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
         JPanel itemsPanel = cashierScreen.getItemsPanel();
+        Font font12 = new Font("Arial", Font.PLAIN, 12);
 
         // get mainframe from cashier screen
         JFrame frame = cashierScreen.getFrame();
@@ -214,7 +215,9 @@ public class Controller implements ActionListener{
                 if (db_category.equals(category)) {
                     String item_name = rs.getString("item_name");
                     String item_price = rs.getString("item_price");
-                    String jlabel_text =  item_name + "  " +"$"+ item_price;
+                    
+                    String jlabel_text =  item_name + "  " + "$" + item_price;
+                    //jlabel_text.setFont(font12);
                     StringBuilder item_image = new StringBuilder();
 
                     // formats image as item_name in lowercase and replaces spaces with underscores
@@ -317,6 +320,7 @@ public class Controller implements ActionListener{
 
                     // create a new label with the item name to go below the center of the image button
                     JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
+                    itemName.setFont(font12);
                     itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
                     itemPanel.add(itemName, BorderLayout.SOUTH);
 
@@ -440,6 +444,7 @@ public class Controller implements ActionListener{
     // populate the bottom panel of the cashier screen with the cashier's name and the subtotal of the order
     public void populateCashierBottomPanel() {
         JPanel bottomPanel = cashierScreen.getBottomPanel();
+        Font font24 = new Font("Arial", Font.PLAIN, 24);
 
         // if bottom panel populated with items, remove all items
         if (bottomPanel.getComponentCount() > 0) {
@@ -450,13 +455,33 @@ public class Controller implements ActionListener{
         cashierScreen.setOrderCompleteButton(null);
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
         orderCompleteButton.setText("Complete Order");
+        orderCompleteButton.setFont(font24);
+
+        // get the subtotal of the order and calculate the tax and total
+        double subtotal = model.sumItemPrices(orderItems);
+        double tax = subtotal * 0.0825;
+        double total = subtotal * 1.0825;
+
+        double roundedSubtotal = ((long)(subtotal * 1e2)) / 1e2;
+        double roundedTax = ((long)(tax * 1e2)) / 1e2;
+        double roundedTotal = ((long)(total * 1e2)) / 1e2;
+
+        // create a new label with the cashier's name and the subtotal of the order, we do this so we can update the component's font
+        JLabel orderCashier = new JLabel(" Cashier Name: " + model.getUserName(phoneNumber) + " -- " + phoneNumber);
+        orderCashier.setFont(font24);
+        orderCashier.setForeground(Color.WHITE); // Set foreground color to white
+        JLabel orderPrice = new JLabel("Subtotal: " + roundedSubtotal + " +  " + roundedTax + " (tax)" + "                Total - $" + roundedTotal);
+        orderPrice.setFont(font24);
+        orderPrice.setForeground(Color.WHITE); // Set foreground color to white
 
         // add the cashier's name, the subtotal of the order, and orderComplete button to the bottomPanel with empty horizontal glues for centering
-        bottomPanel.add(new JLabel("Cashier Name: " + model.getUserName(phoneNumber) + " -- " + phoneNumber));
+        bottomPanel.add(orderCashier);
         bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(new JLabel("Subtotal: " + model.sumItemPrices(orderItems) + " +  " + model.sumItemPrices(orderItems)*0.0825 + " (tax)" + "        Total - " + model.sumItemPrices(orderItems)*1.0825));
+        bottomPanel.add(orderPrice);
         bottomPanel.add(Box.createHorizontalGlue());
         bottomPanel.add(orderCompleteButton);
+
+        bottomPanel.setBackground(new Color(80, 0, 0));
 
         // add event listener to orderComplete button
         cashierScreen.setOrderCompleteButton(orderCompleteButton);
@@ -473,30 +498,49 @@ public class Controller implements ActionListener{
     public void switchFromCashierPanel() {
         JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
 
+        double dSubtotal = model.sumItemPrices(orderItems);
+        double dTax = dSubtotal * 0.0825;
+        double dTotal = dSubtotal * 1.0825;
+
+        double roundedSubtotal = ((long)(dSubtotal * 1e2)) / 1e2;
+        double roundedTax = ((long)(dTax * 1e2)) / 1e2;
+        double roundedTotal = ((long)(dTotal * 1e2)) / 1e2;
+
         // add action listener to orderComplete button to display subtotal and switch to payment screen when clicked
         orderCompleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // System.out.println("Order complete"); // testing
-                String subtotal = String.valueOf(model.sumItemPrices(orderItems));
+                // // System.out.println("Order complete"); // testing
+                // String subtotal = String.valueOf(roundedSubtotal);
 
-                // display total by converting subtotal to float and multiplying by 1.0825 (8.25% tax)
-                JOptionPane.showMessageDialog(null, "Total: " + Float.parseFloat(subtotal)*1.0825);
+                // // display total by converting subtotal to float and multiplying by 1.0825 (8.25% tax)
+                // JOptionPane.showMessageDialog(null, "Total: " + roundedTotal);
 
-                // insert order into database and display message based on success ; currently hardcoded to "credit"
-                if(model.insert_order(subtotal, orderItems,"credit") == true){
-                    JOptionPane.showMessageDialog(null, "Order submitted");
-                }
-                else{
-                    JOptionPane.showMessageDialog(null, "Order not submitted");
-                }
+                // // insert order into database and display message based on success ; currently hardcoded to "credit"
+                // if(model.insert_order(subtotal, orderItems,"credit") == true){
+                //     JOptionPane.showMessageDialog(null, "Order submitted");
+                // }
+                // else{
+                //     JOptionPane.showMessageDialog(null, "Order not submitted");
+                // }
 
-                // switch to payment screen and dispose of the cashier screen
-                switchToPaymentScreen();
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                paymentScreen.getFrame().setSize(screenSize.width, screenSize.height);
-                // dispose of the cashier screen
-                cashierScreen.getFrame().dispose();
+                // // dispose of the cashier screen
+                // cashierScreen.getFrame().dispose();
+
+                // // create pop up to ask for payment methods (two big square buttons with pictures)
+                JPanel popUpPanel = new JPanel();
+
+                // Get the screen size
+                Dimension frameSize = cashierScreen.getFrame().getSize();
+
+                // sets the size and style of the popup panel
+                int size = (int) (frameSize.getWidth() / 2);
+                popUpPanel.setPreferredSize(new Dimension(size, size));
+                popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+                popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
+
+                // create and style the label and button for the popup
+                JLabel popUpLabel = new JLabel("Cart");
             }
         });
     }
@@ -848,7 +892,7 @@ public class Controller implements ActionListener{
         JPanel paymentButtonPanel = paymentScreen.getPaymentButtonPanel();
 
         JButton btnCancelOrder = new JButton("Cancel Order");
-        // btnCancelOrder.setFont(font1);
+        // btnCancelOrder.setFont(font24);
         btnCancelOrder.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnCancelOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnCancelOrder.addActionListener(this);
@@ -861,14 +905,14 @@ public class Controller implements ActionListener{
         paymentButtonPanel.add(Box.createHorizontalGlue());
 
         JButton btnGoBack = new JButton("Go Back");
-        //btnGoBack.setFont(font1);
+        //btnGoBack.setFont(font24);
         btnGoBack.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnGoBack.addActionListener(this);
         paymentButtonPanel.add(btnGoBack);
         paymentButtonPanel.add(Box.createHorizontalGlue());
 
         JButton btnPlaceOrder = new JButton("Place Order");
-        //btnPlaceOrder.setFont(font1);
+        //btnPlaceOrder.setFont(font24);
         btnPlaceOrder.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnPlaceOrder.addActionListener(this);
         paymentButtonPanel.add(btnPlaceOrder);

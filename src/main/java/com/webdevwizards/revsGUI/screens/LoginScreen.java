@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
+import javax.swing.border.Border;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
@@ -14,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -61,8 +63,19 @@ public class LoginScreen extends JFrame implements ActionListener {
 
         // label for screen (replaces title that was removed by setUndecorated)
         lblScreen = new JLabel("Welcome to Rev's American Grill");
-        lblScreen.setFont(font1);
         lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // label decoration
+        Border emptyBorder = BorderFactory.createEmptyBorder(40, 40, 40, 40);
+
+        lblScreen.setFont(font1);
+        lblScreen.setForeground(new Color(246, 182, 12));
+        lblScreen.setBackground(new Color(80, 0, 0));
+        lblScreen.setOpaque(true);
+
+        Border existingBorder = lblScreen.getBorder();
+        Border totalBorder = BorderFactory.createCompoundBorder(existingBorder, emptyBorder);
+        lblScreen.setBorder(totalBorder);
 
         // the panel will lay compenents out from left to right
         inputPanel = new JPanel();
