@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.BorderFactory;
+import java.awt.event.KeyAdapter;  
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,9 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.AttributeSet;
+
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 
 public class LoginScreen extends JFrame implements ActionListener {
     private JLabel lblScreen;
@@ -89,6 +93,15 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumber.setFont(font2);
         phoneNumber.setMaximumSize(new Dimension(140, 30));
         phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+                // Added a KeyListener to the phoneNumber field
+                phoneNumber.addKeyListener(new KeyAdapter() {
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            // Perform login action
+                            btnLogin.doClick();
+                        }
+                    }
+                });
 
         // code below limits the number of characters that can be input to 10 and restricts the character type to numbers
         ((AbstractDocument) phoneNumber.getDocument()).setDocumentFilter(new DocumentFilter() {
