@@ -858,7 +858,7 @@ public class Controller implements ActionListener{
             ResultSet rs = model.getOrderDaytoDay(startDate, endDate);
             try{
                 while (rs.next()) {
-                    Object[] row = new Object[7]; // Assuming 7 columns in the result set
+                    Object[] row = new Object[15]; // Assuming 7 columns in the result set
                     for (int i = 0; i < row.length; i++) {
                         row[i] = rs.getObject(i + 1); // Columns are 1-indexed in ResultSet
                     }
