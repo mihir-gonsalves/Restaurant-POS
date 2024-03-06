@@ -93,7 +93,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         phoneNumber.setFont(font2);
         phoneNumber.setMaximumSize(new Dimension(140, 30));
         phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
-                // Add a KeyListener to the phoneNumber field
+                // Added a KeyListener to the phoneNumber field
                 phoneNumber.addKeyListener(new KeyAdapter() {
                     public void keyPressed(KeyEvent e) {
                         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
