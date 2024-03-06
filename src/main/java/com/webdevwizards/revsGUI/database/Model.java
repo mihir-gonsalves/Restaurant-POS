@@ -160,8 +160,8 @@ public class Model {
         }
     }
 
-    private static final String INSERT_ORDER_QUERY = "INSERT INTO c_orders (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
-    private static final String INSERT_ORDER_ITEM_QUERY = "INSERT INTO c_oti (c_order_id, item_id, item_quantity) VALUES (?, ?, ?)";
+    private static final String INSERT_ORDER_QUERY = "INSERT INTO customer_order (c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type) VALUES ( ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_ORDER_ITEM_QUERY = "INSERT INTO c_order_to_item_list (c_order_id, item_id, item_quantity) VALUES (?, ?, ?)";
     private static final String SELECT_INGREDIENT= "SELECT ingredient_id, ingredient_quantity FROM item_to_ingredient_list WHERE item_id = ?;";
     private static final String SELECT_INGREDIENT_NAME = "SELECT ingredient_current_stock FROM ingredients WHERE ingredient_id = ?;";
     private static final String UPDATE_INGREDIENT_COUNT= "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
@@ -1392,7 +1392,7 @@ public class Model {
             return null;
         }   
     }
-}
+
 
 
 

@@ -559,13 +559,19 @@ public class Controller implements ActionListener{
                         } 
                         else {
                             // insert order into database and display message based on success
-                            model.insert_order(subtotal, orderItems, paymentType[0]);
-                            JOptionPane.showMessageDialog(null, "Order submitted");
-                            // dispose of the cashier screen
-                            cashierScreen.getFrame().dispose();
-                            po.hide();
-                            // switch back to login screen
-                            switchToLoginScreen();
+                            if (model.insert_order(subtotal, orderItems, paymentType[0])) {
+                                JOptionPane.showMessageDialog(null, "Order submitted");
+                                orderItems = new int[15][2];
+                                // dispose of the cashier screen
+                                cashierScreen.getFrame().dispose();
+                                po.hide();
+                                // switch back to login screen
+                                switchToLoginScreen();
+                            }
+                            else{
+                                JOptionPane.showMessageDialog(null, "Order not submitted");
+                            
+                            }
                         }
                     }
                 });
