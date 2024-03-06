@@ -206,13 +206,18 @@ public class Controller implements ActionListener{
 
         // try loop to get items from the database safely
         try {
-
+            boolean isTodayinRange;
             // while there is another row in the result set
             while (rs.next()) {
                 String db_category = rs.getString("category"); // get the category of the current row
-
+                String date_range = rs.getString("date_range");
+                if(date_range == null){
+                    isTodayinRange = true;
+                } else {
+                    isTodayinRange = isTodayWithinDateRange(date_range);
+                }
                 // if the category of the current row is the same as the category we want to display
-                if (db_category.equals(category)) {
+                if (db_category.equals(category) && isTodayinRange) {
                     String item_name = rs.getString("item_name");
                     String item_price = rs.getString("item_price");
                     
@@ -1976,16 +1981,40 @@ public class Controller implements ActionListener{
                             categoryPanel.add(categoryLabel);
                             categoryPanel.add(categoryComboBox);
 
+                            // create and collect initial date and ending date
+                            JPanel datePanel = new JPanel();
+                            JLabel startDate = new JLabel("Start Date: ");
+                            JTextField startDateField = new JTextField(model.getObject("menu_items", "item_id", id, "lower(date_range)"));
+                            JLabel endDate = new JLabel("End Date: ");
+                            JTextField endDateField = new JTextField(model.getObject("menu_items", "item_id", id, "upper(date_range)"));
+                            datePanel.add(startDate);
+                            datePanel.add(startDateField);
+                            datePanel.add(endDate);
+                            datePanel.add(endDateField);
+
+                            JPanel descriptionPanel = new JPanel();
+                            JTextArea description = new JTextArea("Please enter dates in the following format: YYYY-MM-DD");
+                            description.setEditable(false);
+                            descriptionPanel.add(description);
+
                             // create a button to commit the new item to the database, dispose of dialog, and update table
                             JButton commitButton = new JButton("Commit");
                             commitButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     // update the order in the database and also the table 
+                                    boolean flagDate; String startDateString = ""; String endDateString = "";
                                     String name = nameField.getText();
                                     Double price = Double.parseDouble(priceField.getText());
                                     String category = categoryComboBox.getSelectedItem().toString();
-                                    model.updateItem(id, name, price, category);
+                                    if(startDateField.getText().trim().isEmpty() || endDateField.getText().trim().isEmpty()){ //If either field is empty don't add to the date_range column
+                                        flagDate = false;
+                                    } else{
+                                        flagDate = true;
+                                        startDateString = startDateField.getText();
+                                        endDateString = endDateField.getText();
+                                    }
+                                    model.updateItem(id, name, price, category, startDateString, endDateString, flagDate);
                                     updateItemPopupDialog.dispose();
                                     viewTable(table, tableType);
                                 }
@@ -1995,6 +2024,8 @@ public class Controller implements ActionListener{
                             updateItemPopup.add(namePanel);
                             updateItemPopup.add(pricePanel);
                             updateItemPopup.add(categoryPanel);
+                            updateItemPopup.add(datePanel);
+                            updateItemPopup.add(descriptionPanel);
                             updateItemPopup.add(commitButton);
                             updateItemPopup.setVisible(true);
                             updateItemPopupDialog.setVisible(true);
@@ -2069,6 +2100,21 @@ public class Controller implements ActionListener{
                             categoryPanel.add(categoryLabel);
                             categoryPanel.add(categoryBox);
 
+                            JPanel datePanel = new JPanel();
+                            JLabel startDate = new JLabel("Start Date: ");
+                            JTextField startDateField = new JTextField(10);
+                            JLabel endDate = new JLabel("End Date: ");
+                            JTextField endDateField = new JTextField(10);
+                            datePanel.add(startDate);
+                            datePanel.add(startDateField);
+                            datePanel.add(endDate);
+                            datePanel.add(endDateField);
+
+                            JPanel descriptionPanel = new JPanel();
+                            JTextArea dateDescription = new JTextArea("Please enter dates in the following format: YYYY-MM-DD");
+                            dateDescription.setEditable(false);
+                            descriptionPanel.add(dateDescription);
+
                             // create a button to commit the new item to the database
                             JButton commitButton = new JButton("Commit");
 
@@ -2076,6 +2122,8 @@ public class Controller implements ActionListener{
                             createItemPopup.add(namePanel);
                             createItemPopup.add(pricePanel);
                             createItemPopup.add(categoryPanel);
+                            createItemPopup.add(datePanel);
+                            createItemPopup.add(descriptionPanel);
                             createItemPopup.add(commitButton);
                             createItemPopup.setVisible(true);
                             createItemPopupDialog.setVisible(true);
@@ -2130,12 +2178,20 @@ public class Controller implements ActionListener{
                             commitButton.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent event) {
+                                   boolean flagDate; String startDateString = ""; String endDateString = "";
                                     String name = nameField.getText();
                                     Double price = Double.parseDouble(priceField.getText());
                                     String category = categoryBox.getSelectedItem().toString();
+                                    if(startDateField.getText().trim().isEmpty() || endDateField.getText().trim().isEmpty()){ //If either field is empty don't add to the date_range column
+                                        flagDate = false;
+                                    } else{
+                                        flagDate = true;
+                                        startDateString = startDateField.getText();
+                                        endDateString = endDateField.getText();
+                                    }
 
                                     // if we can add the item then display the popup and update the table
-                                    if(model.addNewItem(name, price, category)){
+                                    if(model.addNewItem(name, price, category, startDateString, endDateString, flagDate)){
                                         itemID.set(model.getItemID(name));
                                         attachIngredientsFrame.getContentPane().add(panelIngredientList);
                                         attachIngredientsFrame.getContentPane().add(panelQuantityList);
@@ -2407,6 +2463,23 @@ public class Controller implements ActionListener{
         }
 
         return ingredientList;
+    }
+
+    public static boolean isTodayWithinDateRange(String dateRange) {
+        // Parse the date range string
+        String[] dateRangeParts = dateRange.substring(1, dateRange.length() - 1).split(",");
+        String startDateString = dateRangeParts[0].trim();
+        String endDateString = dateRangeParts[1].trim();
+
+        // Convert to LocalDate objects
+        LocalDate startDate = LocalDate.parse(startDateString, DateTimeFormatter.ISO_DATE);
+        LocalDate endDate = LocalDate.parse(endDateString, DateTimeFormatter.ISO_DATE);
+
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Check if today is within the date range
+        return !today.isBefore(startDate) && today.isBefore(endDate);
     }
 
     @Override
