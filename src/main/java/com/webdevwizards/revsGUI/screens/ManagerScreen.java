@@ -17,6 +17,7 @@ public class ManagerScreen extends JFrame implements ActionListener{
     JPanel navPanel;
     JPanel southPanel;
     JPanel mainPanel;
+    JLabel managerLabel;
 
     public ManagerScreen() {
         frame = new JFrame("Rev's GUI: Manager Screen");
@@ -39,11 +40,11 @@ public class ManagerScreen extends JFrame implements ActionListener{
         southPanel.setPreferredSize(new Dimension(600, 100));
         southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         // Add components to the southPanel as per your requirements
-        southPanel.add(new JLabel("Cashier Name: Ritchey"));
         southPanel.add(Box.createHorizontalGlue());
-        southPanel.add(new JLabel(" Order Subtotal: $0.00"));
+        managerLabel = new JLabel("Manager Name: ");
+        southPanel.add(managerLabel);
         southPanel.add(Box.createHorizontalGlue());
-        southPanel.add(new JButton(" Order Complete"));
+        
         
 
 
@@ -81,5 +82,9 @@ public class ManagerScreen extends JFrame implements ActionListener{
     }
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public JLabel getManagerLabel() {
+        return managerLabel;
     }
 }

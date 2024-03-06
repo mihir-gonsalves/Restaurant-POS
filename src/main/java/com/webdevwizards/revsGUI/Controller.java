@@ -613,12 +613,16 @@ public class Controller implements ActionListener{
             populateManagerTablePanel();
 
         }
+
+        // add manager name
+        managerScreen.getManagerLabel().setText("Manager Name: " + model.getUserName(phoneNumber));
+
         // revalidate and repaint the mainPanel for redraw
         mainPanel.revalidate();
         mainPanel.repaint();
     }
     
-    // populates the manager screen with a chart // TODO implement chart
+    // populates the manager screen with a chart
     public void populateManagerOrderPanel() {
         JPanel mainPanel = managerScreen.getMainPanel();
         mainPanel.setLayout(new BorderLayout());
