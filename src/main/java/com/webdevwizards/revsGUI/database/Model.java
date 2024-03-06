@@ -1293,5 +1293,28 @@ public class Model {
             return null;
         }
     }
+    public ResultSet findExcess(String startDate){
+        try{
+            String text = "";
+            try{
+                text = new String(Files.readAllBytes(Paths.get("test-query/excessReport.txt")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String endDate = (new Date(System.currentTimeMillis())).toString();
+            PreparedStatement statement = conn.prepareStatement(text);
+            statement.setString(1, startDate);statement.setString(2, endDate);statement.setString(3, startDate);statement.setString(4, endDate);
+            statement.setString(5, startDate);statement.setString(6, endDate);statement.setString(7, startDate);statement.setString(8, endDate);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        }
+
+
+        catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
 }
 

@@ -913,7 +913,8 @@ public class Controller implements ActionListener{
                 }
 
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
-                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table, 2);
+                ResultSet Rs = model.findExcess(timeStart2.getText());
+                TableQuery(Rs, table, 1);
             } else if (comboBox.getSelectedItem().equals("Restock Report")) {
                 //Adds the items that are currently less than 15 in number to the restock report
                 TableQuery(model.executeQuery("SELECT *\r\n" + //
