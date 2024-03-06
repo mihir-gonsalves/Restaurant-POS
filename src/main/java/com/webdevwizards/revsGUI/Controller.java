@@ -6,10 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.time.LocalDate;
@@ -916,28 +913,18 @@ public class Controller implements ActionListener{
             //PreparedStatement pstmt = conn.prepareStatement(sql);
             //pstmt.setString(1, phoneNumber);
 
-        comboBox.addActionListener(e -> { //Resets boxes to white and then grays out and sets to uneditable the unneeded ones based on the option you select
+        comboBox.addActionListener(e -> { 
+            // retrieve start and end dates from text fields
+            String startDate = timeStart2.getText();
+            String endDate = LocalDate.now().toString();
+
+            // set up the table based on the selected option's resultset
             if(comboBox.getSelectedItem().equals("Product Usage")){
-                TableQuery(model.executeQuery("SELECT * FROM menu_items ORDER BY category;"), table,2 );
+                TableQuery(model.getProductUsage(startDate, endDate), table, 1);
+                
             } else if(comboBox.getSelectedItem().equals("Sales Report")){
-                String sql = "SELECT c_order_to_item_list.item_id as item_id, COUNT(*) as itemCount, menu_Items.item_name as itemName\r\n" + //
-                "FROM customer_order\r\n" + //
-                "JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
-                "JOIN menu_Items ON c_order_to_item_list.item_id = menu_Items.item_id \r\n" + //
-                "WHERE c_order_date >= date(?) AND c_order_date <= date(?) \r\n" + //
-                "GROUP BY c_order_to_item_list.item_id, menu_Items.item_name,DATE_PART('month', c_order_date)\r\n" + //
-                "ORDER BY itemCount DESC;\r\n" + //
-                "";
-                try {
-                    PreparedStatement pstmt = model.conn.prepareStatement(sql);
-                    pstmt.setString(1,parseDate(timeStart2.getText()));
-                    pstmt.setString(2, parseDate(timeEnd2.getText()));
-                    ResultSet r = pstmt.executeQuery();
-                    TableQuery(r, table,2);
-                }
-                catch (Exception er) {
-                    er.printStackTrace();
-                }
+                
+                TableQuery(model.getSalesReport(startDate, endDate), table, 1);
 
             } else if (comboBox.getSelectedItem().equals("Excess Report")) {
                 ResultSet Rs = model.findExcess(timeStart2.getText());

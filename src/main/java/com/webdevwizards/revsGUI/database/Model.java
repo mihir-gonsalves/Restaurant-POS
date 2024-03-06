@@ -432,7 +432,10 @@ public class Model {
      */
     public static ResultSet getAllIngredients(){
         try{
-            PreparedStatement statement = conn.prepareStatement("select * from ingredients order by ingredient_id");
+            String sql = "select * from ingredients order by ingredient_id";
+            PreparedStatement statement = conn.prepareStatement(sql,
+                ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = statement.executeQuery();
             return rs;
         } catch (SQLException e) {
@@ -853,7 +856,10 @@ public class Model {
      */
     public ResultSet getOrderDaytoDay(String startDate, String endDate){
         try{
-            PreparedStatement statement = conn.prepareStatement("select * from customer_order where c_order_date between date(?) and date(?) ORDER BY c_order_id");
+            String sql = "select * from customer_order where c_order_date between date(?) and date(?) ORDER BY c_order_id";
+            PreparedStatement statement = conn.prepareStatement(sql, 
+                ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                ResultSet.CONCUR_READ_ONLY);
             statement.setString(1, startDate);
             statement.setString(2, endDate);
             ResultSet rs = statement.executeQuery();
@@ -1298,6 +1304,11 @@ public class Model {
             return null;
         }
     }
+    /**
+     * Retrieves the total sales per item for a given date range
+     * @param startDate the start date (YYYY-MM-DD format)
+     * @return ResultSet of the total sales per item for the given date range
+     */
     public ResultSet findExcess(String startDate){
         try{
             String text = "";
@@ -1313,14 +1324,78 @@ public class Model {
             ResultSet rs = statement.executeQuery();
             return rs;
         }
-
-
         catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
             return null;
         }
     }
+
+    /**
+     * Retrieves the total sales per ingredient for a given date range
+     * @param startDate the start date (YYYY-MM-DD format)
+     * @param endDate the end date (YYYY-MM-DD format)
+     * @return ResultSet of the total sales per ingredient for the given date range
+     */
+    public ResultSet getProductUsage(String startDate, String endDate){
+        try {
+            String sql = 
+                //add columns for ingredient name and used quantity
+                "SELECT i.ingredient_name AS ingredient, " +
+                // use coalesce to set used_quantity to sum(ingredientCount * itemCount) or
+                // 0 if it is null  
+                "COALESCE(SUM(oi.item_quantity * iti.ingredient_quantity), 0) AS used_quantity " +
+
+                // join the ingredients table with the customer orders table
+                "FROM ingredients i " +
+                "LEFT JOIN item_to_ingredient_list iti ON i.ingredient_id = iti.ingredient_id " +
+                "LEFT JOIN c_order_to_item_list oi ON iti.item_id = oi.item_id " +
+                "LEFT JOIN customer_order co ON oi.c_order_id = co.c_order_id " +
+
+                // so we can filter product usage by date
+                "WHERE co.c_order_date BETWEEN ? AND ? " +
+                "GROUP BY ingredient " +
+                "ORDER BY used_quantity desc;";
+    
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setDate(1, java.sql.Date.valueOf(startDate));
+            pstmt.setDate(2, java.sql.Date.valueOf(endDate));
+    
+            ResultSet rs = pstmt.executeQuery();
+            return rs;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ResultSet getSalesReport(String startTime, String endTime) {
+
+        String sql = "SELECT menu_Items.item_name as item, DATE_PART('month', c_order_date) as month, COUNT(*) as quantity \r\n" + //
+                "FROM customer_order\r\n" + //
+                "JOIN c_order_to_item_list ON customer_order.c_order_id = c_order_to_item_list.c_order_id \r\n" + //
+                "JOIN menu_Items ON c_order_to_item_list.item_id = menu_Items.item_id \r\n" + //
+                "WHERE c_order_date >= date(?) AND c_order_date <= date(?) \r\n" + //
+                "GROUP BY item, c_order_to_item_list.item_id, month\r\n" + //
+                "ORDER BY quantity DESC;\r\n" + //
+                "";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setDate(1, java.sql.Date.valueOf(startTime));
+            pstmt.setDate(2, java.sql.Date.valueOf(endTime));
+            ResultSet r = pstmt.executeQuery();
+            return r;
+        }
+        catch (Exception er) {
+            er.printStackTrace();
+            return null;
+        }   
+    }
+}
+
+
+
 
 
 /** 
