@@ -86,7 +86,7 @@ public class Controller implements ActionListener{
 
         isManager = false;
         pf = new PopupFactory();
-        orderItems = new int[10][2];
+        orderItems = new int[15][2];
 
         // set preferred width and height to maximum screen size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -241,11 +241,14 @@ public class Controller implements ActionListener{
 
                     // create a new button with an image
                     JLabel itemImage = new JLabel(new ImageIcon(item_image_path));
+                    itemImage.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
                     itemPanel.add(itemImage, BorderLayout.CENTER);
 
                     // create a new label with the item name to go below the center of the image button
                     JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
-                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                    itemName.setFont(font12);
                     itemPanel.add(itemName, BorderLayout.SOUTH);
 
                     // add the panel to the itemsPanel
@@ -256,73 +259,21 @@ public class Controller implements ActionListener{
                     itemPanel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            JPanel popUpPanel = new JPanel();
 
-                            // Get the screen size
-                            Dimension frameSize = frame.getSize();
 
-                            // sets the size and style of the popup panel
-                            int size = (int) (frameSize.getWidth() / 2);
-                            popUpPanel.setPreferredSize(new Dimension(size, size));
-                            popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-                            popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
+                            model.getItemID(item_name);
+                            for (int i = 0; i < orderItems.length; i++) {
+                                if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
+                                    orderItems[i][0] = model.getItemID(item_name);
+                                    orderItems[i][1] = orderItems[i][1] + 1;
 
-                            // create and style the label and button for the popup
-                            JLabel popUpLabel = new JLabel("Item: " + item_name);
-                            popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                            JButton orderButton = new JButton("Add to Order");
-                            orderButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                                    // reupdates the order panel
+                                    populateCashierOrderPanel();
 
-                            // add action listener to the "Add to Order" button to add the item to the order and close the popup
-                            orderButton.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    // System.out.println("Item added to order: " + item_name);
-                                    model.getItemID(item_name);
-                                    for (int i = 0; i < orderItems.length; i++) {
-                                        if (orderItems[i][0] == model.getItemID(item_name) || orderItems[i][0] == 0) {
-                                            orderItems[i][0] = model.getItemID(item_name);
-                                            orderItems[i][1] = orderItems[i][1] + 1;
-
-                                            // reupdates the order panel
-                                            populateCashierOrderPanel();
-
-                                            // break because we found the item in the orderItems array
-                                            break;
-                                        }
-                                    }
-                                    po.hide();
+                                    // break because we found the item in the orderItems array
+                                    break;
                                 }
-                            });
-
-                            JButton cancelButton = new JButton("Cancel");
-                            cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                            // add action listener to the "Cancel" button to close the popup
-                            cancelButton.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    po.hide();
-                                }
-                            });
-
-                            // add the label and buttons to the popup panel with some vertical spacing
-                            popUpPanel.add(Box.createVerticalGlue());
-                            popUpPanel.add(popUpLabel);
-                            popUpPanel.add(Box.createVerticalGlue());
-                            popUpPanel.add(orderButton);
-                            popUpPanel.add(Box.createVerticalStrut(30));
-                            popUpPanel.add(cancelButton);
-                            popUpPanel.add(Box.createVerticalGlue());
-
-                            // sets the location of the popup panel (centered on the main frame)
-                            Point frameLocation = frame.getLocation();
-                            int x = (int) (frameLocation.getX() + (frameSize.getWidth() - popUpPanel.getPreferredSize().getWidth()) / 2);
-                            int y = (int) (frameLocation.getY() + (frameSize.getHeight() - popUpPanel.getPreferredSize().getHeight()) / 2);
-
-                            // creates and shows the popup
-                            po = pf.getPopup(frame, popUpPanel, x, y);
-                            po.show();
+                            }
                         }
                     });
 
@@ -410,6 +361,7 @@ public class Controller implements ActionListener{
         }
 
         JLabel orderItemsLabel = new JLabel("Order Items");
+        orderItemsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         orderItemsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         orderPanel.add(orderItemsLabel, BorderLayout.NORTH);
 
@@ -422,7 +374,7 @@ public class Controller implements ActionListener{
                 orderItemTextArea.setEditable(false);
                 orderItemTextArea.setLineWrap(true);
                 orderItemTextArea.setWrapStyleWord(true);
-                orderItemTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                orderItemTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                 orderItemTextArea.setPreferredSize(new Dimension(200, 60));
                 orderFieldsPanel.add(orderItemTextArea);
             }
@@ -511,37 +463,175 @@ public class Controller implements ActionListener{
         orderCompleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // // System.out.println("Order complete"); // testing
-                // String subtotal = String.valueOf(roundedSubtotal);
+                String subtotal = String.valueOf(roundedSubtotal);
 
-                // // display total by converting subtotal to float and multiplying by 1.0825 (8.25% tax)
-                // JOptionPane.showMessageDialog(null, "Total: " + roundedTotal);
-
-                // // insert order into database and display message based on success ; currently hardcoded to "credit"
-                // if(model.insert_order(subtotal, orderItems,"credit") == true){
-                //     JOptionPane.showMessageDialog(null, "Order submitted");
-                // }
-                // else{
-                //     JOptionPane.showMessageDialog(null, "Order not submitted");
-                // }
-
-                // // dispose of the cashier screen
-                // cashierScreen.getFrame().dispose();
-
-                // // create pop up to ask for payment methods (two big square buttons with pictures)
+                // create pop up to ask for payment methods
                 JPanel popUpPanel = new JPanel();
+                JPanel cardPanel = new JPanel();
+                cardPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                 // Get the screen size
                 Dimension frameSize = cashierScreen.getFrame().getSize();
 
                 // sets the size and style of the popup panel
-                int size = (int) (frameSize.getWidth() / 2);
+                int size = (int) (frameSize.getWidth() / 3);
                 popUpPanel.setPreferredSize(new Dimension(size, size));
-                popUpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+                popUpPanel.setBorder(BorderFactory.createLineBorder(new Color(246, 182, 12), 8));
                 popUpPanel.setLayout(new BoxLayout(popUpPanel, BoxLayout.PAGE_AXIS));
 
                 // create and style the label and button for the popup
                 JLabel popUpLabel = new JLabel("Cart");
+                popUpLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                popUpLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                // JPanel creditPanel = new JPanel(new BorderLayout());
+                // JPanel cashPanel = new JPanel(new BorderLayout());
+
+                // ImageIcon creditImageIcon = new ImageIcon("./images/credit-card.png");
+                // Image creditImage = creditImageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                // JLabel creditImageLabel = new JLabel(new ImageIcon(creditImage));
+                // creditImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
+                // ImageIcon cashImageIcon = new ImageIcon("./images/student-card.png");
+                // Image cashImage = cashImageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                // JLabel cashImageLabel = new JLabel(new ImageIcon(cashImage));
+                // cashImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
+                // creditPanel.add(creditImageLabel, BorderLayout.CENTER);
+                // cashPanel.add(cashImageLabel, BorderLayout.CENTER);
+
+                // JLabel creditName = new JLabel("Credit", SwingConstants.CENTER);
+                // creditName.setFont(new Font("Arial", Font.PLAIN, 12));
+                // creditName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                // creditPanel.add(creditName, BorderLayout.SOUTH);
+
+                // JLabel cashName = new JLabel("Cash", SwingConstants.CENTER);
+                // cashName.setFont(new Font("Arial", Font.PLAIN, 12));
+                // cashName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                // cashPanel.add(cashName, BorderLayout.SOUTH);
+
+                // creditPanel.setPreferredSize(new Dimension(50, 100));
+                // cashPanel.setPreferredSize(new Dimension(50, 100));
+
+                // JButton finishOrder = new JButton("Finish Order");
+                // finishOrder.setFont(new Font("Arial", Font.PLAIN, 12));
+                // finishOrder.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                ImageIcon creditImage = new ImageIcon("./images/credit-card.png");
+                creditImage = new ImageIcon(creditImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+                JButton creditButton = new JButton(creditImage);
+                creditButton.setPreferredSize(new Dimension(300, 200));
+                cardPanel.add(creditButton);
+
+                ImageIcon cashImage = new ImageIcon("./images/student-card.png");
+                cashImage = new ImageIcon(cashImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+                JButton cashButton = new JButton(cashImage);
+                cashButton.setPreferredSize(new Dimension(300, 200));
+                cardPanel.add(Box.createHorizontalGlue());
+                cardPanel.add(cashButton);
+
+                JButton finishOrder = new JButton("Finish Order");
+                finishOrder.setFont(new Font("Arial", Font.PLAIN, 12));
+                finishOrder.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                String paymentType = "credit"; // TODO
+
+                // creditButton.addActionListener(new ActionListener() {
+                //     @Override
+                //     public void actionPerformed(ActionEvent e) {
+                //         paymentType = "credit";
+                //     }
+                // });
+
+                // cashButton.addActionListener(new ActionListener() {
+                //     @Override
+                //     public void actionPerformed(ActionEvent e) {
+                //         paymentType = "cash";
+                //     }
+                // });
+
+                finishOrder.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (paymentType.equals("")) {
+                            JOptionPane.showMessageDialog(null, "Please select a payment method");
+                        } 
+                        else {
+                            // insert order into database and display message based on success
+                            model.insert_order(subtotal, orderItems, paymentType);
+                            JOptionPane.showMessageDialog(null, "Order submitted");
+                            // dispose of the cashier screen
+                            cashierScreen.getFrame().dispose();
+                            po.hide();
+                            // switch back to login screen
+                            switchToLoginScreen();
+                        }
+                    }
+                });
+
+                // // add action listener to the "Credit" button to add the item to the order and close the popup
+                // creditPanel.addMouseListener(new MouseAdapter() {
+                //     @Override
+                //     public void mouseClicked(MouseEvent e) {
+                //         paymentType = "credit";
+                //     }
+                // });
+
+                // // add action listener to the "Cash" button to add the item to the order and close the popup
+                // cashPanel.addMouseListener(new MouseAdapter() {
+                //     @Override
+                //     public void mouseClicked(MouseEvent e) {
+                //         paymentType = "cash";
+                //     }
+                // });
+
+                // // add action listener to the "Finish Order" button to add the item to the order and close the popup
+                // finishOrder.addActionListener(new ActionListener() {
+                //     @Override
+                //     public void actionPerformed(ActionEvent e) {
+                //         if (paymentType.equals("")) {
+                //             JOptionPane.showMessageDialog(null, "Please select a payment method");
+                //         } 
+                //         else {
+                //             // insert order into database and display message based on success
+                //             model.insert_order(subtotal, orderItems, paymentType);
+                //             JOptionPane.showMessageDialog(null, "Order submitted");
+                //             // dispose of the cashier screen
+                //             cashierScreen.getFrame().dispose();
+                //             po.hide();
+                //             // switch back to login screen
+                //             switchToLoginScreen();
+                //         }
+                //     }
+                // });
+                
+                // popUpPanel.add(Box.createVerticalGlue());
+                // popUpPanel.add(popUpLabel);
+                // popUpPanel.add(Box.createVerticalGlue());
+                // //popUpPanel.add(creditPanel);
+                // popUpPanel.add(creditButton);
+                // popUpPanel.add(Box.createVerticalStrut(30));
+                // //popUpPanel.add(cashPanel);
+                // popUpPanel.add(cashButton);
+                // popUpPanel.add(Box.createVerticalGlue());
+                // popUpPanel.add(finishOrder);
+
+                popUpPanel.add(Box.createVerticalGlue());
+                popUpPanel.add(popUpLabel);
+                popUpPanel.add(Box.createVerticalGlue());
+                popUpPanel.add(cardPanel);
+                popUpPanel.add(Box.createVerticalStrut(30));
+                popUpPanel.add(finishOrder);
+                popUpPanel.add(Box.createVerticalGlue());
+
+                // set the popup panel to the center of the screen
+                Point frameLocation = cashierScreen.getFrame().getLocation();
+                int x = (int) (frameLocation.getX() + (frameSize.getWidth() - popUpPanel.getPreferredSize().getWidth()) / 2);
+                int y = (int) (frameLocation.getY() + (frameSize.getHeight() - popUpPanel.getPreferredSize().getHeight()) / 2);
+
+                // creates and shows the popup
+                po = pf.getPopup(cashierScreen.getFrame(), popUpPanel, x, y);
+                po.show();
             }
         });
     }
