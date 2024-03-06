@@ -49,9 +49,10 @@ public class LoginScreen extends JFrame implements ActionListener {
         frame = new JFrame("Rev's American Grill: Login");
         
         // the next line ensures that the X button in the top right will not close the application
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         // removing window decorations (title and buttons)
-        frame.setUndecorated(true);
+        //frame.setUndecorated(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // get the size of the screen so that we can fill it with our window completely
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
