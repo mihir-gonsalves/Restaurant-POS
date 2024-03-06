@@ -95,7 +95,7 @@ Java (JDBC and Java Swing), PostgreSQL, Maven, Python, AWS, Git/Github
 ### Database Schema:
 ![Database Schema](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/schema.png?raw=true)
 
-### Icons Used for Menu Screen navigation bar:
+### Icons Used for Cashier Screen navigation bar:
 - [Appetizers](https://www.flaticon.com/free-icons/appetizer) created by Iconiic
 - [Beverages](https://www.flaticon.com/free-icons/beverage) created by ultimatearm
 - [Burgers](https://www.flaticon.com/free-icons/burger) created by Freepik

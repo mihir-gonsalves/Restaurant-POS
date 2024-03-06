@@ -237,14 +237,22 @@ public class Controller implements ActionListener{
                     // System.out.println("Adding item: " + item_name); // testing
 
                     // create a new button with an image
-                    JButton itemButton = new JButton(new ImageIcon(item_image_path));
-                    itemPanel.add(itemButton, BorderLayout.CENTER);
+                    JLabel itemImage = new JLabel(new ImageIcon(item_image_path));
+                    itemPanel.add(itemImage, BorderLayout.CENTER);
+
+                    // create a new label with the item name to go below the center of the image button
+                    JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
+                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+                    itemPanel.add(itemName, BorderLayout.SOUTH);
+
+                    // add the panel to the itemsPanel
+                    itemsPanel.add(itemPanel);
 
                     // add action listener to the image button to display a popup with the item name and an "Add to Order" button
 
-                    itemButton.addActionListener(new ActionListener() {
+                    itemPanel.addMouseListener(new MouseAdapter() {
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void mouseClicked(MouseEvent e) {
                             JPanel popUpPanel = new JPanel();
 
                             // Get the screen size
@@ -315,13 +323,7 @@ public class Controller implements ActionListener{
                         }
                     });
 
-                    // create a new label with the item name to go below the center of the image button
-                    JLabel itemName = new JLabel(jlabel_text, SwingConstants.CENTER);
-                    itemName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-                    itemPanel.add(itemName, BorderLayout.SOUTH);
-
-                    // add the panel to the itemsPanel
-                    itemsPanel.add(itemPanel);
+                    
                 }
             }
         } catch (Exception e) {
@@ -2061,7 +2063,7 @@ public class Controller implements ActionListener{
                                     String name = nameField.getText();
                                     Integer currentStock = Integer.parseInt(currentStockField.getText());
                                     Double unitPrice = Double.parseDouble(unitPriceField.getText());
-                                    model.updateIngredient(id, name, currentStock, unitPrice, (previousStock != currentStock), phoneNumber);
+                                    model.updateIngredient(id, name, currentStock, unitPrice, (previousStock != currentStockField.getText()), phoneNumber);
                                     updateIngredientPopupDialog.dispose();
                                     viewTable(table, tableType);
                                 }
