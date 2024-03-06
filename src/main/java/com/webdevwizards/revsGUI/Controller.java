@@ -464,9 +464,11 @@ public class Controller implements ActionListener{
         // create a new button to complete the order
         cashierScreen.setOrderCompleteButton(null);
         JButton returnButton = new JButton("Return to Login");
+        returnButton.setFont(font24);
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                clearOrder();
                 cashierScreen.getFrame().dispose();
                 switchToLoginScreen();
             }
@@ -570,6 +572,10 @@ public class Controller implements ActionListener{
                 finishOrder.setFont(new Font("Arial", Font.PLAIN, 12));
                 finishOrder.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+                JButton returnButton = new JButton("Continue Ordering");
+                returnButton.setFont(new Font("Arial", Font.PLAIN, 12));
+                returnButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
                 // String paymentType = "credit"; // TODO
 
                 creditButton.addActionListener(new ActionListener() {
@@ -599,6 +605,8 @@ public class Controller implements ActionListener{
                                 orderItems = new int[15][2];
                                 // dispose of the cashier screen
                                 po.hide();
+                                clearOrder();
+                                cashierScreen.getFrame().dispose();
                                 switchToLoginScreen();  
                                 
                             }
@@ -610,12 +618,21 @@ public class Controller implements ActionListener{
                     }
                 });
 
+                returnButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        po.hide();
+                    }
+                });
+
                 popUpPanel.add(Box.createVerticalGlue());
                 popUpPanel.add(popUpLabel);
                 popUpPanel.add(Box.createVerticalGlue());
                 popUpPanel.add(cardPanel);
                 popUpPanel.add(Box.createVerticalStrut(30));
                 popUpPanel.add(finishOrder);
+                popUpPanel.add(Box.createVerticalGlue());
+                popUpPanel.add(returnButton);
                 popUpPanel.add(Box.createVerticalGlue());
 
                 // set the popup panel to the center of the screen
@@ -810,6 +827,14 @@ public class Controller implements ActionListener{
                 viewTable(table, 4);
             }
         });  
+    }
+
+    public void clearOrder(){
+        for (int i = 0; i < orderItems.length; i++) {
+            orderItems[i][0] = 0;
+            orderItems[i][1] = 0;
+        }
+        populateCashierOrderPanel();
     }
 
     // populates the manager screen with the track panel
