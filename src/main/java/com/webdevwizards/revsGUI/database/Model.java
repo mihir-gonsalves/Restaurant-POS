@@ -1,6 +1,87 @@
 
 
+<<<<<<< Updated upstream
     package com.webdevwizards.revsGUI.database;
+=======
+package com.webdevwizards.revsGUI.database;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import javax.swing.JOptionPane;
+import javax.naming.spi.DirStateFactory.Result;
+import javax.swing.JFrame;
+
+
+
+/**
+ * Model class for the database
+ * @author Caden, Carson, Jesung, Kevin
+ */
+public class Model {
+    public static Connection conn = null;
+    private static boolean initialized = false;
+
+    /**
+     * The phone number of the user
+     */
+    public String phoneNumber;
+    /**
+     * Constructor for the Model class : just calls initialize
+     */
+    public Model() {
+        this.initialize();
+    }
+
+    /**
+     * Sets up config file and initializes the database connection
+     */
+    public void initialize() {
+
+        if (initialized) return; // Prevent re-initialization
+
+        System.out.println("initializing database connection");
+
+        Properties prop = new Properties();
+        String rootPath = System.getProperty("user.dir");
+        try (InputStream input = new FileInputStream("./config.properties")) {
+            prop.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to load main configuration.");
+            return;
+        }
+
+        try (InputStream localInput = new FileInputStream("./config-local.properties")) {
+            prop.load(localInput);
+        } catch (IOException ex) {
+            // Local config not found, using default values
+        }
+
+        String database_name = prop.getProperty("db.name");
+        String database_user = prop.getProperty("db.user");
+        String database_password = prop.getProperty("db.password");
+        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
+
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(database_url, database_user, database_password);
+            initialized = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to open database connection.");
+            System.exit(1);
+        }
+    }
+>>>>>>> Stashed changes
 
     import java.io.FileInputStream;
     import java.io.IOException;
@@ -521,5 +602,406 @@
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    
+    /** 
+     * retrieves the information of an item based on table, idColumnName, id, and type
+     * @param table the table to retrieve from
+     * @param idColumnName the name of the id column of the item
+     * @param id the row of the item
+     * @param column the type of information to retrieve
+     * @return String the information of the specfied item at the specified column in the specified table
+     */
+    public String getObject(String table, String idColumnName, int id, String column) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("select " + column + " from " + table + " where " + idColumnName + " = ?");
+            statement.setInt(1, id);
+            
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString(1);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+   /**
+     * updates the manager order given all fields
+     * @param id the id of the order
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param total the total of the order
+     * @param phoneNumber the phone number of the user making the order
+     */
+    public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update manager_order " +
+                    "set m_order_date = ?, " +
+                    "m_order_time = ?, " +
+                    "m_order_total = ?, " +
+                    "phonenumber = ? " +
+                    "where m_order_id = ?");
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.setInt(5, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    /**
+     * updates the customer order given all fields
+     * @param id the id of the order
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param subtotal the subtotal of the order
+     * @param tax the tax of the order
+     * @param total the total of the order
+     * @param paymentType the payment type of the order
+     */
+    public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update customer_order " +
+                    "set c_order_date = ?, " +
+                    "c_order_time = ?, " +
+                    "c_order_subtotal = ?, " +
+                    "c_order_tax = ?, " +
+                    "c_order_total = ?, " +
+                    "c_order_payment_type = ? " +
+                    "where c_order_id = ?");
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setString(3, subtotal);
+            statement.setString(4, tax);
+            statement.setString(5, total);
+            statement.setString(6, paymentType);
+            statement.setInt(7, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    /**
+     * updates a user given all fields
+     * @param id the id of the user
+     * @param phoneNumber the phone number of the user
+     * @param name the name of the user
+     * @param isManager boolean true if the user is a manager, false if they are not
+     */
+    public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update users " +
+                    "set phonenumber = ?, " +
+                    "name = ?, " +
+                    "ismanager = ? " +
+                    "where user_id = ?");
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    /**
+     * updates item given all fields
+     * @param id the id of the item
+     * @param name the name of the item
+     * @param price the price of the item
+     * @param category the category of the item
+     */
+    public void updateItem(int id, String name, double price, String category) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update menu_items " +
+                    "set item_name = ?, " +
+                    "item_price = ?, " +
+                    "category = ? " +
+                    "where item_id = ?");
+            statement.setString(1, name);
+            statement.setDouble(2, price);
+            statement.setString(3, category);
+            statement.setInt(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    /**
+     * updates ingredient given all fields
+     * @param id the id of the ingredient
+     * @param name the name of the ingredient
+     * @param stock the stock of the ingredient
+     * @param price the price of the ingredient
+     * @param stockChanged boolean true if the stock of the ingredient has changed, false if it has not
+     * @param phoneNumber the phone number of the user making the order
+     */
+    public void updateIngredient(int id, String name, int stock, double price, boolean stockChanged, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("update ingredients " +
+                    "set ingredient_name = ?, " +
+                    "ingredient_current_stock = ?, " +
+                    "ingredient_unit_price = ? " +
+                    "where ingredient_id = ?");
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
+            statement.setInt(4, id);
+            statement.execute();
+            if(stockChanged) { //Only if we updated the stock do we need to insert into manager_order and junction table
+                Double order_total = stock * price;
+                PreparedStatement statement3 = conn.prepareStatement("INSERT INTO manager_order (m_order_date, m_order_time, m_order_total, phonenumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                statement3.setDate(1, new Date(System.currentTimeMillis()));
+                statement3.setTime(2, new Time(System.currentTimeMillis()));
+                statement3.setDouble(3, order_total);
+                statement3.setString(4, phoneNumber);
+
+                statement3.execute();
+                ResultSet rs3 = statement3.getGeneratedKeys();
+                if (rs3.next()) {
+                    PreparedStatement statement4 = conn.prepareStatement("INSERT INTO m_order_to_ingredient_list (m_order_id, ingredient_id, ingredient_quantity) VALUES (?, ?, ?)");
+                    statement4.setInt(1, rs3.getInt(1));
+                    statement4.setInt(2, id);
+                    statement4.setInt(3, stock);
+                    statement4.execute();
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+    
+    /** 
+     * deletes user based on id
+     * @param id the id of the user
+     */
+    public void deleteUser(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from users where user_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return;
+        }
+    }
+
+    
+    /** 
+     * Deletes customer order based on id
+     * @param id the id of the order
+     */
+    public void deleteCustomerOrder(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from customer_order where c_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Deletes manager order based on id
+     * @param id the id of the order
+     */
+    public void deleteManagerOrder(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from manager_order where m_order_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Deletes item based on id
+     * @param id the id of the item
+     */
+    public void deleteItem(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from menu_items where item_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Deletes ingredient based on id
+     * @param id the id of the ingredient
+     */
+    public void deleteIngredient(int id) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("delete from ingredients where ingredient_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /**
+     * creates customer order, takes in all attributes 
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param subtotal the subtotal of the order
+     * @param tax the tax of the order
+     * @param total the total of the order
+     * @param paymentType the payment type of the order
+     */
+    public void createCustomerOrder(String date, String time, String subtotal, String tax, String total, String paymentType) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into customer_order" +
+                "(c_order_date, c_order_time, c_order_subtotal, c_order_tax, c_order_total, c_order_payment_type)" +
+                "values (?, ?, ?, ?, ?, ?)"
+                );
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setString(3, subtotal);
+            statement.setString(4, tax);
+            statement.setString(5, total);
+            statement.setString(6, paymentType);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Creates manager order, takes in all attributes
+     * @param date the date of the order
+     * @param time the time of the order
+     * @param total the total of the order
+     * @param phoneNumber the phone number of the user making the order
+     */
+    public void createManagerOrder(String date, String time, Double total, String phoneNumber) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into manager_order" +
+                "(m_order_date, m_order_time, m_order_total, phonenumber)" +
+                "values (?, ?, ?, ?)"
+                );
+            statement.setString(1, date);
+            statement.setString(2, time);
+            statement.setDouble(3, total);
+            statement.setString(4, phoneNumber);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Creates new user, takes in all attributes
+     * @param phoneNumber the phone number of the user
+     * @param name the name of the user
+     * @param isManager boolean true if the user is a manager, false if they are not
+     */
+    public void createUser(String phoneNumber, String name, boolean isManager) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into users" +
+                "(phonenumber, name, ismanager)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, phoneNumber);
+            statement.setString(2, name);
+            statement.setBoolean(3, isManager);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    
+    /** 
+     * Create new ingredients, takes in all attributes
+     * @param name the name of the ingredient
+     * @param stock the stock of the ingredient
+     * @param price the price of the ingredient
+     */
+    public void createIngredient(String name, int stock, double price) {
+        try {
+            PreparedStatement statement = conn.prepareStatement("insert into ingredients" +
+                "(ingredient_name, ingredient_current_stock, ingredient_unit_price)" +
+                "values (?, ?, ?)"
+                );
+            statement.setString(1, name);
+            statement.setInt(2, stock);
+            statement.setDouble(3, price);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Finds list of pair that sells the best
+     */
+    public ResultSet findPair(String startDate,String endDate){
+        try{
+            String text = "";
+            try{
+                text = new String(Files.readAllBytes(Paths.get("test-query/find_Pairs.txt")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        
+            PreparedStatement statement = conn.prepareStatement(text);
+            statement.setString(1, startDate);statement.setString(2, endDate);
+            statement.setString(3, startDate);statement.setString(4, endDate);
+            ResultSet rs = statement.executeQuery();
+            return rs;
+        }
+
+
+        catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
+            return null;
+        }
+    }
+
+>>>>>>> Stashed changes
 }
 

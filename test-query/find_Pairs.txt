@@ -1,0 +1,25 @@
+SELECT
+    m1.item_name AS item1,
+    m2.item_name AS item2,
+    COUNT(*) AS frequency
+FROM
+    c_order_to_item_list  t1
+JOIN
+    c_order_to_item_list  t2 ON t1.c_order_id = t2.c_order_id
+JOIN
+    customer_order o1 ON t1.c_order_id = o1.c_order_id
+JOIN
+    customer_order o2 ON t2.c_order_id = o2.c_order_id
+JOIN 
+    menu_items m1 ON t1.item_id = m1.item_id
+JOIN
+    menu_items m2 ON t2.item_id = m2.item_id
+WHERE
+    t1.item_id < t2.item_id 
+    AND o1.c_order_date BETWEEN date(?) AND date(?)
+    AND o2.c_order_date BETWEEN date(?) AND date(?)
+GROUP BY
+    m1.item_id,
+    m2.item_id
+ORDER BY
+    frequency DESC;
