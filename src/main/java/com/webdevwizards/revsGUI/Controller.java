@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -784,8 +785,6 @@ public class Controller implements ActionListener{
         JLabel timeEnd = new JLabel("End Date yyyy-mm-dd:");
         JTextField timeEnd2 = new JTextField(10);
 
-        JLabel timeStamp = new JLabel("Time Stamp yyyy-mm-dd:");
-        JTextField timeStamp2 = new JTextField(10);
 
         //inputPanel.add(tableLabel);
         inputPanel.add(comboBox);
@@ -796,10 +795,8 @@ public class Controller implements ActionListener{
         inputPanel.add(timeEnd);
         inputPanel.add(timeEnd2);
 
-        inputPanel.add(timeStamp);
-        inputPanel.add(timeStamp2);
-        timeStart2.setText("2024-01-15");
-        timeEnd2.setText("2024-06-15");
+        timeStart2.setText("2022-02-01");//our table's start date it begins from 2022 feb first
+        timeEnd2.setText((new Date(System.currentTimeMillis())).toString());//current time
 
 
         
