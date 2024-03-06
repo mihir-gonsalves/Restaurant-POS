@@ -323,7 +323,6 @@ public class Model {
      * Updates the current number of ingredients left in stocafter a customer order is completed
      * @param ingredient_id the id of the ingredient
      * @param ingredient_quantity the quantity of the ingredient
-     * @param connection the connection to the database
      * @throws SQLException
      */
     public void updateIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
@@ -378,14 +377,20 @@ public class Model {
      * @param category the category of the item
      * @return boolean
      */
-    public static boolean addNewItem(String itemName, Double itemPrice, String category){
+    public static boolean addNewItem(String itemName, Double itemPrice, String category, String startDate, String endDate, boolean flagDate){
         try{
-            PreparedStatement statement = conn.prepareStatement("insert into menu_items (item_name, item_price, category) values (?, ?, ?)");
-            statement.setString(1,itemName);
-            statement.setDouble(2,itemPrice);
-            statement.setString(3,category);
+            PreparedStatement statement;
+            if(flagDate){ //If a date was provided
+                statement = conn.prepareStatement("insert into menu_items (item_name, item_price, category, date_range) values (?, ?, ?, ?::daterange)");
+                String date_range = "[" + startDate + ", " + endDate + "]";
+                statement.setString(4, date_range);
+            }else{
+                statement = conn.prepareStatement("insert into menu_items (item_name, item_price, category) values (?, ?, ?)");
+            }
+            statement.setString(1, itemName);
+            statement.setDouble(2, itemPrice);
+            statement.setString(3, category);
             statement.execute();
-            statement.close();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -979,18 +984,32 @@ public class Model {
      * @param price the price of the item
      * @param category the category of the item
      */
-    public void updateItem(int id, String name, double price, String category) {
+    public void updateItem(int id, String name, double price, String category, String startDate, String endDate, boolean flagDate) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update menu_items " +
-                    "set item_name = ?, " +
-                    "item_price = ?, " +
-                    "category = ? " +
-                    "where item_id = ?");
+            PreparedStatement statement;
+            if(flagDate){
+                String date_range = "[" + startDate + ", " + endDate + "]";
+                statement = conn.prepareStatement("update menu_items " +
+                        "set item_name = ?, " +
+                        "item_price = ?, " +
+                        "category = ?, " +
+                        "date_range = (?::daterange) " +
+                        "where item_id = ?");
+                statement.setString(4, date_range);
+                statement.setInt(5, id);
+            } else{
+                statement = conn.prepareStatement("update menu_items " +
+                        "set item_name = ?, " +
+                        "item_price = ?, " +
+                        "category = ? " +
+                        "where item_id = ?");
+                statement.setInt(4, id);
+            }
             statement.setString(1, name);
             statement.setDouble(2, price);
             statement.setString(3, category);
-            statement.setInt(4, id);
             statement.execute();
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error executing SQL query: " + e.getMessage());
