@@ -641,7 +641,7 @@ public class Controller implements ActionListener{
                                 
                             }
                             else{
-                                JOptionPane.showMessageDialog(null, "Order not submitted");
+                                JOptionPane.showMessageDialog(null, "Sorry, we are out of ingredients for this order.");
                             
                             }
                         }
