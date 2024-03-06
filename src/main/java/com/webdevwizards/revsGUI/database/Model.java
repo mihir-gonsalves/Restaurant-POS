@@ -861,8 +861,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+   /**
      * updates the manager order given all fields
      * @param id the id of the order
      * @param date the date of the order
@@ -872,12 +871,12 @@ public class Model {
      */
     public void updateManagerOrder(int id, String date, String time, Double total, String phoneNumber) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update manager_order" +
-                "set m_order_date = ?" +
-                "set m_order_time = ?" +
-                "set m_order_total = ?" +
-                "set phonenumber = ?" +
-                "where m_order_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update manager_order " +
+                    "set m_order_date = ?, " +
+                    "m_order_time = ?, " +
+                    "m_order_total = ?, " +
+                    "phonenumber = ? " +
+                    "where m_order_id = ?");
             statement.setString(1, date);
             statement.setString(2, time);
             statement.setDouble(3, total);
@@ -891,8 +890,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates the customer order given all fields
      * @param id the id of the order
      * @param date the date of the order
@@ -904,14 +902,14 @@ public class Model {
      */
     public void updateCustomerOrder(int id, String date, String time, String subtotal, String tax, String total, String paymentType) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update customer_order" +
-                "set c_order_date = ?" +
-                "set c_order_time = ?" +
-                "set c_order_subtotal = ?" +
-                "set c_order_tax = ?" +
-                "set c_order_total = ?" +
-                "set c_order_payment_type = ?" +
-                "where c_order_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update customer_order " +
+                    "set c_order_date = ?, " +
+                    "c_order_time = ?, " +
+                    "c_order_subtotal = ?, " +
+                    "c_order_tax = ?, " +
+                    "c_order_total = ?, " +
+                    "c_order_payment_type = ? " +
+                    "where c_order_id = ?");
             statement.setString(1, date);
             statement.setString(2, time);
             statement.setString(3, subtotal);
@@ -927,8 +925,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates a user given all fields
      * @param id the id of the user
      * @param phoneNumber the phone number of the user
@@ -937,11 +934,11 @@ public class Model {
      */
     public void updateUser(int id, String phoneNumber, String name, boolean isManager) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update users" +
-                "set phonenumber = ?" +
-                "set name = ?" +
-                "set ismanager = ?" +
-                "where user_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update users " +
+                    "set phonenumber = ?, " +
+                    "name = ?, " +
+                    "ismanager = ? " +
+                    "where user_id = ?");
             statement.setString(1, phoneNumber);
             statement.setString(2, name);
             statement.setBoolean(3, isManager);
@@ -954,8 +951,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates item given all fields
      * @param id the id of the item
      * @param name the name of the item
@@ -964,11 +960,11 @@ public class Model {
      */
     public void updateItem(int id, String name, double price, String category) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update menu_items" +
-                "set item_name = ?" +
-                "set item_price = ?" +
-                "set category = ?" +
-                "where item_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update menu_items " +
+                    "set item_name = ?, " +
+                    "item_price = ?, " +
+                    "category = ? " +
+                    "where item_id = ?");
             statement.setString(1, name);
             statement.setDouble(2, price);
             statement.setString(3, category);
@@ -981,8 +977,7 @@ public class Model {
         }
     }
 
-    
-    /** 
+    /**
      * updates ingredient given all fields
      * @param id the id of the ingredient
      * @param name the name of the ingredient
@@ -991,11 +986,11 @@ public class Model {
      */
     public void updateIngredient(int id, String name, int stock, double price) {
         try {
-            PreparedStatement statement = conn.prepareStatement("update ingredients" +
-                "set ingredient_name = ?" +
-                "set ingredient_current_stock = ?" +
-                "set ingredient_unit_price = ?" +
-                "where ingredient_id = ?");
+            PreparedStatement statement = conn.prepareStatement("update ingredients " +
+                    "set ingredient_name = ?, " +
+                    "ingredient_current_stock = ?, " +
+                    "ingredient_unit_price = ? " +
+                    "where ingredient_id = ?");
             statement.setString(1, name);
             statement.setInt(2, stock);
             statement.setDouble(3, price);
@@ -1007,7 +1002,6 @@ public class Model {
             return;
         }
     }
-
     
     /** 
      * deletes user based on id
