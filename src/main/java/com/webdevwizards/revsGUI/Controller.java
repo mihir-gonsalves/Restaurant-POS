@@ -2148,7 +2148,7 @@ public class Controller implements ActionListener{
                             // window for associated ingredients with a new menu item
                             JFrame attachIngredientsFrame = new JFrame();
                             attachIngredientsFrame.setLayout(new BoxLayout(attachIngredientsFrame.getContentPane(), BoxLayout.PAGE_AXIS));
-                            attachIngredientsFrame.setSize(preferredWidth / 3,preferredHeight / 3);
+                            attachIngredientsFrame.setSize(preferredWidth / 2,preferredHeight / 3);
                             attachIngredientsFrame.setLocationRelativeTo(null);
                             attachIngredientsFrame.setTitle("Inventory Association");
 
