@@ -307,7 +307,7 @@ public class Model {
                 List<Integer> mergedListquant = new ArrayList<>(mergedMap.values());
                 for (int j = 0; j < mergedListid.size(); j++) {
                     if(checkSelectIngredient(mergedListid.get(j), mergedListquant.get(j), connection) == false){
-                        preparedStatement = connection.prepareStatement("SELECT ingredient_name FROM ingredients WHERE ingredient_id = ?");
+                        connection.prepareStatement("SELECT ingredient_name FROM ingredients WHERE ingredient_id = ?");
                         throw new SQLException("Not enough stock for ingredients" + mergedListid.get(j));
                     }
                 }
