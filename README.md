@@ -15,7 +15,7 @@ Team Number: 01
 <br>
 
 ### Configuration:
-As to not expose our own database password, you should create a copy of the config.properties file and then fill in the
+As to not expose our own database password, you should create a copy of the "config.properties" file called "config-local.properties" and then fill in the
 fields with the proper database information. 
 
 #### config.properties example:
@@ -43,6 +43,12 @@ Then, in the same directory, run the application with the following command:
 java -jar target/RevsGUI-0.0.1-jar-with-dependencies.jar
 ```
 
+or on Windows
+
+```bash
+java -jar .\target\RevsGUI-0.0.1-jar-with-dependencies.jar
+```
+
 To recompile the project run the following command:
 
 ```bash
@@ -56,19 +62,6 @@ For example (using 4 cores):
 ```bash
 mvn clean package -T 4
 ```
-
-<br>
-
-## TODOs
-
-### Optimizations:
-- Including specific imports as opposed to * (all) in a library
-- Refactoring code by removing redundancies
-- Add comments to explain why a code block was implemented
-- Rewriting files to make the codebase succinct by including all shared functions within one file
-
-### Bug Fixes:
-- When relogging into a menu (cashier back to cashier or manager back to manager) the program can crash
 
 <br>
 

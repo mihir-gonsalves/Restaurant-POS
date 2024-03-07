@@ -4,15 +4,30 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+/** CashierScreen class creates some of the components for the cashier screen. */
 public class CashierScreen extends JFrame {
+  /** main frame. */
   JFrame frame;
+
+  /** panel containing menu items. */
   JPanel itemsPanel;
+
+  /** panel containing navbar. */
   JPanel navPanel;
+
+  /** panel containing items currently in order and label. */
   JPanel orderPanel;
+
+  /** panel containing the items in the order. */
   JPanel orderFieldsPanel;
+
+  /** bottom panel for cashier name, subtotal, and order complete button. */
   JPanel bottomPanel;
+
+  /** button to complete the order. */
   JButton orderCompleteButton;
 
+  /** Constructor for the CashierScreen class that creates the frame and panels for the cashier. */
   public CashierScreen() {
     frame = new JFrame("Rev's GUI: Cashier Screen");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,7 +84,7 @@ public class CashierScreen extends JFrame {
    */
 
   /**
-   * returns the frame
+   * returns the frame.
    *
    * @return JFrame frame
    */
@@ -78,7 +93,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the items panel
+   * returns the items panel.
    *
    * @return JPanel items panel
    */
@@ -87,7 +102,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the navigation panel
+   * returns the navigation panel.
    *
    * @return JPanel navigation panel
    */
@@ -96,7 +111,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the order panel
+   * returns the order panel.
    *
    * @return JPanel order panel
    */
@@ -105,7 +120,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the bottom panel and creates a new one if it doesnt exist
+   * returns the bottom panel and creates a new one if it doesnt exist.
    *
    * @return JPanel bottom panel
    */
@@ -119,7 +134,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the order fields panel and creates a new one if it doesnt exist
+   * returns the order fields panel and creates a new one if it doesnt exist.
    *
    * @return JPanel order fields panel
    */
@@ -132,7 +147,7 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * returns the order complete button and creates a new one if it doesnt exist
+   * returns the order complete button and creates a new one if it doesnt exist.
    *
    * @return JButton order complete button
    */
@@ -144,9 +159,9 @@ public class CashierScreen extends JFrame {
   }
 
   /**
-   * sets the order complete button
+   * sets the order complete button.
    *
-   * @param JButton order complete button
+   * @param orderCompleteButton JButton order complete button
    */
   public void setOrderCompleteButton(JButton orderCompleteButton) {
     this.orderCompleteButton = orderCompleteButton;

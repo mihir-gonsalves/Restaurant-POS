@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.webdevwizards.revsGUI.database","l":"Model"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.webdevwizards.revsGUI.screens","l":"CashierScreen"},{"p":"com.webdevwizards.revsGUI","l":"Controller"},{"p":"com.webdevwizards.revsGUI.screens","l":"LoginScreen"},{"p":"com.webdevwizards.revsGUI.screens","l":"ManagerScreen"},{"p":"com.webdevwizards.revsGUI.database","l":"Model"}];updateSearchResults();

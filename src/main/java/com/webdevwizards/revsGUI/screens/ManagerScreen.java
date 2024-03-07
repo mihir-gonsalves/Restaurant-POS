@@ -1,20 +1,39 @@
 package com.webdevwizards.revsGUI.screens;
 
-import com.webdevwizards.revsGUI.Controller;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+/**
+ * ManagerScreen class creates the components for the manager screen.
+ *
+ * @author Amol, Caden, Mihir
+ */
 public class ManagerScreen extends JFrame implements ActionListener {
+  /** main frame. */
   JFrame frame;
-  JPanel navPanel;
-  JPanel southPanel;
-  JPanel mainPanel;
-  JLabel managerLabel;
-  JButton btnClose;
-  private LoginScreen loginScreen;
-  private Controller controller;
 
+  /** panel containing navbar. */
+  JPanel navPanel;
+
+  /** panel containing manager name and close button. */
+  JPanel southPanel;
+
+  /** main panel. */
+  JPanel mainPanel;
+
+  /** label for manager name. */
+  JLabel managerLabel;
+
+  /** close button. */
+  JButton btnClose;
+
+  /** login screen. */
+  // private LoginScreen loginScreen;
+  // /** controller. */
+  // private Controller controller;
+
+  /** Constructor for the ManagerScreen class that creates the frame and panels for the manager. */
   public ManagerScreen() {
     frame = new JFrame("Rev's GUI: Manager Screen");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,7 +68,7 @@ public class ManagerScreen extends JFrame implements ActionListener {
   }
 
   /**
-   * closes the frame when the close button is clicked
+   * closes the frame when the close button is clicked.
    *
    * @param e ActionEvent
    */
@@ -65,7 +84,7 @@ public class ManagerScreen extends JFrame implements ActionListener {
    */
 
   /**
-   * returns the frame
+   * returns the frame.
    *
    * @return JFrame frame
    */
@@ -74,7 +93,7 @@ public class ManagerScreen extends JFrame implements ActionListener {
   }
 
   /**
-   * returns the nav panel and creates a new one if it doesnt exist
+   * returns the nav panel and creates a new one if it doesnt exist.
    *
    * @return JPanel navigation panel
    */
@@ -87,7 +106,7 @@ public class ManagerScreen extends JFrame implements ActionListener {
   }
 
   /**
-   * returns the main panel
+   * returns the main panel.
    *
    * @return JPanel main panel
    */
@@ -105,7 +124,7 @@ public class ManagerScreen extends JFrame implements ActionListener {
   }
 
   /**
-   * returns the manager label
+   * returns the manager label.
    *
    * @return JLabel manager label
    */

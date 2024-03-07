@@ -1,6 +1,6 @@
 package com.webdevwizards.revsGUI;
 
-import com.formdev.flatlaf.FlatLightLaf;
+// import com.formdev.flatlaf.FlatLightLaf;
 import com.webdevwizards.revsGUI.database.Model;
 import com.webdevwizards.revsGUI.screens.CashierScreen;
 import com.webdevwizards.revsGUI.screens.LoginScreen;
@@ -16,9 +16,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Controller class for the REVS GUI
+ * Controller class for the Rev's GUI This class is used to control the flow of the program and handle all user input.
  *
- * @author Caden, Mihir, Amol
+ * @author Amol, Caden, Carson, Kevin, Jesung, and Mihir
  */
 public class Controller implements ActionListener {
   private Model model;
@@ -35,13 +35,16 @@ public class Controller implements ActionListener {
   private boolean managerfirst = true;
   private boolean cashierfirst = true;
 
+  /** Constructor for the Controller class that creates a new instance of the Controller class. */
+  public Controller() {}
+
   /**
-   * This method is used to create a new instance of the Controller class
+   * This method is used to create a new instance of the Controller class.
    *
    * @param args is the command line arguments
    */
   public static void main(String[] args) {
-    FlatLightLaf.setup();
+    // FlatLightLaf.setup();
     Controller controller = new Controller();
     controller.initialize();
     controller.switchToLoginScreen();
@@ -49,7 +52,7 @@ public class Controller implements ActionListener {
     controller.switchFromLoginScreen();
   }
 
-  /** This method is used to initialize the model and all screens on program start */
+  /** This method is used to initialize the model and all screens on program start. */
   public void initialize() {
     model = new Model();
 
@@ -86,8 +89,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * get preferred size of the frame from fullscreen button then set preferred values and the size
-   * of the frames so that all frames have a consistent size
+   * get preferred size of the frame from fullscreen button then set preferred values and the size of the frames so that all frames have a consistent size.
    */
   public void getPreferredSize() {
     JToggleButton fullscreenButton = loginScreen.getFullscreenButton();
@@ -120,8 +122,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * update font size of all components of a panel recursively, not used constantly is mainly used
-   * for testing
+   * update font size of all components of a panel recursively, not used constantly is mainly used for testing.
    *
    * @param c is the component that needs to be updated
    * @param f is the frame that the component is in
@@ -151,12 +152,12 @@ public class Controller implements ActionListener {
     }
   }
 
-  /** This is used to dispose the manager screen, this was created for testing purposes */
+  /** This is used to dispose the manager screen, this was created for testing purposes. */
   public void disposeManager() {
     managerScreen.getFrame().dispose();
   }
 
-  /** This is used to clear the current order if it is canceled */
+  /** This is used to clear the current order if it is canceled. */
   public void clearOrder() {
     for (int i = 0; i < orderItems.length; i++) {
       orderItems[i][0] = 0;
@@ -167,12 +168,12 @@ public class Controller implements ActionListener {
 
   /* ------------------------------------------------- LOGIN SCREEN METHODS --------------------------------------- */
 
-  /** sets the login screen to visible for program startup */
+  /** sets the login screen to visible for program startup. */
   public void switchToLoginScreen() {
     loginScreen.getFrame().setVisible(true);
   }
 
-  /** switch to appropriate screen (manager or cashier) based on login's phone number */
+  /** switch to appropriate screen (manager or cashier) based on login's phone number. */
   public void switchFromLoginScreen() {
     loginScreen
         .getLoginButton()
@@ -201,7 +202,7 @@ public class Controller implements ActionListener {
                     }
                     // auto update fonts
                   } else { // if the user is a cashier, switch to the cashier screen and populate
-                           // with defaults, get rid of the login screen, and completeOrder
+                    // with defaults, get rid of the login screen, and completeOrder
                     switchToCashierScreen();
                     cashierScreen.getFrame().setSize(preferredWidth, preferredHeight);
                     loginScreen.getFrame().dispose();
@@ -227,21 +228,21 @@ public class Controller implements ActionListener {
 
   /* ------------------------------------------------- CASHIER SCREEN METHODS --------------------------------------- */
 
-  /** sets the cashier screen to visible and sets isManager to false */
+  /** sets the cashier screen to visible and sets isManager to false. */
   public void switchToCashierScreen() {
     isManager = false;
     cashierScreen.getFrame().setVisible(true);
   }
 
   /**
-   * draws the menu items on the cashier screen for use
+   * draws the menu items on the cashier screen for use.
    *
    * @param category used to print correct items in the category
    */
   public void populateCashierItemPanel(String category) {
     // Get items and sort by category
     ResultSet rs =
-        model.executeQuery("SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
+        model.executeQuery("SELECT * FROM menu_items ORDER BY category;");
     JPanel itemsPanel = cashierScreen.getItemsPanel();
     Font font12 = new Font("Arial", Font.PLAIN, 12);
 
@@ -342,11 +343,11 @@ public class Controller implements ActionListener {
     itemsPanel.repaint();
   }
 
-  /** populates the cashier navbar and sets up action listeners for each category button */
+  /** populates the cashier navbar and sets up action listeners for each category button. */
   public void populateCashierNavBar() {
     ResultSet rs =
         this.model.executeQuery(
-            "SELECT * FROM menu_items ORDER BY category;"); // TODO EDIT THIS LATER
+            "SELECT * FROM menu_items ORDER BY category;"); 
     JPanel navPanel = cashierScreen.getNavPanel();
 
     // used in the while loop to keep track of the current category
@@ -408,7 +409,7 @@ public class Controller implements ActionListener {
 
   /**
    * This is used for testing, used when disposing the cashier screen when cancelling and restarting
-   * order
+   * order.
    */
   private void cleanCashierOrderPanel() {
     JPanel orderPanel = cashierScreen.getOrderPanel();
@@ -419,7 +420,7 @@ public class Controller implements ActionListener {
     }
   }
 
-  /** populate cashier order panel with items selected for order */
+  /** populate cashier order panel with items selected for order. */
   public void populateCashierOrderPanel() {
     // remove all items from the orderFieldsPanel if it exists and then from the orderPanel as well
     JPanel orderPanel = cashierScreen.getOrderPanel();
@@ -499,7 +500,7 @@ public class Controller implements ActionListener {
 
   /**
    * populate the bottom panel of the cashier screen with the cashier's name and the subtotal of the
-   * order
+   * order.
    */
   public void populateCashierBottomPanel() {
     JPanel bottomPanel = cashierScreen.getBottomPanel();
@@ -579,7 +580,7 @@ public class Controller implements ActionListener {
 
   /**
    * complete the cashier's order via orderComplete button, display subtotal, and switch to payment
-   * screen
+   * screen.
    */
   public void switchFromCashierPanel() {
     JButton orderCompleteButton = cashierScreen.getOrderCompleteButton();
@@ -728,14 +729,14 @@ public class Controller implements ActionListener {
 
   /* ------------------------------------------------- MANAGER SCREEN METHODS --------------------------------------- */
 
-  /** Activated when manager number is input to login screen */
+  /** Activated when manager number is input to login screen. */
   public void switchToManagerScreen() {
     isManager = true;
     managerScreen.getFrame().setVisible(true);
   }
 
   /**
-   * populates the manager screen with a default navbar and adds action listeners for each button
+   * populates the manager screen with a default navbar and adds action listeners for each button.
    */
   public void populateManagerNavBar() {
     String[] buttonNames = {"chart", "order", "track", "table"};
@@ -767,7 +768,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * populates the manager screen with content
+   * populates the manager screen with content.
    *
    * @param content is the content to populate the manager screen with
    */
@@ -806,7 +807,7 @@ public class Controller implements ActionListener {
     mainPanel.repaint();
   }
 
-  /** populates the manager screen with the order history */
+  /** populates the manager screen with the order history. */
   public void populateManagerOrderPanel() {
     JPanel mainPanel = managerScreen.getMainPanel();
     mainPanel.setLayout(new BorderLayout());
@@ -856,7 +857,7 @@ public class Controller implements ActionListener {
         });
   }
 
-  /** Populates the manager screen with the order panel */
+  /** Populates the manager screen with the order panel. */
   public void populateManagerTablePanel() {
     JPanel mainPanel = managerScreen.getMainPanel();
     mainPanel.setLayout(new BorderLayout());
@@ -889,7 +890,7 @@ public class Controller implements ActionListener {
 
     comboBox.addActionListener(
         e -> { // Resets boxes to white and then grays out and sets to uneditable the unneeded ones
-               // based on the option you select
+          // based on the option you select
           if (comboBox.getSelectedItem().equals("Users")) {
             usersPopUp(table);
             viewTable(table, 0);
@@ -909,7 +910,7 @@ public class Controller implements ActionListener {
         });
   }
 
-  /** populates the manager screen with the track panel */
+  /** populates the manager screen with the track panel. */
   public void populateManagerTrackPanel() {
     JPanel mainPanel = managerScreen.getMainPanel();
 
@@ -973,7 +974,7 @@ public class Controller implements ActionListener {
     mainPanel.add(fetchDataButton);
   }
 
-  /** populates the manager screen with a table of CRUD operations for each table */
+  /** populates the manager screen with a table of CRUD operations for each table. */
   public void populateManagerChartPanel() {
     JPanel mainPanel = managerScreen.getMainPanel();
     mainPanel.setLayout(new BorderLayout());
@@ -1057,7 +1058,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * This method is used to update the table with the latest data from SQL
+   * This method is used to update the table with the latest data from SQL.
    *
    * @param rs is the result set to be displayed in the table
    * @param table is the table to display the result set
@@ -1105,7 +1106,7 @@ public class Controller implements ActionListener {
   /* ------------------------------------------------- MANAGER HELPER METHODS --------------------------------------- */
 
   /**
-   * parses a date string to a format that can be used in SQL queries
+   * parses a date string to a format that can be used in SQL queries.
    *
    * @param dateString is the date for which data will be fetched
    * @return String is the date in the format yyyy-mm-dd so that queries are consistent
@@ -1118,7 +1119,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * updates the table with the latest data from SQL
+   * updates the table with the latest data from SQL.
    *
    * @param table is the table to display the result set
    * @param tableType 0 for users, 1 for manager orders, 2 for customer orders, 2 for items, 3 for
@@ -1352,7 +1353,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Creates a pop up menu for CRUD
+   * Creates a pop up menu for CRUD.
    *
    * @param table is the table to display the result set
    */
@@ -1565,7 +1566,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Fetch data from SQL and update the table
+   * Fetch data from SQL and update the table.
    *
    * @param table is the table to display information
    */
@@ -1591,7 +1592,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Creates a pop up menu for manager CRUD
+   * Creates a pop up menu for manager CRUD.
    *
    * @param table is the table to display info
    */
@@ -1823,7 +1824,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Creates a pop up menu for customer CRUD
+   * Creates a pop up menu for customer CRUD.
    *
    * @param table is the table to display info
    */
@@ -2098,7 +2099,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Creates a pop up menu for items CRUD
+   * Creates a pop up menu for items CRUD.
    *
    * @param table is the table to display info
    */
@@ -2508,7 +2509,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Creates a pop up menu for ingredients CRUD
+   * Creates a pop up menu for ingredients CRUD.
    *
    * @param table is the table to display info
    */
@@ -2730,7 +2731,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Populates a vector with the ingredient names from the result set
+   * Populates a vector with the ingredient names from the result set.
    *
    * @param rs is the result set
    * @return a vector of ingredient names
@@ -2746,7 +2747,7 @@ public class Controller implements ActionListener {
   }
 
   /**
-   * Checks if today's date is within a given date range
+   * Checks if today's date is within a given date range.
    *
    * @param dateRange is the date range to check
    * @return true if today's date is within the date range, false otherwise
@@ -2774,7 +2775,7 @@ public class Controller implements ActionListener {
   /* ------------------------------------------ MISCELLANEOUS -------------------------------------- */
 
   /**
-   * used to simply override the abstract method in the ActionListener interface
+   * used to simply override the abstract method in the ActionListener interface.
    *
    * @param e is the action event
    */
