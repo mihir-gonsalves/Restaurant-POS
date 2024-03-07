@@ -1,187 +1,202 @@
 package com.webdevwizards.revsGUI.screens;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.border.Border;
 import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.AttributeSet;
 
 public class LoginScreen extends JFrame implements ActionListener {
-    private JLabel lblScreen;
-    
-    private JLabel lblNumber;
-    private JTextField phoneNumber;
-    
-    private JFrame frame;
-    private JPanel mainPanel;
-    private JPanel inputPanel; // panel for lblNumber, phoneNumber, and btnLogin (below) 
+  private JLabel lblScreen;
 
-    private JButton btnLogin; 
-    private JToggleButton btnFullscreen;
+  private JLabel lblNumber;
+  private JTextField phoneNumber;
 
-    public LoginScreen() {
-        frame = new JFrame("Rev's American Grill: Login");
-        
-        // the next line ensures that the X button in the top right will not close the application
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        // removing window decorations (title and buttons)
-        frame.setUndecorated(true);
-        
-        // get the size of the screen so that we can fill it with our window completely
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setSize(screenSize.width, screenSize.height);
+  private JFrame frame;
+  private JPanel mainPanel;
+  private JPanel inputPanel; // panel for lblNumber, phoneNumber, and btnLogin (below)
 
-        Font font1 = new Font("Arial", Font.BOLD, 32);
-        Font font2 = new Font("Arial", Font.PLAIN, 16);
+  private JButton btnLogin;
+  private JToggleButton btnFullscreen;
 
-        // the panel will lay compenents out from top to bottom
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(180, 20, 20, 20));
+  public LoginScreen() {
+    frame = new JFrame("Rev's American Grill: Login");
 
-        // label for screen (replaces title that was removed by setUndecorated)
-        lblScreen = new JLabel("Welcome to Rev's American Grill");
-        lblScreen.setFont(font1);
-        lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // the next line ensures that the X button in the top right will not close the application
+    // frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    // removing window decorations (title and buttons)
+    // frame.setUndecorated(true);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // the panel will lay compenents out from left to right
-        inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
+    // get the size of the screen so that we can fill it with our window completely
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    frame.setSize(screenSize.width, screenSize.height);
 
-        lblNumber = new JLabel("Phone Number:");
-        lblNumber.setFont(font2);
-        lblNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+    Font font1 = new Font("Arial", Font.BOLD, 32);
+    Font font2 = new Font("Arial", Font.PLAIN, 16);
 
-        phoneNumber = new JTextField(10);
-        phoneNumber.setFont(font2);
-        phoneNumber.setMaximumSize(new Dimension(140, 30));
-        phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // the panel will lay compenents out from top to bottom
+    mainPanel = new JPanel();
+    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(180, 20, 20, 20));
 
-<<<<<<< Updated upstream
-        // code below limits the number of characters that can be input to 10 and restricts the character type to numbers
-        ((AbstractDocument) phoneNumber.getDocument()).setDocumentFilter(new DocumentFilter() {
-            final int maxCharacters = 10;
+    // label for screen (replaces title that was removed by setUndecorated)
+    lblScreen = new JLabel("Welcome to Rev's American Grill");
+    lblScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrset)
-                    throws BadLocationException {
+    // label decoration
+    Border emptyBorder = BorderFactory.createEmptyBorder(40, 40, 40, 40);
+
+    lblScreen.setFont(font1);
+    lblScreen.setForeground(new Color(246, 182, 12));
+    lblScreen.setBackground(new Color(80, 0, 0));
+    lblScreen.setOpaque(true);
+
+    Border existingBorder = lblScreen.getBorder();
+    Border totalBorder = BorderFactory.createCompoundBorder(existingBorder, emptyBorder);
+    lblScreen.setBorder(totalBorder);
+
+    // the panel will lay compenents out from left to right
+    inputPanel = new JPanel();
+    inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
+
+    lblNumber = new JLabel("Phone Number:");
+    lblNumber.setFont(font2);
+    lblNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    phoneNumber = new JTextField(10);
+    phoneNumber.setFont(font2);
+    phoneNumber.setMaximumSize(new Dimension(140, 30));
+    phoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // Added a KeyListener to the phoneNumber field
+    phoneNumber.addKeyListener(
+        new KeyAdapter() {
+          public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+              // Perform login action
+              btnLogin.doClick();
+            }
+          }
+        });
+
+    // code below limits the number of characters that can be input to 10 and restricts the
+    // character type to numbers
+    ((AbstractDocument) phoneNumber.getDocument())
+        .setDocumentFilter(
+            new DocumentFilter() {
+              final int maxCharacters = 10;
+
+              @Override
+              public void replace(
+                  FilterBypass fb, int offset, int length, String text, AttributeSet attrset)
+                  throws BadLocationException {
                 int currentLength = fb.getDocument().getLength();
                 int futureLength = currentLength - length + text.length();
 
                 if (futureLength <= maxCharacters && text.matches("\\d*")) {
-                    super.replace(fb, offset, length, text, attrset);
+                  super.replace(fb, offset, length, text, attrset);
                 } else {
-                    Toolkit.getDefaultToolkit().beep(); // BEEP BEEP BEEP BEEP BEEP on invalids lol
+                  Toolkit.getDefaultToolkit().beep(); // BEEP BEEP BEEP BEEP BEEP on invalids lol
                 }
-            }
-        });
-=======
+              }
+            });
 
-        // add delay to format phone number so that it isn't so slow and jumpy
-        // Timer timer = new Timer(500, new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         formatPhoneNumber();
-        //     }
-        // });
-        // timer.setRepeats(false);
+    btnLogin = new JButton("Login");
+    btnLogin.setFont(font2);
+    btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // // This will format the phone number as the user types it in
-        // phoneNumber.getDocument().addDocumentListener(new DocumentListener() {
-        //     @Override
-        //     public void insertUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
+    // add components to inputPanel
+    inputPanel.add(lblNumber);
+    inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    inputPanel.add(phoneNumber);
+    inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    inputPanel.add(btnLogin);
+    inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-        //     @Override
-        //     public void removeUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
+    inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        //     @Override
-        //     public void changedUpdate(DocumentEvent e) {
-        //         formatPhoneNumber();
-        //     }
-        // });
->>>>>>> Stashed changes
+    btnFullscreen = new JToggleButton("Exit Fullscreen");
+    btnFullscreen.setFont(font2);
+    btnFullscreen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        btnLogin = new JButton("Login");
-        btnLogin.setFont(font2);
-        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // add components to mainPanel with glue in between to center the components
+    mainPanel.add(lblScreen);
+    mainPanel.add(Box.createVerticalGlue());
+    mainPanel.add(inputPanel);
+    mainPanel.add(Box.createVerticalGlue());
+    mainPanel.add(btnFullscreen);
+    mainPanel.add(Box.createVerticalGlue());
 
-        // add components to inputPanel
-        inputPanel.add(lblNumber);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(phoneNumber);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        inputPanel.add(btnLogin);
-        inputPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        
-        inputPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    // add panel to frame
+    frame.add(mainPanel);
 
-        btnFullscreen = new JToggleButton("Exit Fullscreen");
-        btnFullscreen.setFont(font2);
-        btnFullscreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+    frame.setVisible(true);
+  }
 
-        // add components to mainPanel with glue in between to center the components
-        mainPanel.add(lblScreen);
-        mainPanel.add(Box.createVerticalGlue());
-        mainPanel.add(inputPanel);
-        mainPanel.add(Box.createVerticalGlue());
-        mainPanel.add(btnFullscreen);
-        mainPanel.add(Box.createVerticalGlue());
-
-        // add panel to frame
-        frame.add(mainPanel);
-
-        frame.setVisible(true);
+  /**
+   * closes screen when close button is pressed
+   *
+   * @param e ActionEvent object that disposes of the frame when the close button is pressed
+   */
+  // if button is pressed
+  public void actionPerformed(ActionEvent e) {
+    String s = e.getActionCommand();
+    if (s.equals("Close")) {
+      frame.dispose();
     }
+  }
 
-    // if button is pressed
-    public void actionPerformed(ActionEvent e)
-    {
-        String s = e.getActionCommand();
-        if (s.equals("Close")) {
-            frame.dispose();
-        }
-    }
+  /**
+   * returns the frame
+   *
+   * @return the frame
+   */
+  public JFrame getFrame() {
+    return frame;
+  }
 
-    public JFrame getFrame() {
-        return frame;
-    }
+  /**
+   * returns the login button
+   *
+   * @return the login button
+   */
+  public JButton getLoginButton() {
+    return btnLogin;
+  }
 
-    public JButton getLoginButton() {
-        return btnLogin;
-    }
+  /**
+   * returns the phone number text field
+   *
+   * @return the phone number text field
+   */
+  public String getPhoneNumber() {
+    return phoneNumber.getText();
+  }
 
-    public String getPhoneNumber() {
-        return phoneNumber.getText();
-    }
-
-<<<<<<< Updated upstream
-    public JToggleButton getFullscreenButton() {
-        return btnFullscreen;
-=======
-    // from XXXXXXXXXX to (XXX) XXX-XXXX
-    private void formatPhoneNumber() {
-        // String number = phoneNumber.getText().replaceAll("[^\\d]", "");
-        // if (number.length() > 0) {
-        //     StringBuilder formattedNumber = new StringBuilder("(");
-        //     for (int i = 0; i < Math.min(number.length(), 10); i++) {
-        //         if (i == 3) {
-        //             formattedNumber.append(") ");
-        //         } else if (i == 6) {
-        //             formattedNumber.append("-");
-        //         }
-        //         formattedNumber.append(number.charAt(i));
-        //     }
-        //     phoneNumber.setText(formattedNumber.toString());
-        // }
->>>>>>> Stashed changes
-    }
+  /**
+   * returns the fullscreen button
+   *
+   * @return the fullscreen button
+   */
+  public JToggleButton getFullscreenButton() {
+    return btnFullscreen;
+  }
 }

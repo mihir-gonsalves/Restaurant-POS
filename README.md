@@ -68,8 +68,7 @@ mvn clean package -T 4
 - Rewriting files to make the codebase succinct by including all shared functions within one file
 
 ### Bug Fixes:
-- Payment Screen is not working as intended
-- Updating inventory through the manager screen does not actually update inventory in database
+- When relogging into a menu (cashier back to cashier or manager back to manager) the program can crash
 
 <br>
 
@@ -95,7 +94,7 @@ Java (JDBC and Java Swing), PostgreSQL, Maven, Python, AWS, Git/Github
 ### Database Schema:
 ![Database Schema](https://github.com/csce-315-331-2024a/project-2-database-gui-905-1/blob/dev/images/schema.png?raw=true)
 
-### Icons Used for Menu Screen navigation bar:
+### Icons Used for Cashier Screen navigation bar:
 - [Appetizers](https://www.flaticon.com/free-icons/appetizer) created by Iconiic
 - [Beverages](https://www.flaticon.com/free-icons/beverage) created by ultimatearm
 - [Burgers](https://www.flaticon.com/free-icons/burger) created by Freepik

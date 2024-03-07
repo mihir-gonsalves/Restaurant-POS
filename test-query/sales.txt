@@ -1,0 +1,10 @@
+SELECT mi.item_name as item,
+        COUNT(*) as quantity
+FROM customer_order co
+JOIN c_order_to_item_list oti ON co.c_order_id = oti.c_order_id
+JOIN menu_Items mi ON oti.item_id = mi.item_id
+WHERE co.c_order_date BETWEEN date(?) AND date(?)
+GROUP BY item_name, oti.item_id
+ORDER BY quantity DESC;
+
+
