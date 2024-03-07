@@ -1,102 +1,115 @@
 package com.webdevwizards.revsGUI.screens;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-
+import com.webdevwizards.revsGUI.Controller;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.sql.ResultSet;
+import javax.swing.*;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import com.webdevwizards.revsGUI.screens.LoginScreen;
-import com.webdevwizards.revsGUI.Controller;
+public class ManagerScreen extends JFrame implements ActionListener {
+  JFrame frame;
+  JPanel navPanel;
+  JPanel southPanel;
+  JPanel mainPanel;
+  JLabel managerLabel;
+  JButton btnClose;
+  private LoginScreen loginScreen;
+  private Controller controller;
 
+  public ManagerScreen() {
+    frame = new JFrame("Rev's GUI: Manager Screen");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setSize(600, 600);
+    frame.setLayout(new BorderLayout());
 
+    mainPanel = new JPanel(new GridLayout(3, 3));
+    mainPanel.setPreferredSize(new Dimension(450, 500));
 
-public class ManagerScreen extends JFrame implements ActionListener{
-    JFrame frame;
-    JPanel navPanel;
-    JPanel southPanel;
-    JPanel mainPanel;
-    JLabel managerLabel;
-    JButton btnClose;
-    private LoginScreen loginScreen;
-    private Controller controller;
+    navPanel = new JPanel();
+    navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
+    navPanel.setPreferredSize(new Dimension(120, 600));
+    navPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
+    southPanel = new JPanel();
+    southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
+    southPanel.setPreferredSize(new Dimension(600, 100));
+    southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+    // Add components to the southPanel as per your requirements
+    southPanel.add(Box.createHorizontalGlue());
+    managerLabel = new JLabel("Manager Name: ");
+    southPanel.add(managerLabel);
+    southPanel.add(Box.createHorizontalGlue());
+    btnClose = new JButton("Close");
+    southPanel.add(btnClose);
 
-    public ManagerScreen() {
-        frame = new JFrame("Rev's GUI: Manager Screen");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
-        frame.setLayout(new BorderLayout());
+    frame.add(navPanel, BorderLayout.WEST);
+    frame.add(southPanel, BorderLayout.SOUTH);
+    frame.add(mainPanel, BorderLayout.CENTER);
 
-        mainPanel = new JPanel(new GridLayout(3, 3));
-        mainPanel.setPreferredSize(new Dimension(450, 500));
+    frame.pack();
+  }
 
-        navPanel = new JPanel();
-        navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
-        navPanel.setPreferredSize(new Dimension(120, 600));
-        navPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-
-        
-
-        southPanel = new JPanel();
-        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
-        southPanel.setPreferredSize(new Dimension(600, 100));
-        southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        // Add components to the southPanel as per your requirements
-        southPanel.add(Box.createHorizontalGlue());
-        managerLabel = new JLabel("Manager Name: ");
-        southPanel.add(managerLabel);
-        southPanel.add(Box.createHorizontalGlue());
-        btnClose = new JButton("Close");
-        southPanel.add(btnClose);
-
-        frame.add(navPanel, BorderLayout.WEST);
-        frame.add(southPanel, BorderLayout.SOUTH);
-        frame.add(mainPanel, BorderLayout.CENTER);
-
-        frame.pack();
+  /**
+   * closes the frame when the close button is clicked
+   *
+   * @param e ActionEvent
+   */
+  public void actionPerformed(ActionEvent e) {
+    String s = e.getActionCommand();
+    if (s.equals("Close")) {
+      frame.dispose();
     }
+  }
 
-    
-    /** 
-     * @param e
-     */
-    public void actionPerformed(ActionEvent e) {
-        String s = e.getActionCommand();
-        if (s.equals("Close")) {
-            frame.dispose();
-        }
-    }
+  /*
+   * GETTERS AND SETTERS
+   */
 
+  /**
+   * returns the frame
+   *
+   * @return JFrame frame
+   */
+  public JFrame getFrame() {
+    return frame;
+  }
 
-    
-    /*
-     * GETTERS AND SETTERS
-     */
-    public JFrame getFrame() {
-        return frame;
+  /**
+   * returns the nav panel and creates a new one if it doesnt exist
+   *
+   * @return JPanel navigation panel
+   */
+  public JPanel getNavPanel() {
+    if (navPanel == null) {
+      navPanel = new JPanel();
+      navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
     }
-    public JPanel getNavPanel() {
-        if (navPanel == null) {
-            navPanel = new JPanel();
-            navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
-        }
-        return navPanel;
-    }
-    public JPanel getMainPanel() {
-        return mainPanel;
-    }
+    return navPanel;
+  }
 
-    public JButton getOrderButton (){
-        return btnClose;
-    }
+  /**
+   * returns the main panel
+   *
+   * @return JPanel main panel
+   */
+  public JPanel getMainPanel() {
+    return mainPanel;
+  }
 
-    public JLabel getManagerLabel() {
-        return managerLabel;
-    }
+  /**
+   * returns the close button
+   *
+   * @return JButton close button
+   */
+  public JButton getOrderButton() {
+    return btnClose;
+  }
+
+  /**
+   * returns the manager label
+   *
+   * @return JLabel manager label
+   */
+  public JLabel getManagerLabel() {
+    return managerLabel;
+  }
 }
