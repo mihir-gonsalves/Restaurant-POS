@@ -68,8 +68,7 @@ mvn clean package -T 4
 - Rewriting files to make the codebase succinct by including all shared functions within one file
 
 ### Bug Fixes:
-- Payment Screen is not working as intended
-- Updating inventory through the manager screen does not actually update inventory in database
+- When relogging into a menu (cashier back to cashier or manager back to manager) the program can crash
 
 <br>
 

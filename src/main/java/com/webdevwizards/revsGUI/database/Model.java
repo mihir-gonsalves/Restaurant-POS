@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 
 /**
  * Model class for the database
- * @author Caden, Carson, Jesung, Kevin
+ * @author Caden, Carson, Jesung, Kevin, Mihir
  */
 public class Model {
     public static Connection conn = null;
@@ -31,6 +31,7 @@ public class Model {
      * The phone number of the user
      */
     public String phoneNumber;
+    public int orderNumber = 0;
     /**
      * Constructor for the Model class : just calls initialize
      */
@@ -234,6 +235,7 @@ public class Model {
     }
 
     
+    
     /** 
      * Attaches the associated ingredients to the new item ; used for new seasonal item
      * @param itemID the id of the item
@@ -363,9 +365,6 @@ public class Model {
             }
         }
     }
-
-    
-
     
     /** 
      * Inserts order details to customer_order table
@@ -385,8 +384,8 @@ public class Model {
             preparedStatementInsert.executeUpdate();
             ResultSet rs = preparedStatementInsert.getGeneratedKeys();
             if(rs.next()){
-                int order_id = rs.getInt(1);
-                insert_order_item(order_id, orderItems, conn);
+                orderNumber = rs.getInt(1);
+                insert_order_item(orderNumber, orderItems, conn);
             }
             return true;
 
@@ -395,6 +394,15 @@ public class Model {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Tells user their order number when they finish payment, mod 100
+     * @param number the order number
+     * @return the order number mod 100
+     */
+    public int getOrderNumber() {
+        return orderNumber % 100;
     }
     
     /** 
