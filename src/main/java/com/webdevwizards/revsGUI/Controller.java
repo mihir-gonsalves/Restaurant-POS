@@ -2554,6 +2554,10 @@ public class Controller implements ActionListener{
         return !today.isBefore(startDate) && today.isBefore(endDate);
     }
 
+    
+    /** 
+     * @param e
+     */
     /* ------------------------------------------ MISCELLANEOUS -------------------------------------- */
     
     /**
