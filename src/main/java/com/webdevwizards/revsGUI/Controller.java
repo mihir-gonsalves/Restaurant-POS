@@ -1007,6 +1007,12 @@ public class Controller implements ActionListener{
     }
 
 
+    
+    /** 
+     * @param rs
+     * @param table
+     * @param start_num
+     */
     /* ------------------------------------------------- MANAGER FUNCTION METHODS --------------------------------------- */    
 
     public void TableQuery(ResultSet rs, JTable table, int start_num) {
@@ -1476,6 +1482,10 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param table
+     */
     private void updateOrderTable(JTable table) {
         // Fetch data from SQL and update the table
         try {
@@ -2470,6 +2480,12 @@ public class Controller implements ActionListener{
         });
     }
 
+    
+    /** 
+     * @param rs
+     * @return Vector<String>
+     * @throws SQLException
+     */
     private Vector<String> populateVector(ResultSet rs) throws SQLException {
         Vector<String> ingredientList = new Vector<>();
         while(rs.next()){
@@ -2479,6 +2495,11 @@ public class Controller implements ActionListener{
         return ingredientList;
     }
 
+    
+    /** 
+     * @param dateRange
+     * @return boolean
+     */
     public static boolean isTodayWithinDateRange(String dateRange) {
         // Parse the date range string
         String[] dateRangeParts = dateRange.substring(1, dateRange.length() - 1).split(",");
@@ -2496,6 +2517,10 @@ public class Controller implements ActionListener{
         return !today.isBefore(startDate) && today.isBefore(endDate);
     }
 
+    
+    /** 
+     * @param e
+     */
     /* ------------------------------------------ MISCELLANEOUS -------------------------------------- */
     @Override
     public void actionPerformed(ActionEvent e) {
