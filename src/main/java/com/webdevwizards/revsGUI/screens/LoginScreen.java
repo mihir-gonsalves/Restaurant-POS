@@ -24,19 +24,37 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+/**
+ * LoginScreen class creates the components for the login screen
+ *
+ * @author Amol, Caden. Mihir
+ */
 public class LoginScreen extends JFrame implements ActionListener {
+  /** label for welcome text */
   private JLabel lblScreen;
 
+  /** label for phone number field */
   private JLabel lblNumber;
+
+  /** phone number input */
   private JTextField phoneNumber;
 
+  /** main frame */
   private JFrame frame;
-  private JPanel mainPanel;
-  private JPanel inputPanel; // panel for lblNumber, phoneNumber, and btnLogin (below)
 
+  /** main panel */
+  private JPanel mainPanel;
+
+  /** panel for input */
+  private JPanel inputPanel;
+
+  /** login button */
   private JButton btnLogin;
+
+  /** fullscreen button */
   private JToggleButton btnFullscreen;
 
+  /** Constructor for the LoginScreen class that creates the frame and panels for the login */
   public LoginScreen() {
     frame = new JFrame("Rev's American Grill: Login");
 

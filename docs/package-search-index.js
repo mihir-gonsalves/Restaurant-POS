@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.webdevwizards.revsGUI.database"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.webdevwizards.revsGUI"},{"l":"com.webdevwizards.revsGUI.database"},{"l":"com.webdevwizards.revsGUI.screens"}];updateSearchResults();

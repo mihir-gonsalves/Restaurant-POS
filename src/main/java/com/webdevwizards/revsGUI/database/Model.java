@@ -14,25 +14,28 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 /**
- * Model class for the database
+ * Model class for the database.
  *
  * @author Caden, Carson, Jesung, Kevin, Mihir
  */
 public class Model {
+  /** The connection to be locally referenced. */
   public static Connection conn = null;
+
   private static boolean initialized = false;
 
-  /** The phone number of the user */
+  /** The phone number of the user. */
   public String phoneNumber;
 
+  /** Used to display current order number. */
   public int orderNumber = 0;
 
-  /** Constructor for the Model class : just calls initialize */
+  /** Constructor for the Model class : just calls initialize. */
   public Model() {
     this.initialize();
   }
 
-  /** Sets up config file and initializes the database connection */
+  /** Sets up config file and initializes the database connection. */
   public void initialize() {
 
     if (initialized) return; // Prevent re-initialization
@@ -73,12 +76,11 @@ public class Model {
   }
 
   /**
-   * Executes query and returns the result set of the query
+   * Executes query and returns the result set of the query.
    *
    * @param sql the query to be executed
    * @return the ResultSet of the query unless the query fails, in which case it returns null
    */
-  // Execute and return query results
   public static ResultSet executeQuery(String sql) {
     try {
       Statement stmt = conn.createStatement();
@@ -90,7 +92,7 @@ public class Model {
     }
   }
 
-  /** Closes connection */
+  /** Closes connection. */
   public static void close() {
     try {
       conn.close();
@@ -101,7 +103,7 @@ public class Model {
   }
 
   /**
-   * Checks whether the inputted phone number is in the users database
+   * Checks whether the inputted phone number is in the users database.
    *
    * @param phoneNumber the phone number to be checked
    * @return boolean true if the phone number is in the table, false if it is not
@@ -123,7 +125,7 @@ public class Model {
   }
 
   /**
-   * Checks whether the inputted phone number is a manager's number
+   * Checks whether the inputted phone number is a manager's number.
    *
    * @param phoneNumber the phone number to be checked
    * @return boolean true if the phone number is a manager's number, false if it is not
@@ -161,7 +163,7 @@ public class Model {
       "UPDATE ingredients SET ingredient_current_stock = ? WHERE ingredient_id = ?;";
 
   /**
-   * Sets the details for the specific order
+   * Sets the details for the specific order.
    *
    * @param preparedStatement the prepared statement to be used
    * @param subtotal the subtotal of the order as a string
@@ -180,7 +182,7 @@ public class Model {
   }
 
   /**
-   * Inserts the customer order items into the database based on order_id
+   * Inserts the customer order items into the database based on order_id.
    *
    * @param order_id the id of the order
    * @param orderItems the items in the order
@@ -211,7 +213,7 @@ public class Model {
   }
 
   /**
-   * Checks if the selected ingredient is in stock
+   * Checks if the selected ingredient is in stock.
    *
    * @param ingredient_id the id of the ingredient
    * @param ingredient_quantity the quantity of the ingredient
@@ -235,7 +237,7 @@ public class Model {
   }
 
   /**
-   * Attaches the associated ingredients to the new item ; used for new seasonal item
+   * Attaches the associated ingredients to the new item ; used for new seasonal item.
    *
    * @param itemID the id of the item
    * @param associatedIngredients the ingredients associated with the item
@@ -268,7 +270,7 @@ public class Model {
   }
 
   /**
-   * merges the lists of ingredients and quantities into a map
+   * merges the lists of ingredients and quantities into a map.
    *
    * @param list1 list of id's
    * @param list2 list of quantities
@@ -284,7 +286,7 @@ public class Model {
   }
 
   /**
-   * Selects the ingredients for the order so it can be subtracted from the inventory
+   * Selects the ingredients for the order so it can be subtracted from the inventory.
    *
    * @param orderItems the items and their quantities in the order
    * @param connection the connection to the database
@@ -329,11 +331,11 @@ public class Model {
   } // Done?
 
   /**
-   * Decreases the current number of ingredients left in stocafter a customer order is completed
+   * Decreases the current number of ingredients left in stocafter a customer order is completed.
    *
    * @param ingredient_id the id of the ingredient
    * @param ingredient_quantity the quantity to decrease by
-   * @throws SQLException
+   * @throws SQLException if the SQL query fails
    */
   public void subtractIngredientCount(int ingredient_id, int ingredient_quantity)
       throws SQLException {
@@ -352,11 +354,11 @@ public class Model {
   }
 
   /**
-   * Increase the current number of ingredients left in stocafter a customer order is completed
+   * Increase the current number of ingredients left in stocafter a customer order is completed.
    *
    * @param ingredient_id the id of the ingredient
    * @param ingredient_quantity the quantity to increase by
-   * @throws SQLException
+   * @throws SQLException if the SQL query fails
    */
   public void addIngredientCount(int ingredient_id, int ingredient_quantity) throws SQLException {
     try (PreparedStatement preparedStatement = conn.prepareStatement(SELECT_INGREDIENT_NAME)) {
@@ -374,7 +376,7 @@ public class Model {
   }
 
   /**
-   * Inserts order details to customer_order table
+   * Inserts order details to customer_order table.
    *
    * @param subtotal the subtotal of the order
    * @param orderItems the items and their quantities in the order
@@ -405,22 +407,24 @@ public class Model {
   }
 
   /**
-   * Tells user their order number when they finish payment, mod 100
+   * Tells user their order number when they finish payment, mod 100.
    *
-   * @param number the order number
-   * @return the order number mod 100
+   * @return int the order number mod 100
    */
   public int getOrderNumber() {
     return orderNumber % 100;
   }
 
   /**
-   * Adds new item to the order, updates names, price and category
+   * Adds new item to the order, updates names, price, category, and dates if applicable.
    *
    * @param itemName the name of the item
    * @param itemPrice the price of the item
    * @param category the category of the item
-   * @return boolean
+   * @param startDate the start date of the item
+   * @param endDate the end date of the item
+   * @param flagDate boolean flag for date
+   * @return boolean true if the item is successfully added, false if it is not
    */
   public static boolean addNewItem(
       String itemName,
@@ -456,7 +460,7 @@ public class Model {
   }
 
   /**
-   * Gets ResultSet of all ingredients
+   * Gets ResultSet of all ingredients.
    *
    * @return ResultSet of all ingredients in the database ingredient_id | ingredient_name |
    *     ingredient_current_stock | ingredient_unit_price
@@ -476,7 +480,7 @@ public class Model {
   }
 
   /**
-   * returns all attribute from menu items that is ordered by item_id
+   * returns all attribute from menu items that is ordered by item_id.
    *
    * @return ResultSet of all items in the database
    */
@@ -494,7 +498,7 @@ public class Model {
   }
 
   /**
-   * Retrieves all items and their corresponding ingredients
+   * Retrieves all items and their corresponding ingredients.
    *
    * @return ResultSet of all items with corresponding ingredients in the database item_name |
    *     item_price | category | ingredients
@@ -521,7 +525,7 @@ public class Model {
   }
 
   /**
-   * returns ResultSet of all customer orders
+   * returns ResultSet of all customer orders.
    *
    * @return ResultSet of all customer orders in the database c_order_id | c_order_date |
    *     c_order_time | c_order_subtotal | c_order_tax | c_order_total | c_order_payment_type
@@ -540,7 +544,7 @@ public class Model {
   }
 
   /**
-   * Retrieves all manager orders
+   * Retrieves all manager orders.
    *
    * @return ResultSet of all manager orders in the database m_order_id | m_order_date |
    *     m_order_time | m_order_total | phonenumber
@@ -559,7 +563,7 @@ public class Model {
   }
 
   /**
-   * Retrives all users
+   * Retrives all users.
    *
    * @return ResultSet of all users in the database user_id | phonenumber | name | ismanager
    */
@@ -576,7 +580,7 @@ public class Model {
   }
 
   /**
-   * Add a new ingredient/inventory item
+   * Add a new ingredient/inventory item.
    *
    * @param ingredientName ingredient name
    * @param ingredientStock ingredient stock
@@ -604,7 +608,7 @@ public class Model {
   }
 
   /**
-   * Updates inventory and includes flags so some fields can be left empty
+   * Updates inventory and includes flags so some fields can be left empty.
    *
    * @param ingredient_name ingredient name
    * @param stock current ingredient stock
@@ -654,7 +658,7 @@ public class Model {
         }
 
         if (flagStock) { // Only if we updated the stock do we need to insert into manager_order and
-                         // junction table
+          // junction table
           Double order_total = stock * ingredientPrice;
           PreparedStatement statement3 =
               conn.prepareStatement(
@@ -689,7 +693,7 @@ public class Model {
   }
 
   /**
-   * Updates all fields of a menu item for CRUD
+   * Updates all fields of a menu item for CRUD.
    *
    * @param itemName the name of the item
    * @param price the price of the item
@@ -735,7 +739,7 @@ public class Model {
   }
 
   /**
-   * Fetches the item id when passing item name
+   * Fetches the item id when passing item name.
    *
    * @param item_name the name of the item
    * @return int the id of the item
@@ -756,7 +760,7 @@ public class Model {
   }
 
   /**
-   * fetches ingredient id when passing ingredient name
+   * fetches ingredient id when passing ingredient name.
    *
    * @param ingredient_name the name of the ingredient
    * @return int the id of the ingredient
@@ -777,7 +781,7 @@ public class Model {
   }
 
   /**
-   * fetches item name when passing item id
+   * fetches item name when passing item id.
    *
    * @param item_id the id of the item
    * @return String the name of the item
@@ -798,7 +802,7 @@ public class Model {
   }
 
   /**
-   * fetches item price when passing item id
+   * fetches item price when passing item id.
    *
    * @param item_id the id of the item
    * @return String the price of the item
@@ -823,7 +827,7 @@ public class Model {
   }
 
   /**
-   * sums item prices given a list of item orders
+   * sums item prices given a list of item orders.
    *
    * @param orderItems the items and their quantities in the order
    * @return float the sum of the item prices (subtotal)
@@ -841,7 +845,7 @@ public class Model {
   }
 
   /**
-   * fetches user name when passing phone number
+   * fetches user name when passing phone number.
    *
    * @param phoneNumber the phone number of the user
    * @return String the name of the user
@@ -862,8 +866,7 @@ public class Model {
   }
 
   /**
-   * inserts a new user to the database table, allows specification of their number, name, and if
-   * they are a manager
+   * inserts a new user to the database table, allows specification of their number, name, and if they are a manager.
    *
    * @param phonenumber new user's phone number
    * @param name new user's name
@@ -890,7 +893,7 @@ public class Model {
   }
 
   /**
-   * Deletes a specified item from any table
+   * Deletes a specified item from any table.
    *
    * @param table the table to delete from
    * @param id the id of the item to delete
@@ -915,7 +918,7 @@ public class Model {
   }
 
   /**
-   * retrieves the orders made between date 1 to date 2
+   * retrieves the orders made between date 1 to date 2.
    *
    * @param startDate the start date
    * @param endDate the end date
@@ -940,6 +943,15 @@ public class Model {
     }
   }
 
+  /**
+   * retrieves the id based on the table, idColumnName, clickedRow, and maxRow.
+   *
+   * @param tableName name of the table to retrieve from
+   * @param idColumnName name of the id column of the item (based on table)
+   * @param clickedRow the row clicked
+   * @param maxRow the maximum row in the JTable
+   * @return int the id of row clicked
+   */
   public int getIDFromRow(String tableName, String idColumnName, int clickedRow, int maxRow) {
     try {
       String query =
@@ -967,7 +979,7 @@ public class Model {
   }
 
   /**
-   * retrieves the information of an item based on table, idColumnName, id, and type
+   * retrieves the information of an item based on table, idColumnName, id, and type.
    *
    * @param table the table to retrieve from
    * @param idColumnName the name of the id column of the item
@@ -998,7 +1010,7 @@ public class Model {
   }
 
   /**
-   * updates the manager order given all fields
+   * updates the manager order given all fields.
    *
    * @param id the id of the order
    * @param date the date of the order
@@ -1031,7 +1043,7 @@ public class Model {
   }
 
   /**
-   * updates the customer order given all fields
+   * updates the customer order given all fields.
    *
    * @param id the id of the order
    * @param date the date of the order
@@ -1076,7 +1088,7 @@ public class Model {
   }
 
   /**
-   * updates a user given all fields
+   * updates a user given all fields.
    *
    * @param id the id of the user
    * @param phoneNumber the phone number of the user
@@ -1105,12 +1117,15 @@ public class Model {
   }
 
   /**
-   * updates item given all fields
+   * updates item given all fields.
    *
    * @param id the id of the item
    * @param name the name of the item
    * @param price the price of the item
    * @param category the category of the item
+   * @param startDate the start date of the item
+   * @param endDate the end date of the item
+   * @param flagDate boolean true if the date of the item has changed, false if it has not
    */
   public void updateItem(
       int id,
@@ -1157,7 +1172,7 @@ public class Model {
   }
 
   /**
-   * updates ingredient given all fields
+   * updates ingredient given all fields.
    *
    * @param id the id of the ingredient
    * @param name the name of the ingredient
@@ -1183,7 +1198,7 @@ public class Model {
       statement.setInt(4, id);
       statement.execute();
       if (stockChanged) { // Only if we updated the stock do we need to insert into manager_order
-                          // and junction table
+        // and junction table
         Double order_total = stock * price;
         PreparedStatement statement3 =
             conn.prepareStatement(
@@ -1217,7 +1232,7 @@ public class Model {
   }
 
   /**
-   * deletes user based on id
+   * deletes user based on id.
    *
    * @param id the id of the user
    */
@@ -1234,7 +1249,7 @@ public class Model {
   }
 
   /**
-   * Deletes customer order based on id
+   * Deletes customer order based on id.
    *
    * @param id the id of the order
    */
@@ -1251,7 +1266,7 @@ public class Model {
   }
 
   /**
-   * Deletes manager order based on id
+   * Deletes manager order based on id.
    *
    * @param id the id of the order
    */
@@ -1268,7 +1283,7 @@ public class Model {
   }
 
   /**
-   * Deletes item based on id
+   * Deletes item based on id.
    *
    * @param id the id of the item
    */
@@ -1289,7 +1304,7 @@ public class Model {
   }
 
   /**
-   * Deletes ingredient based on id
+   * Deletes ingredient based on id.
    *
    * @param id the id of the ingredient
    */
@@ -1310,7 +1325,7 @@ public class Model {
   }
 
   /**
-   * creates customer order, takes in all attributes
+   * creates customer order, takes in all attributes.
    *
    * @param date the date of the order
    * @param time the time of the order
@@ -1340,7 +1355,7 @@ public class Model {
   }
 
   /**
-   * Creates manager order, takes in all attributes
+   * Creates manager order, takes in all attributes.
    *
    * @param date the date of the order
    * @param time the time of the order
@@ -1366,7 +1381,7 @@ public class Model {
   }
 
   /**
-   * Creates new user, takes in all attributes
+   * Creates new user, takes in all attributes.
    *
    * @param phoneNumber the phone number of the user
    * @param name the name of the user
@@ -1388,7 +1403,7 @@ public class Model {
   }
 
   /**
-   * Create new ingredients, takes in all attributes
+   * Create new ingredients, takes in all attributes.
    *
    * @param name the name of the ingredient
    * @param stock the stock of the ingredient
@@ -1411,6 +1426,13 @@ public class Model {
     }
   }
 
+  /**
+   * finds items that sell together using test-query/find_Pairs.txt.
+   *
+   * @param startDate the start date
+   * @param endDate the end date
+   * @return ResultSet of items that sell together
+   */
   public ResultSet findPair(String startDate, String endDate) {
     try {
       String text = "";
@@ -1435,7 +1457,7 @@ public class Model {
   }
 
   /**
-   * Retrieves the total sales per item for a given date range
+   * Retrieves the total sales per item for a given date range.
    *
    * @param startDate the start date (YYYY-MM-DD format)
    * @return ResultSet of the total sales per item for the given date range
@@ -1468,7 +1490,7 @@ public class Model {
   }
 
   /**
-   * Retrieves the total sales per ingredient for a given date range
+   * Retrieves the total sales per ingredient for a given date range.
    *
    * @param startDate the start date (YYYY-MM-DD format)
    * @param endDate the end date (YYYY-MM-DD format)
@@ -1510,6 +1532,13 @@ public class Model {
     }
   }
 
+  /**
+   * Retrieves the total sales per item for a given date range.
+   *
+   * @param startTime the start date
+   * @param endTime the end date
+   * @return ResultSet of the total sales per item for the given date range
+   */
   public ResultSet getSalesReport(String startTime, String endTime) {
 
     String sql =
@@ -1519,7 +1548,7 @@ public class Model {
             "FROM customer_order\r\n"
             + //
             "JOIN c_order_to_item_list ON customer_order.c_order_id ="
-          + " c_order_to_item_list.c_order_id \r\n"
+            + " c_order_to_item_list.c_order_id \r\n"
             + //
             "JOIN menu_Items ON c_order_to_item_list.item_id = menu_Items.item_id \r\n"
             + //
@@ -1544,10 +1573,9 @@ public class Model {
   }
 
   /**
-   * Checks all the restock needed ingredients
+   * Checks all the restock needed ingredients.
    *
    * @return ResultSet containing restock need items
-   * @throws SQLException
    */
   public ResultSet findRestock() {
     try {
