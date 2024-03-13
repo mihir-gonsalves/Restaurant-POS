@@ -59,6 +59,16 @@ For example (using 4 cores):
 mvn clean package -T 4
 ```
 
+### Screen Visuals
+#### Login Screen
+![Login Screen](https://github.com/mihir-gonsalves/Restaurant-POS/blob/7740a574fbb153685d5a8a929b06738a5de90c58/readme-images/login.png)
+#### Menu Screen
+![Menu Screen](https://github.com/mihir-gonsalves/Restaurant-POS/blob/7740a574fbb153685d5a8a929b06738a5de90c58/readme-images/menu.png)
+#### Checkout Popup
+![Payment Screen](https://github.com/mihir-gonsalves/Restaurant-POS/blob/7740a574fbb153685d5a8a929b06738a5de90c58/readme-images/payment.png)
+#### Manager Screen
+![Manager Screen](https://github.com/mihir-gonsalves/Restaurant-POS/blob/7740a574fbb153685d5a8a929b06738a5de90c58/readme-images/manager.png)
+
 <br>
 
 ## Underlying Details
