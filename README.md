@@ -8,10 +8,6 @@ A Point-of-Sale system and inventory solution for Texas A&M University's very ow
 ### Group Members:
 Amol Gupta, Caden Miller, Carson Adams, Jesung Ha, Kevin Joseph, and Mihir Gonsalves
 
-#### Additional Group Details:
-Class Section: 905
-Team Number: 01
-
 <br>
 
 ### Configuration:
@@ -195,9 +191,3 @@ Configuration file for maven which builds and manages the Java components of the
 #### 15. Months with lowest revenue.
 - lowest_sales_month.sql
 - Retrieves the sum of order value by month and returns in ascending order, grouped further by year.
-
-<br>
-
-# Ignore Below
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/7JP64vQQ)
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-7f7980b617ed060a017424585567c406b6ee15c891e84e1186181d67ecf80aa0.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=13882821)
